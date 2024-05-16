@@ -7,7 +7,7 @@ import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} fro
 import {navigate} from "wouter/use-browser-location";
 
 // ToDo URL вынести в переменные окружения
-export const URL = process.env.URL
+export const URL = process.env.REACT_APP_BACKEND_URL
 async function getInitialDataReq(): Promise<{
   userData: UserData,
   profileData: ProfileData,

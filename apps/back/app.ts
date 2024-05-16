@@ -34,7 +34,7 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }));
 
 // Обслуживание статических файлов React
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '../front')));
 
 app.use('/api', router);
 
@@ -46,7 +46,7 @@ const startServer = async () => {
   initRoutes(app, mongoDataBase)
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../front', 'index.html'));
   });
 
   app.listen(PORT, () => {
