@@ -1,0 +1,154 @@
+{
+  "breed": {
+    "ru": "Порода",
+    "en": "Breed"
+  },
+  "gender": {
+    "ru": "Пол",
+    "en": "Gender"
+  },
+  "dateOfBirth": {
+    "ru": "Дата рождения",
+    "en": "Date of Birth"
+  },
+  "date": {
+    "ru": "Дата",
+    "en": "Date"
+  },
+  "color": {
+    "ru": "Цвет",
+    "en": "Color"
+  },
+  "name": {
+    "ru": "Домашняя кличка",
+    "en": "Pet Name"
+  },
+  "fullName": {
+    "ru": "Полная кличка",
+    "en": "Full Name"
+  },
+  "puppyCardNumber": {
+    "ru": "Номер щенячьей карты",
+    "en": "Puppy Card Number"
+  },
+  "microchipNumber": {
+    "ru": "Номер микрочипа",
+    "en": "Microchip Number"
+  },
+  "tattooNumber": {
+    "ru": "Номер татуировки или клейма",
+    "en": "Tattoo or Brand Number"
+  },
+  "pedigreeNumber": {
+    "ru": "Номер родословной",
+    "en": "Pedigree Number"
+  },
+  "isNeutered": {
+    "ru": "Кастрирован",
+    "en": "Neutered"
+  },
+  "diagnosticIds": {
+    "ru": "Список проведенных и планируемых диагностических мероприятий",
+    "en": "List of Diagnostic Procedures Conducted and Planned"
+  },
+  "treatmentIds": {
+    "ru": "Список проведенных и планируемых обработок",
+    "en": "List of Treatments Conducted and Planned"
+  },
+  "litterTitle": {
+    "ru": "Информация о помете",
+    "en": "Litter Information"
+  },
+  "heats": {
+    "ru": "Течки",
+    "en": "Heats"
+  },
+  "heat": {
+    "ru": "Течка",
+    "en": "Heat"
+  },
+  "mates": {
+    "ru": "Вязки",
+    "en": "Mates"
+  },
+  "pregnancies": {
+    "ru": "Беременности",
+    "en": "Pregnancies"
+  },
+  "births": {
+    "ru": "Роды",
+    "en": "Births"
+  },
+  "litters": {
+    "ru": "Пометы",
+    "en": "Litters"
+  },
+  "litter": {
+    "ru": "Помет",
+    "en": "Litter"
+  },
+  "vaccination": {
+    "ru": "Вакцинация",
+    "en": "Vaccination"
+  },
+  "vaccinations": {
+    "ru": "Вакцинации",
+    "en": "Vaccinations"
+  },
+  "treatments": {
+    "ru": "Обработки",
+    "en": "Antiparasitic treatments"
+  },
+  "treatment": {
+    "ru": "Обработка",
+    "en": "Antiparasitic treatment"
+  },
+  "fatherFullName": {
+    "ru": "Полная кличка кобеля",
+    "en": "Father full name"
+  },
+  "motherFullName": {
+    "ru": "Полная кличка суки",
+    "en": "Mother full name"
+  },
+  "puppies": {
+    "ru": "Щенки",
+    "en": "Puppies"
+  },
+  "comments": {
+    "ru": "Комментарии",
+    "en": "Comments"
+  },
+  "commonData": {
+    "ru": "Общая информация",
+    "en": "Common data"
+  },
+  "validity": {
+    "ru": "Срок действия",
+    "en": "Validity"
+  },
+  "medication": {
+    "ru": "Препарат",
+    "en": "Medication"
+  },
+  "dogId": {
+    "ru": "Собака",
+    "en": "Dog"
+  },
+  "status": {
+    "ru": "Статус",
+    "en": "Status"
+  },
+  "planned": {
+    "ru": "Планируется",
+    "en": "Planned"
+  },
+  "overdue": {
+    "ru": "Просрочено",
+    "en": "Overdue"
+  },
+  "archived": {
+    "ru": "В архиве",
+    "en": "Archived"
+  }
+}

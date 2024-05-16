@@ -1,0 +1,84 @@
+import {useEffect, useState} from 'react'
+import {useLocation, useParams} from "wouter";
+import EntityPage from "../../../e_features/EntityPage";
+import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
+import {BlocksConfig, FieldData, LitterData} from "../../../g_shared/types";
+import {formatSingleDate} from "../../../g_shared/methods/helpers";
+import {BLOCK_TYPES} from "../../../g_shared/types/components";
+import {getFieldsConfigFromPuppiesList} from "../helpers";
+import {litterBaseDataFields} from './configurations'
+
+const LitterInformation = () => {
+  const [litter, setLitter] = useState<LitterData | null>(null);
+
+  const [, setLocation] = useLocation();
+  const params: {id: string} = useParams();
+
+  const {getLitterById} = useProfileDataStore();
+
+  useEffect(() => {
+    setLitter(getLitterById(params.id))
+  }, [params])
+
+  if (!litter) return null;
+
+
+  const openLitterEditor = () => {
+    setLocation(`/dogs/litter/${params.id}/editor`);
+  }
+
+  const getCardsConfig = (): BlocksConfig => {
+    const commonFields: FieldData[] = litterBaseDataFields.map(fieldName => {
+      switch (fieldName) {
+        case 'fatherFullName': return {
+          key: fieldName,
+          value: litter.fatherFullName || litter.fatherName,
+          link: true,
+          linkValue: `/dogs/${litter.fatherId}`,
+        }
+        case 'motherFullName': return {
+          key: fieldName,
+          value:  litter.motherFullName || litter.motherName,
+          link: true,
+          linkValue: `/dogs/${litter.motherId}`,
+        }
+        case 'dateOfBirth': return {
+          key: fieldName,
+          value: formatSingleDate(litter.dateOfBirth),
+          link: false,
+        }
+        default: return {
+          key: fieldName,
+          value: litter[fieldName] || '-',
+          link: false,
+        }
+      }
+    })
+
+    return {
+      title: litter.litterTitle,
+      commonData: {
+        blockName: 'commonData',
+        blockType: BLOCK_TYPES.COMMON,
+        blockFields: commonFields,
+      },
+      additionalData: [
+        {
+          blockName: 'puppies',
+          blockType: BLOCK_TYPES.ARRAY,
+          blockFields: getFieldsConfigFromPuppiesList(litter.puppiesData)
+        },
+      ]
+    }
+  }
+
+  return (
+    <EntityPage
+      config={getCardsConfig()}
+      openBaseInfoEditor={openLitterEditor}
+      closeEntityPage={() => setLocation('/dogs')}
+    />
+  )
+}
+
+export default LitterInformation

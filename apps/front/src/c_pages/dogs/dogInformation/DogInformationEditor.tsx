@@ -1,0 +1,101 @@
+import {useEffect, useState} from "react";
+import {useParams} from "wouter";
+import {BaseDogInfo, DogData} from "../../../g_shared/types";
+import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
+import {getFormatTimezoneOffset} from "../../../g_shared/methods/helpers";
+import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
+import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
+
+
+const DogInformationEditor = () => {
+  const [dog, changeDog] = useState<DogData | null>(null);
+  const [litters, changeLitters] = useState<{_id: string, litterTitle: string}[]>([])
+
+  const params: {id: string} = useParams();
+
+  const {getDogById, setDogsData, dogsData} = useProfileDataStore();
+
+  const handleInputChange = (key, value) => {
+    switch (key) {
+      case 'dateOfBirth': {
+        if (value && value.includes('Z')) {
+          const dateWithTimeZone = value.replace('Z', getFormatTimezoneOffset())
+          return changeDog(
+            (prevState): DogData => (
+              {...prevState, [key]: dateWithTimeZone, litterId: null, litterTitle: null}
+            ))
+        }
+        if (value && value.length >= 10) {
+          const dateWithTime = (new Date(value)).setHours(12)
+          const dateWithTimeZone = (new Date(dateWithTime)).toISOString().replace('Z', getFormatTimezoneOffset())
+          return changeDog(
+            (prevState): DogData => (
+              {...prevState, [key]: dateWithTimeZone, litterId: null, litterTitle: null}
+            ))
+        }
+        return changeDog(
+          (prevState): DogData => (
+            {...prevState, [key]: value, litterId: null, litterTitle: null}
+          ))
+      }
+      default: {
+        changeDog((prevState): DogData => (
+          {...prevState, [key]: value}
+        ))
+      }
+    }
+  }
+
+  useEffect(() => {
+    const dogData = getDogById(params.id);
+    if (dogData) {
+      const dogCopy = JSON.parse(JSON.stringify(dogData));
+      changeDog(dogCopy);
+    } else {
+      changeDog(null);
+    }
+  }, [params])
+
+  useEffect(() => {
+    if (dog) {
+      getLittersByDate(dog.dateOfBirth).then(({litters}) => changeLitters(litters))
+    }
+  }, [dog])
+
+  const handleSubmit = () => {
+    const newBaseDogInfo: BaseDogInfo = {
+      litterId: dog.litterId,
+      litterTitle: dog.litterTitle,
+      breed: dog.breed,
+      gender: dog.gender,
+      dateOfBirth: dog.dateOfBirth,
+      color: dog.color,
+      name: dog.name,
+      fullName: dog.fullName,
+      microchipNumber: dog.microchipNumber,
+      pedigreeNumber: dog.pedigreeNumber,
+      tattooNumber: dog.tattooNumber,
+      isNeutered: dog.isNeutered,
+    }
+    updateBaseDogInfo(newBaseDogInfo, dog._id).then(
+      () => {
+        setDogsData(dogsData.map((dogData => dogData._id === dog._id ? dog : dogData)))
+        window.history.back()
+    })
+  }
+
+  if (!dog) return null;
+
+  return (
+    <BaseInfoEditor
+      title={dog.name || dog.fullName}
+      entityType={'dog'}
+      entity={dog}
+      handleInputChange={handleInputChange}
+      handleSubmit={handleSubmit}
+      litters={litters}
+    />
+  )
+}
+
+export default DogInformationEditor
