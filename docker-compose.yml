@@ -7,10 +7,10 @@ services:
       dockerfile: Dockerfile
       target: app
       args:
-        REACT_APP_BACKEND_URL: 'http://85.143.221.49:8000'
+        REACT_APP_BACKEND_URL: 'http://vududu.ru'
     restart: always
     ports:
-      - 8000:8000
+      - 80:8000
     depends_on:
       - mongodb
     environment:
