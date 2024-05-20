@@ -16,12 +16,17 @@ const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showP
     return isSmall ? '100%' : window.innerWidth - 250
   }
 
+  function isStandalone() {
+    // @ts-ignore: next line
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
   return (
     <Box
       direction={"row"}
       justify={"between"}
       pad={{horizontal: 'medium'}}
-      style={{height: '48px', width: getBlockWidth(), position: "absolute", bottom: isSmall ? 72 : 24}}
+      style={{height: '48px', width: getBlockWidth(), position: "absolute", bottom: isSmall ? isStandalone ? 92 : 72 : 24}}
     >
       <Box direction={"row"} gap={'medium'}>
         <Button

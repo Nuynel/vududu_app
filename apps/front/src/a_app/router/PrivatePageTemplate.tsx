@@ -11,11 +11,16 @@ import {SCREEN_SIZES} from "../../g_shared/constants/theme";
 const PrivatePageTemplate = ({children}) => {
   const size = React.useContext(ResponsiveContext)
 
+  function isStandalone() {
+    // @ts-ignore: next line
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
   if (size === SCREEN_SIZES.SMALL) {
     return (
       <Grid
         height='full'
-        rows={['flex', '60px']}
+        rows={['flex', isStandalone ? '80px' : '60px']}
         columns={['full']}
         gap='none'
         areas={[
