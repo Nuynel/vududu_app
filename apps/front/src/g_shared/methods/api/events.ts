@@ -9,7 +9,7 @@ const eventURLs = {
 
 export async function createEvent(data: Omit<EventData, '_id' | 'activated'>) {
   try{
-    return await fetch(`${URL}/${eventURLs[data.eventType]}`, {
+    return await fetch(`${URL}/api/${eventURLs[data.eventType]}`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export async function createEvent(data: Omit<EventData, '_id' | 'activated'>) {
 export async function updateHeatInfo (baseHeatInfo: Pick<Heat, 'comments' | 'date' | 'activated'>, id: string) {
   try {
     const queryParams = new URLSearchParams({id}).toString();
-    return await fetch(`${URL}/heat?${queryParams}`, {
+    return await fetch(`${URL}/api/heat?${queryParams}`, {
       method: 'PUT',
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export async function updateHeatInfo (baseHeatInfo: Pick<Heat, 'comments' | 'dat
 export async function updateTreatmentInfo (baseTreatmentInfo: Pick<Treatment, 'comments' | 'date' | 'activated' | 'validity' | 'medication'>, id: string) {
   try {
     const queryParams = new URLSearchParams({id}).toString();
-    return await fetch(`${URL}/treatment?${queryParams}`, {
+    return await fetch(`${URL}/api/treatment?${queryParams}`, {
       method: 'PUT',
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export async function updateTreatmentInfo (baseTreatmentInfo: Pick<Treatment, 'c
 
 export async function deleteEventsByIds (eventsIds: string[]) {
   try {
-    return await fetch(`${URL}/events`, {
+    return await fetch(`${URL}/api/events`, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json",

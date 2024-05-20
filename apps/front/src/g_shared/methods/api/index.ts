@@ -16,7 +16,7 @@ async function getInitialDataReq(): Promise<{
   events: EventData[],
 }> {
   try {
-    return await fetch(`${URL}/initial-data`, {
+    return await fetch(`${URL}/api/initial-data`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ async function getInitialDataReq(): Promise<{
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
-    const response = await fetch(`${URL}/refresh-token`, {
+    const response = await fetch(`${URL}/api/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

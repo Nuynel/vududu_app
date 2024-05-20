@@ -2,7 +2,7 @@ import {User} from "../../types";
 import {URL} from './index';
 
 export async function signIn(data: User) {
-  return await fetch(`${URL}/sign-in`, {
+  return await fetch(`${URL}/api/sign-in`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export async function signIn(data: User) {
 
 export async function signOut() {
   try {
-    return await fetch(`${URL}/sign-out`, {
+    return await fetch(`${URL}/api/sign-out`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export async function signOut() {
 }
 
 export async function signUp(data: User) {
-  return await fetch(`${URL}/sign-up`, {
+  return await fetch(`${URL}/api/sign-up`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export async function signUp(data: User) {
 
 export async function getUser() {
   try {
-    return await fetch(`${URL}/user`, {
+    return await fetch(`${URL}/api/user`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import {NewLitter} from "../../types";
 
 export async function createLitter(data: NewLitter) {
   try{
-    return await fetch(`${URL}/litter`, {
+    return await fetch(`${URL}/api/litter`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export async function createLitter(data: NewLitter) {
 export async function getLittersByDate(date: string) {
   try{
     const queryParams = new URLSearchParams({date}).toString();
-    return await fetch(`${URL}/litters?${queryParams}`, {
+    return await fetch(`${URL}/api/litters?${queryParams}`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export async function getLittersByDate(date: string) {
 export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, id: string) {
   try {
     const queryParams = new URLSearchParams({id}).toString();
-    return await fetch(`${URL}/litter?${queryParams}`, {
+    return await fetch(`${URL}/api/litter?${queryParams}`, {
       method: 'PUT',
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, 
 export async function deleteLitter (id: string) {
   try {
     const queryParams = new URLSearchParams({id}).toString();
-    return await fetch(`${URL}/litter?${queryParams}`, {
+    return await fetch(`${URL}/api/litter?${queryParams}`, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json",

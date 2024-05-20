@@ -17,7 +17,7 @@ type NewProfile = {
 
 export async function createProfile(data: NewProfile) {
   try{
-    return await fetch(`${URL}/profile`, {
+    return await fetch(`${URL}/api/profile`, {
       method: 'POST',
       headers: {
         "content-type": "application/json",
@@ -34,7 +34,7 @@ export async function createProfile(data: NewProfile) {
 
 export async function getProfile(): Promise<{ profileData: ProfileData }> {
   try {
-    return await fetch(`${URL}/profile`, {
+    return await fetch(`${URL}/api/profile`, {
       method: 'GET',
       headers: {
         "content-type": "application/json",
