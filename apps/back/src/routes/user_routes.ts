@@ -24,7 +24,7 @@ import {getCookiesPayload} from "../methods/validation_methods";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
 
-const URL = 'http://localhost:8000'
+const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
 
 export enum COOKIE_TOKEN_NAMES {
   REFRESH_TOKEN = 'refresh-token',
