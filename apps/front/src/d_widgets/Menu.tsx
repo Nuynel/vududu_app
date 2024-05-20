@@ -13,7 +13,6 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
   const [matchProfileRoutes] = useRoute('/profile')
   const [matchContactsRoutes] = useRoute('/contacts')
 
-
   const getIconColor = (location) => currentLocation === location ? '#e4b33a' : '#4c4c4c';
 
   if (isDesktop) {
@@ -72,7 +71,7 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
   }
 
   return (
-    <Nav gridArea="nav" height='xxsmall' justify='around' direction="row" border={{color: '#F1F5F8', side: 'top', size: 'xsmall', style: 'solid'}}>
+    <Nav gridArea="nav" height='60px' align='center' justify='around' direction="row" border={{color: '#F1F5F8', side: 'top', size: 'xsmall', style: 'solid'}}>
       <Link to={Paths.profile} asChild>
         <Button icon={<PersonIcon  color={(matchProfileRoutes || matchContactsRoutes) ? '#e4b33a' : '#4c4c4c'}/>}/>
       </Link>

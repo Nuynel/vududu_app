@@ -21,7 +21,7 @@ const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showP
       direction={"row"}
       justify={"between"}
       pad={{horizontal: 'medium'}}
-      style={{height: '48px', width: getBlockWidth(), position: "absolute", bottom: isSmall ? 60 : 24}}
+      style={{height: '48px', width: getBlockWidth(), position: "absolute", bottom: isSmall ? 72 : 24}}
     >
       <Box direction={"row"} gap={'medium'}>
         <Button

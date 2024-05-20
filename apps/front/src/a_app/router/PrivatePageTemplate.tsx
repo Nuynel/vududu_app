@@ -15,7 +15,7 @@ const PrivatePageTemplate = ({children}) => {
     return (
       <Grid
         height='full'
-        rows={['flex', 'xxsmall']}
+        rows={['flex', '60px']}
         columns={['full']}
         gap='none'
         areas={[
@@ -33,7 +33,6 @@ const PrivatePageTemplate = ({children}) => {
 
   return (
     <Grid
-      height='full'
       rows={['64px', 'flex']}
       columns={['250px', 'flex']}
       gap='none'

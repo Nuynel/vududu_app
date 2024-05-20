@@ -36,7 +36,7 @@ const App = () => {
   }, [])
 
   return (
-    <Grommet theme={theme} full>
+    <Grommet theme={theme} style={{minHeight: window.innerHeight, height: window.innerHeight, maxHeight: window.innerHeight}}>
       <Router/>
       <ToastContainer
         position="top-right"

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Route, Switch } from 'wouter';
+import { Route, Switch, Link } from 'wouter';
 import { PrivateRoutes, PublicRoutes, Paths } from "../../g_shared/constants/routes";
 import PrivatePageTemplate from "./PrivatePageTemplate";
 import PrivateRoute from "../../e_features/PrivateRoute";
@@ -36,6 +36,7 @@ const Router = () => {
       }
       <Route>
         <div> 404 Not found </div>
+        <Link to={Paths.events}>Back to events</Link>
       </Route>
     </Switch>
   )
