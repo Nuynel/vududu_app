@@ -114,20 +114,8 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
 
       // Отправка письма
       transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log('MAILING ERROR => => => ', error, mailOptions, {
-            service: 'Brevo',
-            host: process.env.SMTP_SERVER || 'smtp-relay.brevo.com',
-            port: 587,
-            secure: false, // true для порта 465, false для других портов
-            auth: {
-              user: process.env.SMTP_LOGIN || 'your@brevo-email.com',
-              pass: process.env.SMTP_PASSWORD || 'your-brevo-password'
-            }
-          })
-          return res.status(500).send('Ошибка при отправке письма: ' + error.message);
-        }
-        res.status(200).send('Письмо для подтверждения отправлено на адрес: ' + email);
+        if (error) return res.status(500).send('Mailing error: ' + error.message);
+        res.status(200).send({message: 'Письмо для подтверждения отправлено на адрес: ' + email});
       });
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
