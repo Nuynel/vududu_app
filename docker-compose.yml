@@ -16,6 +16,7 @@ services:
     depends_on:
       - mongodb
     environment:
+      BACKEND_URL: http://vududu.ru
       PORT: 8000
       MONGODB_URI: mongodb://admin:pass@mongodb:27017
       SMTP_SERVER: smtp-relay.brevo.com
