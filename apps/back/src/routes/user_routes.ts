@@ -1,5 +1,6 @@
 import {Application, raw, Response} from 'express';
 import {MongoClient, ObjectId, WithId} from 'mongodb';
+import { createTransport } from 'nodemailer';
 import {
   activateProfileByActivator,
   checkIn,
@@ -36,6 +37,18 @@ type UserData = { profileIds: ObjectId[], email: string }
 type ProfileDataFields = 'name' | 'type' | 'documentIds' | 'contactIds' | 'eventIds' | 'dogIds' | 'litterIds' | 'connectedOrganisations'
 type ProfilesWithDogs = KennelProfile | BreederProfile
 type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
+
+// SMTP transporter configuration
+const transporter = createTransport({
+  service: 'Brevo',
+  host: process.env.SMTP_SERVER || 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false, // true для порта 465, false для других портов
+  auth: {
+    user: process.env.SMTP_LOGIN || 'your@brevo-email.com',
+    pass: process.env.SMTP_PASSWORD || 'your-brevo-password'
+  }
+});
 
 
 const pickUserData = (user: User): UserData => {
@@ -90,9 +103,22 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const user = await findUserByEmail(client, email);
       if (user) throw new CustomError(ERROR_NAME.EMAIL_ALREADY_EXISTS)
       const checkInResult = await checkIn(client, {email, password});
-      console.log(`${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}`)
-      res.send({message: `${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}`
-    })
+      // Содержимое письма
+      const mailOptions = {
+        from: 'registration@vududu.ru',
+        to: email,
+        subject: 'Подтверждение регистрации',
+        text: 'Пожалуйста, подтвердите вашу почту, перейдя по ссылке.',
+        html: '<p>Пожалуйста, подтвердите вашу почту, <a href="'+`${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}`+'">перейдя по этой ссылке</a>.</p>'
+      };
+
+      // Отправка письма
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return res.status(500).send('Ошибка при отправке письма: ' + error.message);
+        }
+        res.status(200).send('Письмо для подтверждения отправлено на адрес: ' + email);
+      });
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

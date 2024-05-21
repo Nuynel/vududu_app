@@ -8,6 +8,9 @@ services:
       target: app
       args:
 #        REACT_APP_BACKEND_URL: 'http://localhost:8000'
+        SMTP_SERVER: 'smtp-relay.brevo.com'
+        SMTP_LOGIN: '752df5001@smtp-brevo.com'
+        SMTP_PASSWORD: 'VJTrWhBxcnaUMSs9'
         REACT_APP_BACKEND_URL: 'http://vududu.ru'
     restart: always
     ports:
