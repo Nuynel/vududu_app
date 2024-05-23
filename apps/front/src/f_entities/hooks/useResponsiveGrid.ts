@@ -38,15 +38,15 @@ const GRID_CONFIG = {
   },
 }
 
-const useResponsiveGrid = (isThreeComponents = false) => {
+const useResponsiveGrid = (hasFilter = false) => {
   const size = React.useContext(ResponsiveContext)
   const isSmall = size === SCREEN_SIZES.SMALL
 
   const getGridConfig = () => {
     if (isSmall) {
-      return isThreeComponents ? GRID_CONFIG.THREE_COMPONENT_SMALL : GRID_CONFIG.TWO_COMPONENT_SMALL
+      return hasFilter ? GRID_CONFIG.THREE_COMPONENT_SMALL : GRID_CONFIG.TWO_COMPONENT_SMALL
     }
-    return isThreeComponents ? GRID_CONFIG.THREE_COMPONENT : GRID_CONFIG.TWO_COMPONENT
+    return hasFilter ? GRID_CONFIG.THREE_COMPONENT : GRID_CONFIG.TWO_COMPONENT
   }
 
   const { columns, rows, areas } = getGridConfig()
