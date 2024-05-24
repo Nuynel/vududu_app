@@ -1,17 +1,13 @@
-import {Box, Grid, Text, FormField, Select} from "grommet";
-import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {Box, Grid} from "grommet";
 import {useEffect, useState} from "react";
-import {DogData, FieldData, Pedigree} from "../../g_shared/types";
-import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
+import {Pedigree} from "../../g_shared/types";
 import {getPedigreeByDogId} from "../../g_shared/methods/api";
-import {dogShortDataFields, PEDIGREE_GRIDS} from "./configurations";
-import {getCommonFieldsConfig} from "../../g_shared/methods/helpers/getCommonFieldsConfig";
-import {CommonField, LinkedField} from "../../g_shared/ui_components";
+import {PEDIGREE_GRIDS} from "./configurations";
 import {useLocation} from "wouter";
-import {getRuTranslate} from "../../g_shared/constants/translates";
 import * as React from "react";
 import ProbandSelect from "./ui/ProbandSelect";
 import PedigreeNode from "./ui/PedigreeNode";
+import DogCard from "./ui/DogCard";
 
 // на десктопе должна быть колонка слева, где отображается информация по собакам,
 // предтсавленным в родословной (по дефолту пробанд)
@@ -38,13 +34,7 @@ function traverseTreeDFS(node: Pedigree, results: PedigreeNodes = []): PedigreeN
 const PedigreeScreen = () => {
   const [probandId, changeProbandId] = useState<string | null>(null)
   const [nodes, changeNodes] = useState<PedigreeNodes>([])
-  const {getDogById} = useProfileDataStore();
   const [, setLocation] = useLocation();
-
-  const getCardsConfig = (): FieldData[] => {
-    const dog = getDogById(probandId);
-    return dogShortDataFields.map(fieldName => getCommonFieldsConfig(fieldName, dog))
-  }
 
   useEffect(() => {
     if (probandId) {
@@ -67,36 +57,7 @@ const PedigreeScreen = () => {
     >
       <ProbandSelect probandId={probandId} changeProbandId={changeProbandId}/>
 
-      <Box
-        gridArea={'secondaryFilter'}
-        direction={"row"}
-        pad={"small"}
-      >
-        <Box height={"small"} width={"small"} background={'#777777'} margin={{right: 'small'}}/>
-        <Box justify={"around"}>
-          {probandId && getCardsConfig().map((field, index) => {
-              return (
-                <Grid
-                  columns={['1fr', '1fr']}
-                  key={index}
-                  rows={['auto']}
-                  areas={[
-                    { name: 'title', start: [0, 0], end: [0, 0] },
-                    { name: 'value', start: [1, 0], end: [1, 0] },
-                  ]}
-                >
-                  <Box gridArea={'title'} align={"end"} pad={{right: 'small'}}>
-                    <Text size='small' margin={{right:'xxsmall'}}>{getRuTranslate(field.key)}:</Text>
-                  </Box>
-                  <Box  gridArea={'value'}>
-                    <Text truncate='tip' size='small' weight='bold'>{field.value}</Text>
-                  </Box>
-                </Grid>
-              )
-            }
-          )}
-        </Box>
-      </Box>
+      <DogCard probandId={probandId}/>
       <Box
         gridArea={'content'}
         pad={"small"}
