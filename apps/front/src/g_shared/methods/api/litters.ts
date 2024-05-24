@@ -18,7 +18,7 @@ export async function createLitter(data: NewLitter) {
   }
 }
 
-export async function getLittersByDate(date: string) {
+export async function getLittersByDate(date: string): Promise<{litters: {_id: string}[]}> {
   try{
     const queryParams = new URLSearchParams({date}).toString();
     return await fetch(`${URL}/api/litters?${queryParams}`, {
