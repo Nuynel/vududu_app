@@ -1,5 +1,5 @@
 import {Paths} from "../../g_shared/constants/routes";
-import Calendar from "../../c_pages/calendar/Events";
+import Calendar from "../../c_pages/events/Events";
 import Contacts from "../../c_pages/contacts/Contacts";
 import Documents from "../../c_pages/documents/Documents";
 import Profile from "../../c_pages/profile/Profile";
@@ -12,8 +12,8 @@ import DogInformation from "../../c_pages/dogs/dogInformation/DogInformation";
 import DogInformationEditor from "../../c_pages/dogs/dogInformation/DogInformationEditor";
 import LitterInformation from "../../c_pages/dogs/litterInformation/LitterInformation";
 import LitterInformationEditor from "../../c_pages/dogs/litterInformation/LitterInformationEditor";
-import EventInformation from "../../c_pages/calendar/eventInformation/EventInformation";
-import EventInfoEditor from "../../c_pages/calendar/eventInformation/EventInfoEditor";
+import EventInformation from "../../c_pages/events/eventInformation/EventInformation";
+import EventInfoEditor from "../../c_pages/events/eventInformation/EventInfoEditor";
 import Pedigree from "../../c_pages/pedigree/Pedigree";
 
 export const componentsMapping = {
