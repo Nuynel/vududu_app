@@ -13,6 +13,7 @@ import {
   EventData,
 } from './event'
 import {FieldData, BlocksConfig} from './components'
+import {Pedigree} from './pedigrees'
 
 export {
   DecodedToken,
@@ -50,4 +51,6 @@ export {
 
   FieldData,
   BlocksConfig,
+
+  Pedigree,
 }

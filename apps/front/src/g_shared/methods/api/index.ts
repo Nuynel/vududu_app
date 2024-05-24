@@ -5,6 +5,7 @@ import {createDog, getStuds, updateBaseDogInfo, deleteDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
 import {navigate} from "wouter/use-browser-location";
+import {getPedigreeByDogId} from "./pedigrees";
 
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL
@@ -71,4 +72,5 @@ export {
   updateHeatInfo,
   updateTreatmentInfo,
   deleteEventsByIds,
+  getPedigreeByDogId,
 }
