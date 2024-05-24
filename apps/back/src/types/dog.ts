@@ -19,6 +19,7 @@ export type BaseDogData = { // в момент добавления щенка �
   breed: string | null;
   gender: GENDER;
   dateOfBirth: string;
+  // dateOfDeath: string;
   name: string | null; // домашняя кличка (может быть даже цвет ошейника)
   color: string | null;
   puppyCardId: ObjectId | string | null; // ссылка на документ (щенячку)
@@ -102,16 +103,17 @@ type PuppyReproductiveHistory = {
 
 export type DatabaseDog = Puppy | Dog | MaleExtendedDog | FemaleExtendedDog;
 
-export type BaseDogInfo = {
-  litterId: string | null;
+export type BaseDogInfo = Pick<BaseDogData,
+  | 'litterId'
+  | 'breed'
+  | 'gender'
+  | 'dateOfBirth'
+  | 'color'
+  | 'name'
+  | 'fullName'
+  | 'microchipNumber'
+  | 'tattooNumber'
+  | 'isNeutered'
+> & {
   litterTitle: string | null;
-  breed: string | null;
-  gender: GENDER;
-  dateOfBirth: string;
-  color: string | null;
-  name: string | null;
-  fullName: string | null;
-  microchipNumber: string | null;
-  tattooNumber: string | null;
-  isNeutered: boolean | null;
 }
