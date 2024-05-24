@@ -8,7 +8,7 @@ export type FieldData = {
   key: string,
   value: string | boolean | string[] | null,
   link: boolean,
-  linkValue?: string,
+  linkValue?: string | null,
 }
 
 export type BlocksConfig = {
