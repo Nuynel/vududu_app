@@ -38,6 +38,7 @@ const PrivatePageTemplate = ({children}) => {
 
   return (
     <Grid
+      fill
       rows={['64px', 'flex']}
       columns={['250px', 'flex']}
       gap='none'

@@ -8,6 +8,7 @@ import {formatSingleDate} from "../../../g_shared/methods/helpers";
 import {GENDER} from "../../../g_shared/types/dog";
 import {getFieldsConfigFromHistoryRecords} from "../helpers";
 import {dogBaseDataFields} from './configurations'
+import {getCommonFieldsConfig} from "../../../g_shared/methods/helpers/getCommonFieldsConfig";
 
 const DogInformation = () => {
   const [dog, setDog] = useState<DogData | null>(null);
@@ -32,37 +33,7 @@ const DogInformation = () => {
   }
 
   const getCardsConfig = (): BlocksConfig => {
-    const commonFields: FieldData[] = dogBaseDataFields.map(fieldName => {
-      switch (fieldName) {
-        case 'dateOfBirth': return {
-          key: fieldName,
-          value: formatSingleDate(dog.dateOfBirth),
-          link: false,
-        }
-        case 'litterTitle': return {
-          key: fieldName,
-          value: dog.litterTitle || '-',
-          link: !!dog.litterId,
-          linkValue: `/dogs/litter/${dog.litterId}`,
-        }
-        case 'isNeutered': return {
-          key: fieldName,
-          value: dog.isNeutered ? 'Да' : 'Нет',
-          link: false,
-        }
-        case 'gender': return {
-          key: fieldName,
-          value: dog.gender === GENDER.MALE ? 'Кобель' : 'Сука',
-          link: false,
-        }
-        default: return {
-          key: fieldName,
-          value: dog[fieldName] || '-',
-          link: false,
-        }
-
-      }
-    })
+    const commonFields: FieldData[] = dogBaseDataFields.map(fieldName => getCommonFieldsConfig(fieldName, dog))
 
     return {
       title: dog.name,
