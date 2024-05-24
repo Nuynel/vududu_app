@@ -1,4 +1,4 @@
-import {DateInput, RadioButtonGroup, TextInput, CheckBox, Select} from "grommet";
+import {DateInput, RadioButtonGroup, TextInput, CheckBox, Select, SelectMultiple} from "grommet";
 import {GENDER} from "../../g_shared/types/dog";
 
 export const newDogFormConfig = {
@@ -118,6 +118,16 @@ export const newLitterFormConfig = {
     handler: (event, key, method) => method(key, event.option._id),
     searchHandler: (searchString, method) => method(searchString, GENDER.FEMALE),
     valueGetter: (dogsList, motherId) => {dogsList.find(stud => stud._id === motherId)},
+    labelKey: 'fullName',
+  },
+  puppyIds: {
+    component: SelectMultiple,
+    label: 'Щенки',
+    id: 'puppies-id-input-id',
+    placeholder: 'Выберите щенков',
+    handler: (event, key, method) => method(key, event.option._id),
+    // searchHandler: (searchString, method) => method(searchString),
+    // valueGetter: (puppyIds, attachedPuppiesList) => {puppyIds.find(puppy => )},
     labelKey: 'fullName',
   }
 } as const;

@@ -5,7 +5,7 @@ export type NewLitter = {
   motherId: string;
   dateOfBirth: string;
   registrationId: null; // ссылка на документ (общепометная карта)
-  puppyIds: [];
+  puppyIds: string[];
   // puppiesCount: {
   //   male: number | null,
   //   female: number | null,
@@ -36,5 +36,5 @@ export type LittersStore = {
   setLittersData: (littersData: LitterData[]) => void,
 }
 
-export type NewLitterFormFields = 'fatherId' | 'motherId' | 'dateOfBirth' | 'comments'
+export type NewLitterFormFields = 'fatherId' | 'motherId' | 'dateOfBirth' | 'comments' | 'puppyIds'
   // | 'puppiesCount'

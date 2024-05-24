@@ -53,6 +53,23 @@ export async function getStuds (searchString: string, gender: GENDER) {
   }
 }
 
+export async function getPuppies (dateOfBirth: string) {
+  try{
+    const queryParams = new URLSearchParams({dateOfBirth}).toString();
+    return await fetch(`${URL}/api/puppies?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }).then(r => {
+      return r.json()
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export async function updateBaseDogInfo (baseDogInfo: BaseDogInfo, id: string) {
   try {
     const queryParams = new URLSearchParams({id}).toString();

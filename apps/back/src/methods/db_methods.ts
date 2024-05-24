@@ -190,6 +190,21 @@ export const findStudsBySearchString = async(
   }).toArray();
 }
 
+export const findPuppiesByDateOfBirth = async(
+  client: MongoClient,
+  dateOfBirth: string,
+) => {
+  return await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).find({
+    dateOfBirth,
+    litterId: null,
+  }, {
+    projection: {
+      _id: 1,
+      fullName: 1,
+    }
+  }).toArray();
+}
+
 export const findLittersByDate = async(
   client: MongoClient,
   date: string,

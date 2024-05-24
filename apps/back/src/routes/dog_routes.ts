@@ -7,6 +7,7 @@ import {
   errorHandler,
   findEntitiesByIds,
   findEntityById,
+  findPuppiesByDateOfBirth,
   findStudsBySearchString,
   getCookiesPayload,
   insertEntity,
@@ -136,6 +137,17 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const { searchString, gender } = req.query;
       const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
       res.send({studs})
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
+
+  app.get<{}, { puppies: DatabaseDog[] }, {}, { dateOfBirth: string }>('/api/puppies', async(req, res) => {
+    try {
+      const {} = getCookiesPayload(req);
+      const { dateOfBirth } = req.query;
+      const puppies = await findPuppiesByDateOfBirth(client, dateOfBirth);
+      res.send({puppies})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

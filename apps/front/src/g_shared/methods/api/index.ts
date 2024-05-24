@@ -1,7 +1,7 @@
 import {UserData, ProfileData, DogData, LitterData, EventData} from "../../types";
 import {signIn, signOut, signUp, getUser} from './user';
 import {createProfile, getProfile} from "./profile";
-import {createDog, getStuds, updateBaseDogInfo, deleteDog} from "./dogs";
+import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
 import {navigate} from "wouter/use-browser-location";
@@ -63,6 +63,7 @@ export {
   createDog,
   deleteDog,
   getStuds,
+  getPuppies,
   createLitter,
   deleteLitter,
   createEvent,

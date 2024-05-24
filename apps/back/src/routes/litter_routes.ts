@@ -2,7 +2,9 @@ import {Application} from "express";
 import {MongoClient, ObjectId, WithId} from "mongodb";
 import {BreederProfile, DatabaseDog, KennelProfile, Litter, NewLitter} from "../types";
 import {
-  constructLitterForClient, deleteEntityById,
+  assignValueToField,
+  constructLitterForClient,
+  deleteEntityById,
   errorHandler,
   findEntityById,
   findLittersByDate,
@@ -42,6 +44,9 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
         litterId, FIELDS_NAMES.REPRODUCTIVE_HISTORY_LITTER_IDS)
       await modifyNestedArrayFieldById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(newLitterData.motherId),
         litterId, FIELDS_NAMES.REPRODUCTIVE_HISTORY_LITTER_IDS)
+      await Promise.all(newLitterData.puppyIds.map(async (puppyId) => {
+        await assignValueToField<DatabaseDog>(client, COLLECTIONS.DOGS, puppyId, FIELDS_NAMES.LITTER_ID, litterId)
+      }))
       await modifyNestedArrayFieldById<KennelProfile | BreederProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId), litterId, FIELDS_NAMES.LITTER_IDS)
       const litter = await constructLitterForClient(client, { ...newLitter, _id: litterId })
       res.send({ litter })

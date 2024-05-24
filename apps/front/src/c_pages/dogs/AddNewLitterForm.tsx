@@ -1,7 +1,7 @@
 import {LitterData, NewLitter, NewLitterFormFields} from "../../g_shared/types";
 import * as React from "react";
-import {useState} from "react";
-import {createLitter, getStuds} from "../../g_shared/methods/api";
+import {useState, useEffect} from "react";
+import {createLitter, getStuds, getPuppies} from "../../g_shared/methods/api";
 import {Button, Form, FormField, Heading, Box} from "grommet";
 import {newLitterFormConfig} from "./formsConfig";
 import {GENDER} from "../../g_shared/types/dog";
@@ -13,6 +13,7 @@ const initNewLitterData: Pick<NewLitter, NewLitterFormFields> = {
   fatherId: '',
   motherId: '',
   dateOfBirth: '',
+  puppyIds: [],
   // puppiesCount: {
   //   male: 0,
   //   female: 0
@@ -36,6 +37,23 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
             {...prevState, [key]: dateWithTimezone}
           ))
       }
+      case 'puppyIds': {
+        if (value) {
+          if (newLitterData.puppyIds.includes(value)) {
+            return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+              {...prevState, [key]: prevState.puppyIds.filter(id => id !== value)}
+            ))
+          } else {
+            return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+              {...prevState, [key]: [...prevState.puppyIds, value]}
+            ))
+          }
+        } else {
+          return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+            {...prevState, [key]: []}
+          ))
+        }
+      }
       default: {
         changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
           {...prevState, [key]: value}
@@ -46,12 +64,12 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
 
   const [maleDogsList, changeMaleDogsList] = useState<{_id: string, fullName: string}[]>([])
   const [femaleDogsList, changeFemaleDogsList] = useState<{_id: string, fullName: string}[]>([])
+  const [puppiesList, changePuppiesList] = useState<{_id: string, fullName: string}[]>([])
 
   const createLitterData = (): NewLitter => {
     return {
       ...newLitterData,
       registrationId: null,
-      puppyIds: [],
       litterCardId: null,
     }
   }
@@ -67,13 +85,21 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
   }
 
   const handleSearch = (searchString: string, gender: GENDER) => {
-    if (searchString.length > 2) {
+    if (searchString.length > 0) {
       getStuds(searchString, gender).then(({studs}) => {
         if (gender === GENDER.MALE) changeMaleDogsList(studs)
         if (gender === GENDER.FEMALE) changeFemaleDogsList(studs)
       })
     }
   }
+
+  useEffect(() => {
+    if (newLitterData.dateOfBirth) {
+      getPuppies(newLitterData.dateOfBirth).then(({puppies}) => {
+        changePuppiesList(puppies)
+      })
+    }
+  }, [newLitterData.dateOfBirth])
 
   return (
     <Box pad={"medium"} width={isSmall ? 'auto' : 'large'}>
@@ -117,6 +143,25 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
               />
             </FormField>
           )})}
+        {['puppyIds'].map((key) => {
+          const fieldConfig = newLitterFormConfig[key]
+          const Field = fieldConfig.component
+          return (
+            <FormField key={fieldConfig.id} name={fieldConfig.label} htmlFor={fieldConfig.id} label={fieldConfig.label}>
+              <Field
+                id={fieldConfig.id}
+                name={fieldConfig.label}
+                value={newLitterData[key].map(puppyId => puppiesList.find(puppy => puppy._id === puppyId))}
+                options={puppiesList}
+                labelKey={fieldConfig.labelKey}
+                format={fieldConfig.format}
+                placeholder={fieldConfig.placeholder}
+                // onSearch={(searchString) => fieldConfig.searchHandler(searchString, handleSearch)}
+                onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+              />
+            </FormField>
+          )
+        })}
         <Button margin='small' type="submit" primary label="Сохранить" alignSelf={"center"} />
       </Form>
     </Box>
