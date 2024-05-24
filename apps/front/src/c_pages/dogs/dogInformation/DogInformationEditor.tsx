@@ -13,7 +13,7 @@ const DogInformationEditor = () => {
 
   const params: {id: string} = useParams();
 
-  const {getDogById, setDogsData, dogsData} = useProfileDataStore();
+  const {getDogById, setDogsData, dogsData, getLitterById} = useProfileDataStore();
 
   const handleInputChange = (key, value) => {
     switch (key) {
@@ -58,7 +58,11 @@ const DogInformationEditor = () => {
 
   useEffect(() => {
     if (dog) {
-      getLittersByDate(dog.dateOfBirth).then(({litters}) => changeLitters(litters))
+      getLittersByDate(dog.dateOfBirth).then(({litters}) => {
+        changeLitters(litters.map(
+          ({_id}) => ({_id, litterTitle: getLitterById(_id).litterTitle})
+        ))
+      })
     }
   }, [dog])
 
