@@ -28,12 +28,13 @@ const ProbandSelect = ({probandId, changeProbandId}: Props) => {
     <Box
       gridArea={'mainFilter'}
       alignSelf='center'
-      justify={isSmall ? 'around' : 'end'}
+      justify={'around'}
       background={'white'}
       pad={'small'}
+      direction={"row"}
     >
       <Box>
-        <Text size={'medium'} margin={{right: 'large', top: 'medium', bottom: 'small'}}>
+        <Text size={'small'} margin={{right: 'large', top: 'medium', bottom: 'small'}}>
           Пробанд
         </Text>
       </Box>
@@ -45,6 +46,8 @@ const ProbandSelect = ({probandId, changeProbandId}: Props) => {
           options={dogsList}
           labelKey='fullName'
           placeholder='Фильтр'
+          size={"small"}
+          // border={{color: '#777777', side: 'all', size: 'xsmall', style: 'solid'}}
           onSearch={(searchString) => handleSearch(searchString)}
           onChange={(event) => changeProbandId(event.value._id)}
         />

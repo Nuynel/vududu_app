@@ -25,30 +25,32 @@ const DogCard = ({probandId}: Props) => {
       direction={"row"}
       pad={"small"}
     >
-      <Box height={"small"} width={"small"} background={'#777777'} margin={{right: 'small'}}/>
-      <Box justify={"around"}>
-        {probandId && getCardsConfig().map((field, index) => {
-            return (
-              <Grid
-                columns={['1fr', '1fr']}
-                key={index}
-                rows={['auto']}
-                areas={[
-                  { name: 'title', start: [0, 0], end: [0, 0] },
-                  { name: 'value', start: [1, 0], end: [1, 0] },
-                ]}
-              >
-                <Box gridArea={'title'} align={"end"} pad={{right: 'small'}}>
-                  <Text size='small' margin={{right:'xxsmall'}}>{getRuTranslate(field.key)}:</Text>
-                </Box>
-                <Box  gridArea={'value'}>
-                  <Text truncate='tip' size='small' weight='bold'>{field.value}</Text>
-                </Box>
-              </Grid>
-            )
-          }
-        )}
-      </Box>
+      {probandId && <Box height={"small"} width={"small"} background={'#777777'} margin={{right: 'small'}}/>}
+      {probandId && (
+        <Box justify={"around"}>
+          {getCardsConfig().map((field, index) => {
+              return (
+                <Grid
+                  columns={['1fr', '1fr']}
+                  key={index}
+                  rows={['auto']}
+                  areas={[
+                    { name: 'title', start: [0, 0], end: [0, 0] },
+                    { name: 'value', start: [1, 0], end: [1, 0] },
+                  ]}
+                >
+                  <Box gridArea={'title'} align={"end"} pad={{right: 'small'}}>
+                    <Text size='small' margin={{right:'xxsmall'}}>{getRuTranslate(field.key)}:</Text>
+                  </Box>
+                  <Box  gridArea={'value'}>
+                    <Text truncate='tip' size='small' weight='bold'>{field.value}</Text>
+                  </Box>
+                </Grid>
+              )
+            }
+          )}
+        </Box>
+      )}
     </Box>
   )
 }

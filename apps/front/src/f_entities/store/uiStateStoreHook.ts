@@ -11,8 +11,15 @@ type UIStorage = {
 
   eventTypeFilter: EVENT_TYPE | null,
   setEventTypeFilter: (newEventType: EVENT_TYPE | null) => void,
+
   activeDataType: DATA_TYPES,
   setActiveDataType: (newDataType: DATA_TYPES) => void,
+
+  probandId: string | null,
+  setProbandId: (newProbandId: string | null) => void,
+
+  activePedigreeDogId: string | null,
+  setActivePedigreeDogId: (newActivePedigreeDogId: string | null) => void,
 }
 
 export const useUIStateStore = create<UIStorage>(set => ({
@@ -24,6 +31,14 @@ export const useUIStateStore = create<UIStorage>(set => ({
 
   eventTypeFilter: null,
   setEventTypeFilter: (newEventType) => set(state => ({...state, eventTypeFilter: newEventType })),
+
   activeDataType: DATA_TYPES.PLANNED,
   setActiveDataType: (newDataType) => set(state => ({...state, activeDataType: newDataType })),
+
+  probandId: null,
+  setProbandId: (newProbandId) => set(state => ({...state, probandId: newProbandId})),
+
+  activePedigreeDogId: null,
+  setActivePedigreeDogId: (newActivePedigreeDogId) => set(state => ({...state, activePedigreeDogId: newActivePedigreeDogId})),
+
 }))

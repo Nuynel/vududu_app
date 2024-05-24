@@ -8,6 +8,7 @@ import * as React from "react";
 import ProbandSelect from "./ui/ProbandSelect";
 import PedigreeNode from "./ui/PedigreeNode";
 import DogCard from "./ui/DogCard";
+import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
 
 // на десктопе должна быть колонка слева, где отображается информация по собакам,
 // предтсавленным в родословной (по дефолту пробанд)
@@ -32,32 +33,34 @@ function traverseTreeDFS(node: Pedigree, results: PedigreeNodes = []): PedigreeN
 }
 
 const PedigreeScreen = () => {
-  const [probandId, changeProbandId] = useState<string | null>(null)
   const [nodes, changeNodes] = useState<PedigreeNodes>([])
   const [, setLocation] = useLocation();
+
+  const {probandId, setProbandId, activePedigreeDogId , setActivePedigreeDogId} = useUIStateStore();
 
   useEffect(() => {
     if (probandId) {
       getPedigreeByDogId({id: probandId, type: 'COMMON'}).then((res) => {
         changeNodes(traverseTreeDFS(res.pedigree))
       })
+      setActivePedigreeDogId(probandId)
     }
   }, [probandId])
 
   return (
     <Grid
-      rows={['216px', 'auto']}
-      columns={['1fr', '1fr', '2fr']}
+      rows={['80px', '216px', 'auto']}
+      columns={['auto']}
       areas={[
         { name: 'mainFilter', start: [0, 0], end: [0, 0] },
-        { name: 'secondaryFilter', start: [1, 0], end: [2, 0] },
-        { name: 'content', start: [0, 1], end: [2, 1] },
+        { name: 'secondaryFilter', start: [0, 1], end: [0, 1] },
+        { name: 'content', start: [0, 2], end: [0, 2] },
       ]}
-      height={'100%'}
+      // height={'100%'}
+      fill={"vertical"}
     >
-      <ProbandSelect probandId={probandId} changeProbandId={changeProbandId}/>
-
-      <DogCard probandId={probandId}/>
+      <ProbandSelect probandId={probandId} changeProbandId={setProbandId}/>
+      <DogCard probandId={activePedigreeDogId}/>
       <Box
         gridArea={'content'}
         pad={"small"}
@@ -73,7 +76,13 @@ const PedigreeScreen = () => {
             areas={PEDIGREE_GRIDS.COMMON_PEDIGREE.areas}
           >
             {nodes.map(({id, fullName, position}, index) => (
-              <PedigreeNode nodeId={id} fullName={fullName} position={position} key={index}/>
+              <PedigreeNode
+                nodeId={id}
+                fullName={fullName}
+                position={position}
+                setActiveDogId={setActivePedigreeDogId}
+                key={index}
+              />
             ))}
           </Grid>
         )}
