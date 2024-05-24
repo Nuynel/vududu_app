@@ -9,6 +9,7 @@ import ProbandSelect from "./ui/ProbandSelect";
 import PedigreeNode from "./ui/PedigreeNode";
 import DogCard from "./ui/DogCard";
 import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
+import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 
 // на десктопе должна быть колонка слева, где отображается информация по собакам,
 // предтсавленным в родословной (по дефолту пробанд)
@@ -34,9 +35,9 @@ function traverseTreeDFS(node: Pedigree, results: PedigreeNodes = []): PedigreeN
 
 const PedigreeScreen = () => {
   const [nodes, changeNodes] = useState<PedigreeNodes>([])
-  const [, setLocation] = useLocation();
 
   const {probandId, setProbandId, activePedigreeDogId , setActivePedigreeDogId} = useUIStateStore();
+  const {isSmall} = useResponsiveGrid()
 
   useEffect(() => {
     if (probandId) {
@@ -49,7 +50,7 @@ const PedigreeScreen = () => {
 
   return (
     <Grid
-      rows={['80px', '216px', 'auto']}
+      rows={['80px', isSmall ? '80px' : '264px', 'auto']}
       columns={['auto']}
       areas={[
         { name: 'mainFilter', start: [0, 0], end: [0, 0] },
@@ -60,7 +61,7 @@ const PedigreeScreen = () => {
       fill={"vertical"}
     >
       <ProbandSelect probandId={probandId} changeProbandId={setProbandId}/>
-      <DogCard probandId={activePedigreeDogId}/>
+      <DogCard dogId={activePedigreeDogId}/>
       <Box
         gridArea={'content'}
         pad={"small"}
