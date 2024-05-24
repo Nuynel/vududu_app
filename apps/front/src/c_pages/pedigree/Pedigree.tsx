@@ -11,6 +11,7 @@ import {useLocation} from "wouter";
 import {getRuTranslate} from "../../g_shared/constants/translates";
 import * as React from "react";
 import ProbandSelect from "./ui/ProbandSelect";
+import PedigreeNode from "./ui/PedigreeNode";
 
 // на десктопе должна быть колонка слева, где отображается информация по собакам,
 // предтсавленным в родословной (по дефолту пробанд)
@@ -111,20 +112,7 @@ const PedigreeScreen = () => {
             areas={PEDIGREE_GRIDS.COMMON_PEDIGREE.areas}
           >
             {nodes.map(({id, fullName, position}, index) => (
-              <Box
-                gridArea={position}
-                key={index}
-                id={id}
-                pad={{horizontal: "small"}}
-                background={'white'}
-                justify={"center"}
-                overflow={"hidden"}
-                border={{color: '#777777', side: 'all', size: 'xsmall', style: 'solid'}}
-              >
-                <Text>
-                  {fullName}
-                </Text>
-              </Box>
+              <PedigreeNode nodeId={id} fullName={fullName} position={position} key={index}/>
             ))}
           </Grid>
         )}
