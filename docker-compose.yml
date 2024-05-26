@@ -53,7 +53,7 @@ services:
       - app_network
 
   nginx:
-    build: ./apps/nginx
+    image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
