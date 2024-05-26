@@ -8,14 +8,14 @@ services:
       target: app
       args:
 #        REACT_APP_BACKEND_URL: 'http://localhost:8000'
-        REACT_APP_BACKEND_URL: 'http://vududu.ru'
+        REACT_APP_BACKEND_URL: 'https://vududu.ru'
     restart: always
     ports:
       - 8000:8000
     depends_on:
       - mongodb
     environment:
-      BACKEND_URL: http://vududu.ru
+      BACKEND_URL: https://vududu.ru
       PORT: 8000
       MONGODB_URI: mongodb://admin:pass@mongodb:27017
       SMTP_SERVER: smtp-relay.brevo.com
@@ -61,16 +61,17 @@ services:
       - back
     restart: always
     volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www/:/var/www/certbot/:ro
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     networks:
       - app_network
 
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
 
 volumes:
   mongodb_data:
