@@ -3,6 +3,7 @@ import {useLocation} from "wouter";
 import {signUp} from "../../g_shared/methods/api";
 import {Paths} from "../../g_shared/constants/routes";
 import {EB_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
+import {z} from 'zod'
 
 const useSignUp = () => {
   // для регистрации мне нужны только email и пароль
@@ -28,7 +29,7 @@ const useSignUp = () => {
   }
 
   const checkIsEmailValid = () => {
-    return email.includes('@')
+    return email.includes('@') && !email.includes(' ') && email.includes('.')
   }
 
   const handleSubmit = () => {
@@ -43,11 +44,10 @@ const useSignUp = () => {
       signUp({
         email,
         password,
-      }).then((confirmEmailLink) => {
+      }).then(() => {
         setError(null)
-        console.log(confirmEmailLink)
       }).catch(() => {
-        setError('пользователь не добавлен')
+        setError('Пользователь не добавлен')
         window.dispatchEvent(new Event(EB_EVENTS_NAMES.ERROR))
       }).finally(() => {
         setIsLoading(false)

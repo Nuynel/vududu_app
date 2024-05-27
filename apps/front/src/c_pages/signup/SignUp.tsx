@@ -37,15 +37,32 @@ const SignUpScreen = () => {
           onSubmit={handleSubmit}
           style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}
         >
-          <FormField name='E-mail' htmlFor="email-input-id" label="E-mail">
+          <FormField
+            name='E-mail'
+            htmlFor="email-input-id"
+            label="E-mail"
+            validate={() => {
+              if (!email.includes('@') || email.includes(' ') || !email.includes('.')) return 'Невалидный e-mail'
+            }}
+            validateOn={"blur"}
+          >
             <TextInput
               id="email-input-id"
-              placeholder='email@gmail.com'
+              placeholder='email@email.com'
               value={email}
               onChange={event => setEmail(event.target.value)}
             />
           </FormField>
-          <FormField name='Password' htmlFor="password-input-id" label="Пароль">
+          <FormField
+            name='Password'
+            htmlFor="password-input-id"
+            label="Пароль"
+            info="Минимум 6 символов"
+            validate={() => {
+              if (password.length < 6) return 'Слишком короткий пароль'
+            }}
+            validateOn={"blur"}
+          >
             <TextInput
               id="password-input-id"
               placeholder='********'
@@ -54,7 +71,15 @@ const SignUpScreen = () => {
               onChange={event => setPassword(event.target.value)}
             />
           </FormField>
-          <FormField name='Repeat passwprd' htmlFor="repeat-password-input-id" label="Подтверждение пароля">
+          <FormField
+            name='Repeat passwprd'
+            htmlFor="repeat-password-input-id"
+            label="Подтверждение пароля"
+            validate={() => {
+              if (password !== controlPassword) return 'Пароли не совпадают'
+            }}
+            validateOn={"blur"}
+          >
             <TextInput
               id="epeat-password-input-id"
               placeholder='********'

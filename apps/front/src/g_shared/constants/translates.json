@@ -150,5 +150,13 @@
   "archived": {
     "ru": "В архиве",
     "en": "Archived"
+  },
+  "signUp": {
+    "ru": "Зарегистрироваться",
+    "en": "Sign up"
+  },
+  "signIn": {
+    "ru": "Войти",
+    "en": "Sign in"
   }
 }
