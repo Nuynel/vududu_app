@@ -41,7 +41,7 @@ services:
     environment:
       BACKEND_URL: https://vududu.ru
       PORT: 8000
-      MONGODB_URI: mongodb://shava:1310vudu2021@mongodb-prod:27017
+      MONGODB_URI: mongodb://admin:pass@mongodb:27017
       SMTP_SERVER: smtp-relay.brevo.com
       SMTP_LOGIN: 752df5001@smtp-brevo.com
       SMTP_PASSWORD: VJTrWhBxcnaUMSs9
@@ -55,8 +55,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=pass
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - mongodb_data:/data/db
     networks:
@@ -69,8 +69,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=shava
-      - MONGO_INITDB_ROOT_PASSWORD=1310vudu2021
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: pass
     volumes:
       - mongodb_data:/data/db
     networks:
@@ -84,10 +84,10 @@ services:
       - "8081:8081"
 
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb-dev
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
-      - ME_CONFIG_MONGODB_URL=mongodb://admin:pass@mongodb:27017/
+      ME_CONFIG_MONGODB_SERVER: mongodb-dev
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://admin:pass@mongodb:27017/
 
     depends_on:
       - mongodb-dev
@@ -102,10 +102,10 @@ services:
       - "8081:8081"
 
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb-prod
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=shava
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=1310vudu2021
-      - ME_CONFIG_MONGODB_URL=mongodb://shava:1310vudu2021@mongodb-prod:27017/
+      ME_CONFIG_MONGODB_SERVER: mongodb-prod
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://admin:pass@mongodb:27017/
 
     depends_on:
       - mongodb-prod
