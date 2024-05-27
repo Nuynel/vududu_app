@@ -8,7 +8,7 @@ import {
   errorHandler,
   findEntityById,
   findLittersByDate,
-  getCookiesPayload,
+  getCookiesPayload, getTimestamp,
   insertEntity,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
@@ -33,6 +33,7 @@ const checkIsLitterLinkedToOwner = async (fatherId: string | ObjectId, motherId:
 
 export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/litter', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/LITTERS')
     try {
       const {profileId} = getCookiesPayload(req)
       await verifyProfileType(client, profileId)
@@ -57,6 +58,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
 
   // ToDo поиск пометов для миксов!!!
   app.get<{}, { litters: Litter[] }, {}, { date: string }>('/api/litters', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /GET/LITTERS')
     try {
       const {} = getCookiesPayload(req);
       const { date } = req.query;
@@ -68,6 +70,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.put<{}, {}, {baseLitterInfo: {comments: string}}, {id: string}>('/api/litter', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /PUT/LITTER')
     try {
       const {} = getCookiesPayload(req);
       const {baseLitterInfo} = req.body;
@@ -86,6 +89,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   // todo удалить все документы, связанные с пометом
 
   app.delete<{}, {}, {}, {id: string}>('/api/litter', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /DELETE/LITTER')
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;

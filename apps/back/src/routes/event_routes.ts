@@ -4,7 +4,8 @@ import {
   errorHandler,
   getCookiesPayload,
   deleteEvent,
-  verifyProfileType
+  verifyProfileType,
+  getTimestamp
 } from "../methods";
 
 // при массовом редактировании открывается попап где можно выбрать дату и нажать кнопку активировать
@@ -21,6 +22,7 @@ import {
 
 export const initEventRoutes = (app: Application, client: MongoClient) => {
   app.delete('/api/events', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /DELETE/EVENTS')
     try {
       const {profileId} = getCookiesPayload(req)
       await verifyProfileType(client, profileId)

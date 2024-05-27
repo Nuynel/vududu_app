@@ -6,10 +6,10 @@ import {
   insertEntity,
   modifyNestedArrayFieldById,
   getCookiesPayload,
-  verifyProfileType, errorHandler
+  verifyProfileType, errorHandler, getTimestamp,
+  updateBaseHeatInfoById,
 } from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
-import {updateBaseHeatInfoById} from "../../methods/db_methods";
 
 export function shiftDatesWithTimezone(dateStrings: string[], days: number): string[] {
   return dateStrings.map(dateString => {
@@ -69,6 +69,7 @@ const prepareToNewHeatInsert = ({client, profileId, comments, dogId}: PrepareNew
 
 export const initHeatRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/heat', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/HEAT')
     try {
       const {profileId} = getCookiesPayload(req)
       await verifyProfileType(client, profileId)
@@ -102,6 +103,7 @@ export const initHeatRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.put<{}, {}, {baseHeatInfo: Pick<DatabaseEvent, 'comments' | 'date' | 'activated'>}, {id: string}>('/api/heat', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /PUT/HEAT')
     try {
       const {} = getCookiesPayload(req);
       const {baseHeatInfo} = req.body;

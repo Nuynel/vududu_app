@@ -38,6 +38,8 @@ export const verifyProfileType = async (client: MongoClient, profileId: string) 
   return profile
 }
 
+const getTimestamp = () => new Date().toISOString();
+
 export {
   generateAccessToken,
   generateAPIAccessToken,
@@ -74,4 +76,5 @@ export {
   deleteEventFromProfile,
   deleteEvent,
   getFieldNameByEventType,
+  getTimestamp,
 }

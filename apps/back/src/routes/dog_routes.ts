@@ -9,7 +9,7 @@ import {
   findEntityById,
   findPuppiesByDateOfBirth,
   findStudsBySearchString,
-  getCookiesPayload,
+  getCookiesPayload, getTimestamp,
   insertEntity,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
@@ -71,6 +71,7 @@ const createNewDog = (newDog: NewDog): MaleExtendedDog | FemaleExtendedDog => {
 
 export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/dog', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/DOG')
     try {
       const {profileId} = getCookiesPayload(req)
       await verifyProfileType(client, profileId)
@@ -99,6 +100,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.post('/api/stud', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/STUD')
     try {
       const {} = getCookiesPayload(req);
       const newStudDog: Dog = { ...req.body, isLinkedToOwner: false, reproductiveHistory: {
@@ -117,6 +119,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/dogs', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /GET/DOGS')
     try {
       const {profileId} = getCookiesPayload(req);
       const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
@@ -132,6 +135,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER }>('/api/stud', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /GET/STUD')
     try {
       const {} = getCookiesPayload(req);
       const { searchString, gender } = req.query;
@@ -143,6 +147,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get<{}, { puppies: DatabaseDog[] }, {}, { dateOfBirth: string }>('/api/puppies', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /GET/PUPPIES')
     try {
       const {} = getCookiesPayload(req);
       const { dateOfBirth } = req.query;
@@ -154,6 +159,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.put<{}, {}, {baseDogInfo: BaseDogInfo}, {id: string}>('/api/dog', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /PUT/DOG')
     try {
       const {} = getCookiesPayload(req);
       const {baseDogInfo} = req.body;
@@ -176,6 +182,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.delete<{}, {}, {}, {id: string}>('/api/dog', async(req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /DELETE/DOG')
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;

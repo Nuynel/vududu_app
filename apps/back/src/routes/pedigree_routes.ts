@@ -1,7 +1,7 @@
 import {Application} from "express";
 import {MongoClient, ObjectId} from "mongodb";
 import {DatabaseDog, Litter} from "../types";
-import {errorHandler, findEntityById, getCookiesPayload} from "../methods";
+import {errorHandler, findEntityById, getCookiesPayload, getTimestamp} from "../methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
@@ -59,6 +59,7 @@ const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | st
 
 export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { pedigree: Pedigree }, {}, { id: string, type: keyof typeof PEDIGREE_TYPES_CONFIG}>('/api/pedigree', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /GET/PEDIGREE')
     try {
       const {} = getCookiesPayload(req)
 
@@ -76,8 +77,5 @@ export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
-
-
-    // const
   })
 }

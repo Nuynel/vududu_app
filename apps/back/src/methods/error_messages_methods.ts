@@ -49,8 +49,8 @@ export class CustomError extends Error {
 }
 
 export const errorHandler = (res: Response, e: Error) => {
-  console.error("ERROR FROM ERROR HANDLER >>> ", e)
   if (e instanceof CustomError) {
+    console.error("CUSTOM ERROR >>> ", e.type, e)
     switch (e.type) {
       case ERROR_NAME.INCOMPLETE_INCOMING_DATA:
       case ERROR_NAME.EMAIL_ALREADY_EXISTS:
@@ -68,18 +68,18 @@ export const errorHandler = (res: Response, e: Error) => {
         return res.status(401).send({message: getErrorMessage(e.type)})
       case ERROR_NAME.INTERNAL_SERVER_ERROR:
       case ERROR_NAME.HASHING_ERROR:
-        return console.error("INTERNAL SERVER ERROR 500 >>> ", e.type)
+        return console.error("HANDLED SERVER ERROR 500 >>> ", e.type)
         // return res.status(500).send(getErrorMessage(e.type))
     }
   }
   if (e instanceof MongoError) {
-    console.error("INTERNAL SERVER ERROR 500 >>> ", getErrorMessage(ERROR_NAME.DATABASE_ERROR))
+    console.error("MONGO ERROR 500 >>> ", e)
     return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
   }
   if (e instanceof JsonWebTokenError) {
-    console.error("INTERNAL SERVER ERROR 500 >>> ", getErrorMessage(ERROR_NAME.TOKENS_GENERATION_ERROR))
+    console.error("JSON WEB TOKEN ERROR 500 >>> ", e)
     return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
   }
-  console.error("INTERNAL SERVER ERROR 500 >>> ", getErrorMessage(ERROR_NAME.TOKENS_GENERATION_ERROR))
+  console.error("INTERNAL SERVER ERROR 500 >>> ", e)
   return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
 }

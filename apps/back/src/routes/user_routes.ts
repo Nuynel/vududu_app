@@ -14,14 +14,14 @@ import {
   generateAPIAccessToken,
   generateRefreshToken,
   isPasswordCorrect,
-
+  getTimestamp,
   constructLitterForClient,
-  constructDogForClient
+  constructDogForClient,
+  getCookiesPayload
 } from "../methods";
 import {BreederProfile, DatabaseDog, DatabaseProfile, KennelProfile, Litter, PROFILE_TYPES, User} from "../types";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
-import {getCookiesPayload} from "../methods/validation_methods";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
 
@@ -97,6 +97,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   // todo рассмотреть вариант, когда сразу после регистрации пользователь попадает в приложение, и оттуда надо подтвердить почту
 
   app.post('/api/sign-up', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-UP')
     try {
       const { email, password } = req.body;
       if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA)
@@ -123,8 +124,10 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   });
 
   app.post('/api/sign-in', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-IN')
     try {
       const { email, password } = req.body;
+      console.log({email})
       const user: WithId<User> | null = await findUserByEmail(client, email);
       if (!email || !password) throw new CustomError(ERROR_NAME.WRONG_CREDENTIALS)
       if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL)
@@ -145,13 +148,18 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.post('/api/sign-out', async (req, res) => {
-    res.clearCookie(COOKIE_TOKEN_NAMES.REFRESH_TOKEN);
-    res.clearCookie(COOKIE_TOKEN_NAMES.API_ACCESS_TOKEN);
-    res.send();
+    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-OUT')
+    try {
+      res.clearCookie(COOKIE_TOKEN_NAMES.REFRESH_TOKEN);
+      res.clearCookie(COOKIE_TOKEN_NAMES.API_ACCESS_TOKEN);
+      res.send();
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
   })
 
   app.get<{}, { message: string }, {}, { id: string; activator: string }>('/api/activate', async (req, res) => {
-    console.log('REQUEST TO /GET/ACTIVATE')
+    console.log(getTimestamp, 'REQUEST TO /GET/ACTIVATE')
     try {
       const {id, activator} = req.query
       await activateProfileByActivator(client, id, activator)
@@ -162,7 +170,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/user', async (req, res) => {
-    console.log('REQUEST TO /GET/USER')
+    console.log(getTimestamp, 'REQUEST TO /GET/USER')
     try {
       const {userId} = getCookiesPayload(req);
       const user: WithId<User> | null = await findUserById(client, userId)
@@ -175,7 +183,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/initial-data', async(req, res) => {
-    console.log('REQUEST TO /GET/INITIAL-DATA')
+    console.log(getTimestamp, 'REQUEST TO /GET/INITIAL-DATA')
     try {
       const {userId, profileId} = getCookiesPayload(req);
       const user: WithId<User> | null = await findUserById(client, userId)
@@ -222,6 +230,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   });
 
   app.post('/api/refresh-token', async (req, res) => {
+    console.log(getTimestamp, 'REQUEST TO /POST/REFRESH-TOKEN')
     try {
       if (!req.cookies) throw new CustomError(ERROR_NAME.NO_COOKIES)
       const refreshToken = req.cookies[COOKIE_TOKEN_NAMES.REFRESH_TOKEN];
