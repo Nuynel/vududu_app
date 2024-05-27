@@ -1,30 +1,56 @@
 version: '3.8'
 
 services:
-  back:
+  back-dev:
     build:
       context: .
       dockerfile: Dockerfile
       target: app
       args:
-#        REACT_APP_BACKEND_URL: 'http://localhost:8000'
-        REACT_APP_BACKEND_URL: 'https://vududu.ru'
+        REACT_APP_BACKEND_URL: 'http://localhost:8000'
     restart: always
     ports:
       - 8000:8000
     depends_on:
-      - mongodb
+      - mongodb-dev
     environment:
-      BACKEND_URL: https://vududu.ru
+      CORS_ORIGIN: http://localhost:3000
+      BACKEND_URL: http://localhost:8000
       PORT: 8000
-      MONGODB_URI: mongodb://admin:pass@mongodb:27017
+      MONGODB_URI: mongodb://admin:pass@mongodb-dev:27017
       SMTP_SERVER: smtp-relay.brevo.com
       SMTP_LOGIN: 752df5001@smtp-brevo.com
       SMTP_PASSWORD: VJTrWhBxcnaUMSs9
     networks:
       - app_network
+    profiles:
+      - dev
 
-  mongodb:
+  back-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+      args:
+        REACT_APP_BACKEND_URL: 'https://vududu.ru'
+    restart: always
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb-prod
+    environment:
+      BACKEND_URL: https://vududu.ru
+      PORT: 8000
+      MONGODB_URI: mongodb://shava:1310vudu2021@mongodb-prod:27017
+      SMTP_SERVER: smtp-relay.brevo.com
+      SMTP_LOGIN: 752df5001@smtp-brevo.com
+      SMTP_PASSWORD: VJTrWhBxcnaUMSs9
+    networks:
+      - app_network
+    profiles:
+      - prod
+
+  mongodb-dev:
     image: mongo:latest
     ports:
       - "27017:27017"
@@ -35,22 +61,58 @@ services:
       - mongodb_data:/data/db
     networks:
       - app_network
+    profiles:
+      - dev
 
-  mongo-express:
+  mongodb-prod:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=shava
+      - MONGO_INITDB_ROOT_PASSWORD=1310vudu2021
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app_network
+    profiles:
+      - prod
+
+  mongo-express-dev:
     image: mongo-express:latest
     ports:
       - "8081:8081"
 
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb  # Исправлено имя хоста на mongodb
+      - ME_CONFIG_MONGODB_SERVER=mongodb-dev  # Исправлено имя хоста на mongodb
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
       - ME_CONFIG_MONGODB_URL=mongodb://admin:pass@mongodb:27017/
 
     depends_on:
-      - mongodb
+      - mongodb-dev
     networks:
       - app_network
+    profiles:
+      - dev
+
+  mongo-express-prod:
+    image: mongo-express:latest
+    ports:
+      - "8081:8081"
+
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb-prod  # Исправлено имя хоста на mongodb
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=shava
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=1310vudu2021
+      - ME_CONFIG_MONGODB_URL=mongodb://shava:1310vudu2021@mongodb-prod:27017/
+
+    depends_on:
+      - mongodb-prod
+    networks:
+      - app_network
+    profiles:
+      - prod
 
   nginx:
     image: nginx:latest
@@ -58,7 +120,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - back
+      - back-prod
     restart: always
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
@@ -66,12 +128,16 @@ services:
       - ./data/certbot/www:/var/www/certbot
     networks:
       - app_network
+    profiles:
+      - prod
 
   certbot:
     image: certbot/certbot:latest
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+    profiles:
+    - prod
 
 volumes:
   mongodb_data:

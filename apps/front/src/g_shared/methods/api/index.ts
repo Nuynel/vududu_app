@@ -8,7 +8,7 @@ import {navigate} from "wouter/use-browser-location";
 import {getPedigreeByDogId} from "./pedigrees";
 
 // ToDo URL вынести в переменные окружения
-export const URL = process.env.REACT_APP_BACKEND_URL
+export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
 async function getInitialDataReq(): Promise<{
   userData: UserData,
   profileData: ProfileData,
