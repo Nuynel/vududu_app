@@ -25,7 +25,7 @@ const useAuth = () => {
   }
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!accessToken && location !== Paths.sign_in) {
       // если нет токена, то пользователя редиректит на экран входа
       // кейс - токен удалили при выходе, надо редирекнуть
       setLocation(Paths.sign_in);

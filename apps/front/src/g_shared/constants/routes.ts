@@ -7,7 +7,7 @@ export enum Paths {
   litters = '/litters',
   profile = '/profile',
   settings = '/settings',
-  sign_in = '/sign-in',
+  sign_in = '/sign-in/',
   sign_up = '/sign-up',
   confirmEmail = '/confirm-email',
   createProfile = '/create-profile',

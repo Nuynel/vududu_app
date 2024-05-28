@@ -163,7 +163,8 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
     try {
       const {id, activator} = req.query
       await activateProfileByActivator(client, id, activator)
-      res.status(200).send({message: 'Профиль активирован'}); // Перекидывать на страницу с успешным подтверждением почты
+      // res.redirect(URL + '/sign-in/?activated=true')
+      res.redirect('http://localhost:3000/sign-in/?activated')
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

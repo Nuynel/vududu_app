@@ -7,9 +7,9 @@ export const isValidRoute = (path: string): path is Paths => {
 };
 export const navigationAfterInit = () => {
   const accessToken = localStorage.getItem('accessToken');
+  const location = window.location.pathname;
   if (isAuthenticated(accessToken)) {
     // проверяем текущую локацию: если она НЕ в списке приватных, то редиректим на календарь
-    const location = window.location.pathname;
     if (isValidRoute(location) && !PrivateRoutes.includes(location)) {
       const {profileId} = parseJwt(accessToken);
       if (!profileId) {
@@ -19,9 +19,11 @@ export const navigationAfterInit = () => {
       navigate(Paths.events, { replace: true });
     }
   } else {
-    // Access token недействителен или просрочен, перенаправьте на экран входа
-    console.error('Токен обновления недействителен или просрочен, пользователь перенаправлен на экран хода')
-    navigate("/sign-in", { replace: true });
+    if (location !== Paths.sign_in) {
+      // Access token недействителен или просрочен, перенаправьте на экран входа
+      console.error('Токен обновления недействителен или просрочен, пользователь перенаправлен на экран хода')
+      navigate(Paths.sign_in, { replace: true });
+    }
   }
 }
 

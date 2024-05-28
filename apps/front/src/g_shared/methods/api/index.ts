@@ -6,6 +6,7 @@ import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
 import {navigate} from "wouter/use-browser-location";
 import {getPedigreeByDogId} from "./pedigrees";
+import {Paths} from "../../constants/routes";
 
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
@@ -46,7 +47,9 @@ async function refreshAccessToken(): Promise<string | null> {
     }
   } catch (error) {
     console.error('Ошибка при обновлении access токена', error);
-    navigate("/sign-in", { replace: true });
+    if (window.location.pathname !== Paths.sign_in) {
+      navigate("/sign-in", { replace: true });
+    }
     return null;
   }
 }

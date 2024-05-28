@@ -1,8 +1,10 @@
 import * as React from "react";
 import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading} from 'grommet';
-import { Link } from "wouter"
+import {Link, useSearch} from "wouter"
 import useSignIn from "./useSignIn";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {useEffect} from "react";
+import {toast} from "react-toastify";
 
 const SignInScreen = () => {
   const {
@@ -14,6 +16,11 @@ const SignInScreen = () => {
   } = useSignIn();
 
   const {isSmall} = useResponsiveGrid()
+  const search = useSearch();
+
+  useEffect(() => {
+    if (search === 'activated') toast.info('Профиль активирован!')
+  }, [search])
 
   return (
     <Box
