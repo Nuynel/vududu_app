@@ -30,7 +30,7 @@ const ConfirmEmailScreen = () => {
             </Text>
           </Box>
         </CardBody>
-        <Link to="/sign-up" style={{display: 'flex', justifyContent: 'center'}}>
+        <Link to="/sign-in" style={{display: 'flex', justifyContent: 'center'}}>
           <Button secondary margin='xsmall'>
             На главную
           </Button>

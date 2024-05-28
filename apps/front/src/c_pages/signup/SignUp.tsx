@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading} from 'grommet';
+import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading, Spinner} from 'grommet';
 import {Link} from "wouter";
 import useSignUp from "./useSignUp";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
@@ -9,6 +9,7 @@ const SignUpScreen = () => {
     email,
     password,
     controlPassword,
+    isLoading,
     setEmail,
     setPassword,
     setControlPassword,
@@ -88,7 +89,12 @@ const SignUpScreen = () => {
               onChange={event => setControlPassword(event.target.value)}
             />
           </FormField>
-          <Button margin='small' type="submit" primary label="Зарегистрироваться" />
+          <Button margin='small' type="submit" primary>
+            <Box direction={"row"} align={"center"} justify={"center"} gap={"medium"} height={"36px"}>
+              Зарегистрироваться
+              {isLoading && <Spinner color={'white'}/>}
+            </Box>
+          </Button>
         </Form>
         <Link to="/sign-in" style={{display: 'flex', justifyContent: 'center'}}>
           <Button secondary margin='xsmall'>

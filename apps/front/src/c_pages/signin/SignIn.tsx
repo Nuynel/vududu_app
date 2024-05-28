@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading} from 'grommet';
+import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading, Spinner} from 'grommet';
 import {Link, useSearch} from "wouter"
 import useSignIn from "./useSignIn";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
@@ -10,6 +10,7 @@ const SignInScreen = () => {
   const {
     email,
     password,
+    isLoading,
     setEmail,
     setPassword,
     handleSubmit,
@@ -42,7 +43,14 @@ const SignInScreen = () => {
           onSubmit={handleSubmit}
           style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}
         >
-          <FormField name='E-mail' htmlFor="email-input-id" label="E-mail">
+          <FormField
+            name='E-mail'
+            htmlFor="email-input-id"
+            label="E-mail"
+            validate={() => {
+              if (!email) return 'Введите адрес электронной почты'
+            }}
+          >
             <TextInput
               id="email-input-id"
               placeholder='email@gmail.com'
@@ -50,7 +58,11 @@ const SignInScreen = () => {
               onChange={event => setEmail(event.target.value)}
             />
           </FormField>
-          <FormField name='Password' htmlFor="password-input-id" label="Пароль">
+          <FormField
+            name='Password'
+            htmlFor="password-input-id"
+            label="Пароль"
+          >
             <TextInput
               id="password-input-id"
               type='password'
@@ -59,7 +71,12 @@ const SignInScreen = () => {
               onChange={event => setPassword(event.target.value)}
             />
           </FormField>
-          <Button margin='small' type="submit" primary label="Вход" />
+          <Button margin='small' type="submit" primary>
+            <Box direction={"row"} align={"center"} justify={"center"} gap={"medium"} height={"36px"}>
+              Вход
+              {isLoading && <Spinner color={'white'}/>}
+            </Box>
+          </Button>
         </Form>
         <Link to="/sign-up" style={{display: 'flex', justifyContent: 'center'}}>
           <Button secondary margin='xsmall'>

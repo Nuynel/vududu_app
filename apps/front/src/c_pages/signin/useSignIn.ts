@@ -36,6 +36,7 @@ const useSignIn = () => {
   return {
     email,
     password,
+    isLoading,
     setEmail,
     setPassword,
     handleSubmit,

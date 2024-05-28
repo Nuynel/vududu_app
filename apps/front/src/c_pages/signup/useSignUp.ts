@@ -65,6 +65,7 @@ const useSignUp = () => {
     email,
     password,
     controlPassword,
+    isLoading,
     setEmail,
     setPassword,
     setControlPassword,
