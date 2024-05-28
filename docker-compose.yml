@@ -17,7 +17,7 @@ services:
       CORS_ORIGIN: http://localhost:3000
       BACKEND_URL: http://localhost:8000
       PORT: 8000
-      MONGODB_URI: mongodb://admin:pass@mongodb-dev:27017
+      MONGODB_URI: mongodb-dev://admin:pass@mongodb-dev:27017
       SMTP_SERVER: smtp-relay.brevo.com
       SMTP_LOGIN: 752df5001@smtp-brevo.com
       SMTP_PASSWORD: VJTrWhBxcnaUMSs9
@@ -41,7 +41,7 @@ services:
     environment:
       BACKEND_URL: https://vududu.ru
       PORT: 8000
-      MONGODB_URI: mongodb://admin:pass@mongodb:27017
+      MONGODB_URI: mongodb-prod://admin:pass@mongodb-prod:27017/
       SMTP_SERVER: smtp-relay.brevo.com
       SMTP_LOGIN: 752df5001@smtp-brevo.com
       SMTP_PASSWORD: VJTrWhBxcnaUMSs9
@@ -87,7 +87,7 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongodb-dev
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: pass
-      ME_CONFIG_MONGODB_URL: mongodb://admin:pass@mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb-dev://admin:pass@mongodb-dev:27017/
 
     depends_on:
       - mongodb-dev
@@ -105,7 +105,7 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongodb-prod
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: pass
-      ME_CONFIG_MONGODB_URL: mongodb://admin:pass@mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb-prod://admin:pass@mongodb-prod:27017/
 
     depends_on:
       - mongodb-prod
