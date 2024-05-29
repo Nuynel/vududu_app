@@ -35,7 +35,7 @@ const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | st
   if (depth <= 0) return null
 
   const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
-  if (!dog) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!dog) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 38})
 
   if (!dog.litterId || depth <= 0) {
     return {
@@ -47,7 +47,7 @@ const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | st
   }
 
   const litter = await findEntityById<Litter>(client, COLLECTIONS.LITTERS, new ObjectId(dog.litterId))
-  if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 50})
 
   return {
     ...dog,
@@ -59,15 +59,15 @@ const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | st
 
 export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { pedigree: Pedigree }, {}, { id: string, type: keyof typeof PEDIGREE_TYPES_CONFIG}>('/api/pedigree', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/PEDIGREE')
     try {
-      const {} = getCookiesPayload(req)
-
+      const {profileId} = getCookiesPayload(req)
       const { id, type } = req.query;
+      console.log(getTimestamp, 'REQUEST TO /GET/PEDIGREE, profileId >>> ', profileId, ' >>> dogId >>> ', id)
+
       const depth = PEDIGREE_TYPES_CONFIG[type].DEPTH
 
       const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
-      if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 70})
 
       // если собака не принадлежит владельцу - ограничить доступ к родословной
 

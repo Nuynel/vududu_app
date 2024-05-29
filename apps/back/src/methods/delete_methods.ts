@@ -27,7 +27,7 @@ export const deleteEventFromDog = async (eventId: ObjectId, dogId: ObjectId, fie
     new ObjectId(eventId),
     '$pull'
   )
-  if (!deleteFromDogResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!deleteFromDogResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 30})
 }
 
 export const deleteEventFromProfile = async (eventId: ObjectId, profileId: ObjectId, client: MongoClient) => {
@@ -40,7 +40,7 @@ export const deleteEventFromProfile = async (eventId: ObjectId, profileId: Objec
     new ObjectId(eventId),
     '$pull'
   )
-  if (!deleteFromProfileResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!deleteFromProfileResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 43})
 }
 
 export const deleteEventFromLinkedEntities = async (eventId: ObjectId, dogId: ObjectId, profileId: ObjectId, fieldName: FIELDS_NAMES, client: MongoClient) => {
@@ -50,9 +50,9 @@ export const deleteEventFromLinkedEntities = async (eventId: ObjectId, dogId: Ob
 
 export const deleteEvent = async (eventId: ObjectId, client: MongoClient) => {
   const event = await findEntityById<DatabaseEvent>(client, COLLECTIONS.EVENTS, eventId)
-  if (!event) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!event) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 53})
   const {profileId, dogId} = event
   await deleteEventFromLinkedEntities(eventId, dogId, profileId, getFieldNameByEventType(event.eventType), client)
   const eventDeleteResult = await deleteEntityById<DatabaseEvent>(client, eventId, COLLECTIONS.EVENTS)
-  if (!eventDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!eventDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 57})
 }

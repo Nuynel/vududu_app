@@ -30,7 +30,7 @@ export const initMateRoutes = (app: Application, client: MongoClient) => {
     }
     const { insertedId: mateInsertedId } = await insertEntity(client, COLLECTIONS.MATES, mateEvent)
     const partner = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, partnerId)
-    if (!partner) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+    if (!partner) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'mate_routes', line: 33})
     await modifyNestedArrayFieldById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(dogId), mateInsertedId, FIELDS_NAMES.REPRODUCTIVE_HISTORY_MATE_IDS)
     await modifyNestedArrayFieldById<KennelProfile | BreederProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId), mateInsertedId, FIELDS_NAMES.EVENT_IDS)
     res.send({ message: 'Вязка добавлена!' })

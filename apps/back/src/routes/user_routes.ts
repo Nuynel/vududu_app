@@ -97,12 +97,12 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   // todo рассмотреть вариант, когда сразу после регистрации пользователь попадает в приложение, и оттуда надо подтвердить почту
 
   app.post('/api/sign-up', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-UP')
     try {
       const { email, password } = req.body;
-      if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA)
+      console.log(getTimestamp, 'REQUEST TO /POST/SIGN-UP, email >>> ', email)
+      if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 103})
       const user = await findUserByEmail(client, email);
-      if (user) throw new CustomError(ERROR_NAME.EMAIL_ALREADY_EXISTS)
+      if (user) throw new CustomError(ERROR_NAME.EMAIL_ALREADY_EXISTS, {file: 'user_routes', line: 105})
       const checkInResult = await checkIn(client, {email, password});
       // Содержимое письма
       const mailOptions = {
@@ -124,17 +124,16 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   });
 
   app.post('/api/sign-in', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-IN')
     try {
       const { email, password } = req.body;
-      console.log({email})
+      console.log(getTimestamp, 'REQUEST TO /POST/SIGN-IN, email >>> ', email)
       const user: WithId<User> | null = await findUserByEmail(client, email);
-      if (!email || !password) throw new CustomError(ERROR_NAME.WRONG_CREDENTIALS)
-      if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL)
-      if (!user.isActivated) throw new CustomError(ERROR_NAME.INACTIVE_PROFILE)
+      if (!email || !password) throw new CustomError(ERROR_NAME.WRONG_CREDENTIALS, {file: 'user_routes', line: 132})
+      if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL, {file: 'user_routes', line: 133})
+      if (!user.isActivated) throw new CustomError(ERROR_NAME.INACTIVE_PROFILE, {file: 'user_routes', line: 134})
       const correctPassword = await isPasswordCorrect(user, password)
-      if (!correctPassword) throw new CustomError(ERROR_NAME.WRONG_PASSWORD)
-      if (!user._id) throw new CustomError(ERROR_NAME.INTERNAL_SERVER_ERROR)
+      if (!correctPassword) throw new CustomError(ERROR_NAME.WRONG_PASSWORD, {file: 'user_routes', line: 136})
+      if (!user._id) throw new CustomError(ERROR_NAME.INTERNAL_SERVER_ERROR, {file: 'user_routes', line: 137})
       const profileId = user.activeProfileId instanceof ObjectId ? user.activeProfileId.toHexString() : user.activeProfileId
       const accessToken = generateAccessToken(profileId)
       const apiAccessToken = generateAPIAccessToken(user._id.toHexString(), profileId)
@@ -159,9 +158,9 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get<{}, { message: string }, {}, { id: string; activator: string }>('/api/activate', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/ACTIVATE')
     try {
       const {id, activator} = req.query
+      console.log(getTimestamp, 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
       await activateProfileByActivator(client, id, activator)
       res.redirect('http://localhost:3000/sign-in?activated')
     } catch (e) {
@@ -170,11 +169,11 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/user', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/USER')
     try {
       const {userId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/USER, userId >>> ', userId)
       const user: WithId<User> | null = await findUserById(client, userId)
-      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 177})
       let userData = pickUserData(user)
       return res.send(userData)
     } catch (e) {
@@ -183,11 +182,11 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/initial-data', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/INITIAL-DATA')
     try {
       const {userId, profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/INITIAL-DATA, userId >>> ', userId, ' >>> profileId >>> ', profileId)
       const user: WithId<User> | null = await findUserById(client, userId)
-      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 190})
       const userData = pickUserData(user)
       if (
         !profileId
@@ -197,8 +196,8 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       // надо получить необходимые данные пользователя, данные текущего профиля,
       // данные о собаках, данные о событиях, данные о документах, данные о контактах
       const profile: WithId<DatabaseProfile> | null = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
-      if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
-      if (!isProfileHasDogs(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE)
+      if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 200})
+      if (!isProfileHasDogs(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'user_routes', line: 201})
       const profileData = pickProfileData(profile)
       const rawDogsData: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profileData.dogIds)
 
@@ -232,13 +231,14 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/refresh-token', async (req, res) => {
     console.log(getTimestamp, 'REQUEST TO /POST/REFRESH-TOKEN')
     try {
-      if (!req.cookies) throw new CustomError(ERROR_NAME.NO_COOKIES)
+      if (!req.cookies) throw new CustomError(ERROR_NAME.NO_COOKIES, {file: 'user_routes', line: 235})
       const refreshToken = req.cookies[COOKIE_TOKEN_NAMES.REFRESH_TOKEN];
-      if (!refreshToken) throw new CustomError(ERROR_NAME.INVALID_PAYLOAD)
+      if (!refreshToken) throw new CustomError(ERROR_NAME.INVALID_PAYLOAD, {file: 'user_routes', line: 237})
       const {userId} = checkRefreshToken(refreshToken)
-      if (!userId) throw new CustomError(ERROR_NAME.INVALID_REFRESH_TOKEN)
+      if (!userId) throw new CustomError(ERROR_NAME.INVALID_REFRESH_TOKEN, {file: 'user_routes', line: 239})
+      console.log(getTimestamp, '/api/refresh-token >>> userId >>> ', userId)
       const user = await findUserById(client, userId)
-      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 241})
       const profileId = user.activeProfileId instanceof ObjectId ? user.activeProfileId.toHexString() : user.activeProfileId
       const accessToken = generateAccessToken(profileId)
       const apiAccessToken = generateAPIAccessToken(user._id.toHexString(), profileId)

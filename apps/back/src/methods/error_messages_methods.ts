@@ -40,17 +40,27 @@ export const getErrorMessage = (errorName: ERROR_NAME): string => {
 
 export class CustomError extends Error {
   type: ERROR_NAME;
+  file: string;
+  line: number;
 
-  constructor(type: ERROR_NAME) {
+  constructor(
+    type: ERROR_NAME,
+    {file, line}: {file: string, line: number},
+  ) {
     super();
     this.type = type;
+    this.file = file;
+    this.line = line;
     Object.setPrototypeOf(this, CustomError.prototype);
   }
 }
 
 export const errorHandler = (res: Response, e: Error) => {
   if (e instanceof CustomError) {
-    console.error("CUSTOM ERROR >>> ", e.type, e)
+    console.error(
+      "CUSTOM ERROR TYPE >>> ", e.type,
+      " >>> FILE and LINE >>> ", e.file, ',', e.line,
+    )
     switch (e.type) {
       case ERROR_NAME.INCOMPLETE_INCOMING_DATA:
       case ERROR_NAME.EMAIL_ALREADY_EXISTS:
@@ -68,8 +78,7 @@ export const errorHandler = (res: Response, e: Error) => {
         return res.status(401).send({message: getErrorMessage(e.type)})
       case ERROR_NAME.INTERNAL_SERVER_ERROR:
       case ERROR_NAME.HASHING_ERROR:
-        return console.error("HANDLED SERVER ERROR 500 >>> ", e.type)
-        // return res.status(500).send(getErrorMessage(e.type))
+        return;
     }
   }
   if (e instanceof MongoError) {

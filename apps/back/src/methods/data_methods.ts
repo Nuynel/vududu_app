@@ -60,7 +60,7 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
   const father = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(rawLitterData.fatherId))
   const mother = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(rawLitterData.motherId))
 
-  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR);
+  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 63});
 
   const parentNames = {
     fatherFullName: father.fullName,
@@ -80,7 +80,7 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
     ...parentNames,
     litterTitle,
     puppiesData: puppiesData.map(puppyData => {
-      if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
       return { id: puppyData._id, name: puppyData.name, fullName: puppyData.fullName }
     })
   }
@@ -91,12 +91,12 @@ const getMainLitterData = async (client: MongoClient, litterId: string | ObjectI
   if (!litterId) return {title: null, date: null}
   const litter = await findEntityById(client, COLLECTIONS.LITTERS, new ObjectId(litterId))
 
-  if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR);
+  if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 94});
 
   const father = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(litter.fatherId))
   const mother = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(litter.motherId))
 
-  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR);
+  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 99});
 
   return {date: [litter.dateOfBirth], title: `${father.name}/${mother.name}`}
 }

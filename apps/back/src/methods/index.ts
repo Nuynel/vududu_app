@@ -34,7 +34,9 @@ import {getCookiesPayload} from "./validation_methods";
 
 export const verifyProfileType = async (client: MongoClient, profileId: string) => {
   const profile: WithId<DatabaseProfile> | null = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
-  if (!profile || !(profile.type === PROFILE_TYPES.BREEDER || profile.type === PROFILE_TYPES.KENNEL)) throw new CustomError(ERROR_NAME.INVALID_PAYLOAD)
+  if (!profile || !(profile.type === PROFILE_TYPES.BREEDER || profile.type === PROFILE_TYPES.KENNEL)) {
+    throw new CustomError(ERROR_NAME.INVALID_PAYLOAD, {file: 'src/methods/index', line: 37})
+  }
   return profile
 }
 

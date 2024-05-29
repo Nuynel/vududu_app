@@ -22,9 +22,9 @@ import {
 
 export const initEventRoutes = (app: Application, client: MongoClient) => {
   app.delete('/api/events', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /DELETE/EVENTS')
     try {
       const {profileId} = getCookiesPayload(req)
+      console.log(getTimestamp, 'REQUEST TO /DELETE/EVENTS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       const { eventsIds }: {eventsIds: string[]} = req.body

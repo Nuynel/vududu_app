@@ -71,9 +71,9 @@ const createNewDog = (newDog: NewDog): MaleExtendedDog | FemaleExtendedDog => {
 
 export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/dog', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/DOG')
     try {
       const {profileId} = getCookiesPayload(req)
+      console.log(getTimestamp, 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       const newDogData: NewDog = {
@@ -100,9 +100,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.post('/api/stud', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/STUD')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /POST/STUD, profileId >>> ', profileId)
       const newStudDog: Dog = { ...req.body, isLinkedToOwner: false, reproductiveHistory: {
           heatIds: null,
           mateIds: null,
@@ -119,14 +119,14 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get('/api/dogs', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/DOGS')
     try {
       const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/DOGS, profileId >>> ', profileId)
       const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
-      if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
-      if (!isKennelOrBreedProfile(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE)
+      if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 126})
+      if (!isKennelOrBreedProfile(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'dog_routes', line: 127})
       const { dogIds } = profile;
-      if (!dogIds) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!dogIds) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 129})
       const dogs: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, dogIds.map(str => new ObjectId(str)))
       res.send({dogs})
     } catch (e) {
@@ -135,9 +135,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER }>('/api/stud', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/STUD')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
       const { searchString, gender } = req.query;
       const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
       res.send({studs})
@@ -147,9 +147,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.get<{}, { puppies: DatabaseDog[] }, {}, { dateOfBirth: string }>('/api/puppies', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/PUPPIES')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/PUPPIES, profileId >>> ', profileId)
       const { dateOfBirth } = req.query;
       const puppies = await findPuppiesByDateOfBirth(client, dateOfBirth);
       res.send({puppies})
@@ -159,9 +159,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.put<{}, {}, {baseDogInfo: BaseDogInfo}, {id: string}>('/api/dog', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /PUT/DOG')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /PUT/DOG, profileId >>> ', profileId)
       const {baseDogInfo} = req.body;
       const { id } = req.query;
 
@@ -182,15 +182,15 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.delete<{}, {}, {}, {id: string}>('/api/dog', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /DELETE/DOG')
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;
+      console.log(getTimestamp, 'REQUEST TO /DELETE/DOG, profileId >>> ', profileId, ' >>> dogId >>> ', id)
 
       const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
-      if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 191})
 
-      if (dog.reproductiveHistory.litterIds?.length) return new CustomError(ERROR_NAME.DELETE_ERROR)
+      if (dog.reproductiveHistory.litterIds?.length) return new CustomError(ERROR_NAME.DELETE_ERROR, {file: 'dog_routes', line: 193})
 
       if (dog.treatmentIds?.length) {
         await Promise.all(dog.treatmentIds.map(async (eventId) => {
@@ -215,7 +215,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
           new ObjectId(id),
           '$pull'
         )
-        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 218})
       }
 
       const deleteResult = await modifyNestedArrayField<Litter>(
@@ -227,11 +227,11 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         new ObjectId(id),
         '$pull'
       )
-      if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 230})
 
       const dogDeleteResult = await deleteEntityById<DatabaseDog>(client, new ObjectId(id), COLLECTIONS.DOGS)
 
-      if (!dogDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!dogDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 234})
 
       res.send({ message: 'Собака удалена!' })
 

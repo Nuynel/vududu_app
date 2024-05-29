@@ -27,15 +27,15 @@ const isDogLinkedToProfile = (dog: WithId<DatabaseDog>, profileId: string) => {
 const checkIsLitterLinkedToOwner = async (fatherId: string | ObjectId, motherId: string | ObjectId, profileId: string, client: MongoClient) => {
   const father = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(fatherId))
   const mother = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(motherId))
-  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR)
+  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 30})
   return isDogLinkedToProfile(father, profileId) || isDogLinkedToProfile(mother, profileId)
 }
 
 export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/litter', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/LITTERS')
     try {
       const {profileId} = getCookiesPayload(req)
+      console.log(getTimestamp, 'REQUEST TO /POST/LITTERS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
       const newLitterData: NewLitter = { ...req.body }
       const isLinkedToOwner = await checkIsLitterLinkedToOwner(newLitterData.fatherId, newLitterData.motherId, profileId, client)
@@ -58,9 +58,9 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
 
   // ToDo поиск пометов для миксов!!!
   app.get<{}, { litters: Litter[] }, {}, { date: string }>('/api/litters', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /GET/LITTERS')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /GET/LITTERS, profileId >>> ', profileId)
       const { date } = req.query;
       const litters= await findLittersByDate(client, date);
       res.send({ litters })
@@ -70,9 +70,9 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.put<{}, {}, {baseLitterInfo: {comments: string}}, {id: string}>('/api/litter', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /PUT/LITTER')
     try {
-      const {} = getCookiesPayload(req);
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp, 'REQUEST TO /PUT/LITTER, profileId >>> ', profileId)
       const {baseLitterInfo} = req.body;
       const { id } = req.query;
 
@@ -89,13 +89,13 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   // todo удалить все документы, связанные с пометом
 
   app.delete<{}, {}, {}, {id: string}>('/api/litter', async(req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /DELETE/LITTER')
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;
+      console.log(getTimestamp, 'REQUEST TO /DELETE/LITTER, profileId >>> ', profileId, ' >>> litterId >>> ', id)
 
       const litter = await findEntityById<Litter>(client, COLLECTIONS.LITTERS, new ObjectId(id))
-      if (!litter) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!litter) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 98})
 
       if (litter.fatherId) {
         const deleteResult = await modifyNestedArrayField<DatabaseDog>(
@@ -107,7 +107,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
           new ObjectId(id),
           '$pull'
         )
-        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 110})
       }
 
       if (litter.motherId) {
@@ -120,7 +120,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
           new ObjectId(id),
           '$pull'
         )
-        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 123})
       }
 
       if (litter.puppyIds.length) {
@@ -134,7 +134,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
             null,
             '$set'
           )
-          if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+          if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 137})
         }))
       }
 
@@ -148,12 +148,12 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
           new ObjectId(id),
           '$pull'
         )
-        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+        if (!deleteResult.modifiedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 151})
       }
 
       const litterDeleteResult = await deleteEntityById<Litter>(client, new ObjectId(id), COLLECTIONS.LITTERS)
 
-      if (!litterDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR)
+      if (!litterDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 156})
 
       res.send({ message: 'Помет удален!' })
 

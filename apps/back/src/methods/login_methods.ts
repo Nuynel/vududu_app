@@ -9,7 +9,7 @@ const hashPass = async (password: string) => {
   try {
     return await bcrypt.hash(password, 12)
   } catch (e) {
-    throw new CustomError(ERROR_NAME.HASHING_ERROR)
+    throw new CustomError(ERROR_NAME.HASHING_ERROR, {file: 'login_methods', line: 12})
   }
 };
 
@@ -17,7 +17,7 @@ export const isPasswordCorrect = async (user: User, password: string) => {
   try {
     return await bcrypt.compare( password, user.password )
   } catch (e) {
-    throw new CustomError(ERROR_NAME.HASHING_ERROR)
+    throw new CustomError(ERROR_NAME.HASHING_ERROR, {file: 'login_methods', line: 20})
   }
 }
 
