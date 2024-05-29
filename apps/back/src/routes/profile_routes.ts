@@ -31,7 +31,7 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/profile', async (req, res) => {
     try {
       const {userId} = getCookiesPayload(req, false);
-      console.log(getTimestamp, 'REQUEST TO /POST/PROFILE, userId >>> ', userId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/PROFILE, userId >>> ', userId)
 
       const { name, type, connectedOrganisations } = req.body;
 
@@ -73,7 +73,7 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
   app.get('/api/profile', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/PROFILE, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/PROFILE, profileId >>> ', profileId)
       const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
       if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'profile_routes', line: 78})
       if (!isKennelOrBreedProfile(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'profile_routes', line: 79})

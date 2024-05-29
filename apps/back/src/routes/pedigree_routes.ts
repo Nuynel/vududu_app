@@ -62,7 +62,7 @@ export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
     try {
       const {profileId} = getCookiesPayload(req)
       const { id, type } = req.query;
-      console.log(getTimestamp, 'REQUEST TO /GET/PEDIGREE, profileId >>> ', profileId, ' >>> dogId >>> ', id)
+      console.log(getTimestamp(), 'REQUEST TO /GET/PEDIGREE, profileId >>> ', profileId, ' >>> dogId >>> ', id)
 
       const depth = PEDIGREE_TYPES_CONFIG[type].DEPTH
 

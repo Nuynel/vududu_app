@@ -71,7 +71,7 @@ export const initHeatRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
-      console.log(getTimestamp, 'REQUEST TO /POST/HEAT, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/HEAT, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       // при создании течки мы не можем добавить к ней событие вязки, потому что вязка происходит после начала течки
@@ -105,7 +105,7 @@ export const initHeatRoutes = (app: Application, client: MongoClient) => {
   app.put<{}, {}, {baseHeatInfo: Pick<DatabaseEvent, 'comments' | 'date' | 'activated'>}, {id: string}>('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /PUT/HEAT, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /PUT/HEAT, profileId >>> ', profileId)
       const {baseHeatInfo} = req.body;
       const { id } = req.query;
 

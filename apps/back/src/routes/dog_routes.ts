@@ -73,7 +73,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/dog', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
-      console.log(getTimestamp, 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       const newDogData: NewDog = {
@@ -102,7 +102,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/stud', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /POST/STUD, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/STUD, profileId >>> ', profileId)
       const newStudDog: Dog = { ...req.body, isLinkedToOwner: false, reproductiveHistory: {
           heatIds: null,
           mateIds: null,
@@ -121,7 +121,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.get('/api/dogs', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/DOGS, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/DOGS, profileId >>> ', profileId)
       const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
       if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 126})
       if (!isKennelOrBreedProfile(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'dog_routes', line: 127})
@@ -137,7 +137,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER }>('/api/stud', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
       const { searchString, gender } = req.query;
       const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
       res.send({studs})
@@ -149,7 +149,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { puppies: DatabaseDog[] }, {}, { dateOfBirth: string }>('/api/puppies', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/PUPPIES, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/PUPPIES, profileId >>> ', profileId)
       const { dateOfBirth } = req.query;
       const puppies = await findPuppiesByDateOfBirth(client, dateOfBirth);
       res.send({puppies})
@@ -161,7 +161,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   app.put<{}, {}, {baseDogInfo: BaseDogInfo}, {id: string}>('/api/dog', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /PUT/DOG, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /PUT/DOG, profileId >>> ', profileId)
       const {baseDogInfo} = req.body;
       const { id } = req.query;
 
@@ -185,7 +185,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;
-      console.log(getTimestamp, 'REQUEST TO /DELETE/DOG, profileId >>> ', profileId, ' >>> dogId >>> ', id)
+      console.log(getTimestamp(), 'REQUEST TO /DELETE/DOG, profileId >>> ', profileId, ' >>> dogId >>> ', id)
 
       const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
       if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 191})

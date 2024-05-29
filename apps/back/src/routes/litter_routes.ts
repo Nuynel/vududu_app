@@ -35,7 +35,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/litter', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
-      console.log(getTimestamp, 'REQUEST TO /POST/LITTERS, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/LITTERS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
       const newLitterData: NewLitter = { ...req.body }
       const isLinkedToOwner = await checkIsLitterLinkedToOwner(newLitterData.fatherId, newLitterData.motherId, profileId, client)
@@ -60,7 +60,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { litters: Litter[] }, {}, { date: string }>('/api/litters', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/LITTERS, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/LITTERS, profileId >>> ', profileId)
       const { date } = req.query;
       const litters= await findLittersByDate(client, date);
       res.send({ litters })
@@ -72,7 +72,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.put<{}, {}, {baseLitterInfo: {comments: string}}, {id: string}>('/api/litter', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /PUT/LITTER, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /PUT/LITTER, profileId >>> ', profileId)
       const {baseLitterInfo} = req.body;
       const { id } = req.query;
 
@@ -92,7 +92,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
     try {
       const {profileId} = getCookiesPayload(req)
       const { id } = req.query;
-      console.log(getTimestamp, 'REQUEST TO /DELETE/LITTER, profileId >>> ', profileId, ' >>> litterId >>> ', id)
+      console.log(getTimestamp(), 'REQUEST TO /DELETE/LITTER, profileId >>> ', profileId, ' >>> litterId >>> ', id)
 
       const litter = await findEntityById<Litter>(client, COLLECTIONS.LITTERS, new ObjectId(id))
       if (!litter) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 98})

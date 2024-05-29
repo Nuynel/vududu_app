@@ -40,7 +40,7 @@ type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 
 // SMTP transporter configuration
 const transporter = createTransport({
-  service: 'Brevo',
+  service: 'Yandex',
   host: process.env.SMTP_SERVER || 'smtp.yandex.ru',
   port: 587,
   secure: false, // true для порта 465, false для других портов
@@ -99,7 +99,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/sign-up', async (req, res) => {
     try {
       const { email, password } = req.body;
-      console.log(getTimestamp, 'REQUEST TO /POST/SIGN-UP, email >>> ', email)
+      console.log(getTimestamp(), 'REQUEST TO /POST/SIGN-UP, email >>> ', email)
       if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 103})
       const user = await findUserByEmail(client, email);
       if (user) throw new CustomError(ERROR_NAME.EMAIL_ALREADY_EXISTS, {file: 'user_routes', line: 105})
@@ -126,7 +126,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/sign-in', async (req, res) => {
     try {
       const { email, password } = req.body;
-      console.log(getTimestamp, 'REQUEST TO /POST/SIGN-IN, email >>> ', email)
+      console.log(getTimestamp(), 'REQUEST TO /POST/SIGN-IN, email >>> ', email)
       const user: WithId<User> | null = await findUserByEmail(client, email);
       if (!email || !password) throw new CustomError(ERROR_NAME.WRONG_CREDENTIALS, {file: 'user_routes', line: 132})
       if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL, {file: 'user_routes', line: 133})
@@ -147,7 +147,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   })
 
   app.post('/api/sign-out', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/SIGN-OUT')
+    console.log(getTimestamp(), 'REQUEST TO /POST/SIGN-OUT')
     try {
       res.clearCookie(COOKIE_TOKEN_NAMES.REFRESH_TOKEN);
       res.clearCookie(COOKIE_TOKEN_NAMES.API_ACCESS_TOKEN);
@@ -160,7 +160,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, { message: string }, {}, { id: string; activator: string }>('/api/activate', async (req, res) => {
     try {
       const {id, activator} = req.query
-      console.log(getTimestamp, 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
+      console.log(getTimestamp(), 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
       await activateProfileByActivator(client, id, activator)
       res.redirect('http://localhost:3000/sign-in?activated')
     } catch (e) {
@@ -171,7 +171,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.get('/api/user', async (req, res) => {
     try {
       const {userId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/USER, userId >>> ', userId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/USER, userId >>> ', userId)
       const user: WithId<User> | null = await findUserById(client, userId)
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 177})
       let userData = pickUserData(user)
@@ -184,7 +184,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   app.get('/api/initial-data', async(req, res) => {
     try {
       const {userId, profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /GET/INITIAL-DATA, userId >>> ', userId, ' >>> profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/INITIAL-DATA, userId >>> ', userId, ' >>> profileId >>> ', profileId)
       const user: WithId<User> | null = await findUserById(client, userId)
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 190})
       const userData = pickUserData(user)
@@ -229,14 +229,14 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
   });
 
   app.post('/api/refresh-token', async (req, res) => {
-    console.log(getTimestamp, 'REQUEST TO /POST/REFRESH-TOKEN')
+    console.log(getTimestamp(), 'REQUEST TO /POST/REFRESH-TOKEN')
     try {
       if (!req.cookies) throw new CustomError(ERROR_NAME.NO_COOKIES, {file: 'user_routes', line: 235})
       const refreshToken = req.cookies[COOKIE_TOKEN_NAMES.REFRESH_TOKEN];
       if (!refreshToken) throw new CustomError(ERROR_NAME.INVALID_PAYLOAD, {file: 'user_routes', line: 237})
       const {userId} = checkRefreshToken(refreshToken)
       if (!userId) throw new CustomError(ERROR_NAME.INVALID_REFRESH_TOKEN, {file: 'user_routes', line: 239})
-      console.log(getTimestamp, '/api/refresh-token >>> userId >>> ', userId)
+      console.log(getTimestamp(), '/api/refresh-token >>> userId >>> ', userId)
       const user = await findUserById(client, userId)
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 241})
       const profileId = user.activeProfileId instanceof ObjectId ? user.activeProfileId.toHexString() : user.activeProfileId

@@ -85,7 +85,7 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
   app.post('/api/treatment', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
-      console.log(getTimestamp, 'REQUEST TO /POST/TREATMENT, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /POST/TREATMENT, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       const { date, comments, validity, medication, dogId, repeat, frequencyInDays, eventType } = req.body;
@@ -136,7 +136,7 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
     }, {id: string}>('/api/treatment', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
-      console.log(getTimestamp, 'REQUEST TO /PUT/TREATMENT, profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /PUT/TREATMENT, profileId >>> ', profileId)
       const {baseTreatmentInfo} = req.body;
       const { id } = req.query;
 
