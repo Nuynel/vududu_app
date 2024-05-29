@@ -106,7 +106,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const checkInResult = await checkIn(client, {email, password});
       // Содержимое письма
       const mailOptions = {
-        from: 'snezhinka.alisa@gmail.com',
+        from: 'email.confirm@vududu.ru',
         to: email,
         subject: 'Подтверждение регистрации',
         text: 'Пожалуйста, подтвердите вашу почту, перейдя по ссылке.',
