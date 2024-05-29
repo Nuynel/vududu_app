@@ -41,9 +41,9 @@ type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 // SMTP transporter configuration
 const transporter = createTransport({
   service: 'Yandex',
-  host: process.env.SMTP_SERVER || 'smtp.yandex.ru',
-  port: 587,
-  secure: false, // true для порта 465, false для других портов
+  host: process.env.SMTP_SERVER || 'smtp.yandex.com',
+  port: 465,
+  secure: true, // true для порта 465, false для других портов
   auth: {
     user: process.env.SMTP_LOGIN || 'login',
     pass: process.env.SMTP_PASSWORD || 'password'
@@ -106,7 +106,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const checkInResult = await checkIn(client, {email, password});
       // Содержимое письма
       const mailOptions = {
-        from: 'email.confirm@vududu.ru',
+        from: 'vududu_support@vududu.ru',
         to: email,
         subject: 'Подтверждение регистрации',
         text: 'Пожалуйста, подтвердите вашу почту, перейдя по ссылке.',

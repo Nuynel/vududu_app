@@ -18,9 +18,9 @@ services:
       BACKEND_URL: http://localhost:8000
       PORT: 8000
       MONGODB_URI: mongodb://admin:pass@mongodb-dev:27017
-      SMTP_SERVER: smtp.yandex.ru
-      SMTP_LOGIN: vududu_back
-      SMTP_PASSWORD: dorrcrzucgtfbawk
+      SMTP_SERVER: smtp.yandex.com
+      SMTP_LOGIN: alisa.kislova@vududu.ru
+      SMTP_PASSWORD: uksnaxeqlptcurno
     networks:
       - app_network
     profiles:
