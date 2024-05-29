@@ -41,12 +41,12 @@ type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 // SMTP transporter configuration
 const transporter = createTransport({
   service: 'Brevo',
-  host: process.env.SMTP_SERVER || 'smtp-relay.brevo.com',
+  host: process.env.SMTP_SERVER || 'smtp.yandex.ru',
   port: 587,
   secure: false, // true для порта 465, false для других портов
   auth: {
-    user: process.env.SMTP_LOGIN || 'your@brevo-email.com',
-    pass: process.env.SMTP_PASSWORD || 'your-brevo-password'
+    user: process.env.SMTP_LOGIN || 'login',
+    pass: process.env.SMTP_PASSWORD || 'password'
   }
 });
 

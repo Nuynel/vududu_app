@@ -18,9 +18,9 @@ services:
       BACKEND_URL: http://localhost:8000
       PORT: 8000
       MONGODB_URI: mongodb://admin:pass@mongodb-dev:27017
-      SMTP_SERVER: smtp-relay.brevo.com
-      SMTP_LOGIN: 752df5001@smtp-brevo.com
-      SMTP_PASSWORD: VJTrWhBxcnaUMSs9
+      SMTP_SERVER: smtp.yandex.ru
+      SMTP_LOGIN: vududu_back
+      SMTP_PASSWORD: dorrcrzucgtfbawk
     networks:
       - app_network
     profiles:
