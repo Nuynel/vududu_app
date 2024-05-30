@@ -123,6 +123,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
     }
   });
 
+
   app.post('/api/sign-in', async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -162,7 +163,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const {id, activator} = req.query
       console.log(getTimestamp(), 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
       await activateProfileByActivator(client, id, activator)
-      res.redirect('http://localhost:3000/sign-in?activated')
+      res.redirect(URL + '/sign-in?activated')
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
