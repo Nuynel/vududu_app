@@ -2,6 +2,7 @@ import {Response} from 'express';
 import errorMessages from '../constants/error_messages.json';
 import {MongoError} from "mongodb";
 import {JsonWebTokenError} from "jsonwebtoken";
+import {getTimestamp} from "./index";
 
 export enum ERROR_NAME {
   WRONG_CREDENTIALS = '400_WRONG_CREDENTIALS',
@@ -58,6 +59,7 @@ export class CustomError extends Error {
 export const errorHandler = (res: Response, e: Error) => {
   if (e instanceof CustomError) {
     console.error(
+      getTimestamp(),
       "CUSTOM ERROR TYPE >>> ", e.type,
       " >>> FILE and LINE >>> ", e.file, ',', e.line,
     )
@@ -82,13 +84,13 @@ export const errorHandler = (res: Response, e: Error) => {
     }
   }
   if (e instanceof MongoError) {
-    console.error("MONGO ERROR 500 >>> ", e)
+    console.error(getTimestamp(), "MONGO ERROR 500 >>> ", e)
     return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
   }
   if (e instanceof JsonWebTokenError) {
-    console.error("JSON WEB TOKEN ERROR 500 >>> ", e)
+    console.error(getTimestamp(), "JSON WEB TOKEN ERROR 500 >>> ", e)
     return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
   }
-  console.error("INTERNAL SERVER ERROR 500 >>> ", e)
+  console.error(getTimestamp(), "INTERNAL SERVER ERROR 500 >>> ", e)
   return res.status(500).send({message: getErrorMessage(ERROR_NAME.INTERNAL_SERVER_ERROR)});
 }
