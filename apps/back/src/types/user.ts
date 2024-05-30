@@ -1,8 +1,5 @@
 import {ObjectId} from "mongodb";
 
-// todo подумать должен ли быть список пометов у питомника и заводчика,
-//  или же им хватит историй пометов их собак
-
 type ConnectedOrganisations = {
   canineFederation: ObjectId | string | null;
   nationalBreedClub: ObjectId | string | null;

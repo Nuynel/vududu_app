@@ -1,6 +1,5 @@
 import {DateInput, RadioButtonGroup, TextInput, Select, CheckBox} from "grommet";
 import {EVENT_TYPE} from '../../g_shared/types/event'
-// todo убрать name из конфигов?
 
 export const newDogEventFormConfig = {
   eventType: {

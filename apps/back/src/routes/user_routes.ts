@@ -87,12 +87,7 @@ export const setCookie = ({res, tokenName, token}: SetCookiesParams) => {
 
 export const initUserRoutes = (app: Application, client: MongoClient) => {
 
-  // todo http переделать на https
-
   // todo проверку токенов, client.connect() и client.close() перенести в middleware
-
-  // todo убрать отовсюду clientType и переписать методы так,
-  //  чтобы токен доступа отправлялся в теле запроса, а рефреш токен в куках
 
   // todo рассмотреть вариант, когда сразу после регистрации пользователь попадает в приложение, и оттуда надо подтвердить почту
 

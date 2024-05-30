@@ -19,8 +19,6 @@ import {
 } from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
 
-// todo выпилить moment и добавить https://day.js.org/docs/en/installation/installation
-
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
