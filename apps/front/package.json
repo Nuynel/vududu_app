@@ -2,6 +2,7 @@
   "name": "@vududu/front",
   "version": "0.1.0",
   "dependencies": {
+    "@sentry/react": "^8.7.0",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
