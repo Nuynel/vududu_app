@@ -1,4 +1,4 @@
-import {URL} from "./index";
+import {checkResponse, URL} from "./index";
 import {NewLitter} from "../../types";
 
 export async function createLitter(data: NewLitter) {
@@ -11,6 +11,7 @@ export async function createLitter(data: NewLitter) {
       credentials: "include",
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -28,6 +29,7 @@ export async function getLittersByDate(date: string): Promise<{litters: {_id: st
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -46,6 +48,7 @@ export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, 
       credentials: "include",
       body: JSON.stringify({baseLitterInfo})
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -63,6 +66,7 @@ export async function deleteLitter (id: string) {
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {

@@ -1,4 +1,4 @@
-import {URL} from "./index";
+import {checkResponse, URL} from "./index";
 import {BaseDogInfo, NewDog} from "../../types";
 import {GENDER} from "../../types/dog";
 
@@ -12,6 +12,7 @@ export async function createDog(data: Omit<NewDog, 'profileId' | 'litterTitle'>)
       credentials: "include",
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -29,6 +30,7 @@ export async function deleteDog (id: string) {
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -46,6 +48,7 @@ export async function getStuds (searchString: string, gender: GENDER) {
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -63,6 +66,7 @@ export async function getPuppies (dateOfBirth: string) {
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -81,6 +85,7 @@ export async function updateBaseDogInfo (baseDogInfo: BaseDogInfo, id: string) {
       credentials: "include",
       body: JSON.stringify({baseDogInfo})
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {

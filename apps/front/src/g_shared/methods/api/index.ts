@@ -4,12 +4,17 @@ import {createProfile, getProfile} from "./profile";
 import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
-import {navigate} from "wouter/use-browser-location";
 import {getPedigreeByDogId} from "./pedigrees";
-import {Paths} from "../../constants/routes";
 
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
+
+export const checkResponse = (r: Response) => {
+  if (r.status === 400 || r.status === 401) {
+    throw new Error('Пользователь не добавлен')
+  }
+}
+
 async function getInitialDataReq(): Promise<{
   userData: UserData,
   profileData: ProfileData,
@@ -25,6 +30,7 @@ async function getInitialDataReq(): Promise<{
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -40,6 +46,7 @@ async function refreshAccessToken(): Promise<{accessToken: string | null}> {
     },
     credentials: "include",
   }).then(r => {
+    checkResponse(r)
     return r.json()
   }).catch(() => ({accessToken: null}))
 }

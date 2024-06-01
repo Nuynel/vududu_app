@@ -1,4 +1,4 @@
-import {URL} from "./index";
+import {checkResponse, URL} from "./index";
 import {Pedigree} from '../../types'
 
 export async function getPedigreeByDogId({id, type}: {id: string, type: 'COMMON' | 'EXTENDED'}): Promise<{pedigree: Pedigree}> {
@@ -11,6 +11,7 @@ export async function getPedigreeByDogId({id, type}: {id: string, type: 'COMMON'
       },
       credentials: "include",
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {

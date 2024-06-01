@@ -1,4 +1,4 @@
-import {URL} from "./index";
+import {checkResponse, URL} from "./index";
 import {PROFILE_TYPES} from "../../../c_pages/profile/CreateProfile";
 import {ProfileData} from "../../types";
 
@@ -25,6 +25,7 @@ export async function createProfile(data: NewProfile) {
       credentials: "include",
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -40,6 +41,7 @@ export async function getProfile(): Promise<{ profileData: ProfileData }> {
         "content-type": "application/json",
       },
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {

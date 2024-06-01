@@ -1,5 +1,5 @@
 import {EventData, Treatment, Heat} from "../../types";
-import {URL} from "./index";
+import {checkResponse, URL} from "./index";
 
 const eventURLs = {
   HEAT: 'heat',
@@ -17,6 +17,7 @@ export async function createEvent(data: Omit<EventData, '_id' | 'activated'>) {
       credentials: "include",
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -35,6 +36,7 @@ export async function updateHeatInfo (baseHeatInfo: Pick<Heat, 'comments' | 'dat
       credentials: "include",
       body: JSON.stringify({baseHeatInfo})
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -53,6 +55,7 @@ export async function updateTreatmentInfo (baseTreatmentInfo: Pick<Treatment, 'c
       credentials: "include",
       body: JSON.stringify({baseTreatmentInfo})
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -70,6 +73,7 @@ export async function deleteEventsByIds (eventsIds: string[]) {
       credentials: "include",
       body: JSON.stringify({eventsIds})
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {

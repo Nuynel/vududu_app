@@ -1,5 +1,5 @@
 import {User} from "../../types";
-import {URL} from './index';
+import {checkResponse, URL} from './index';
 
 export async function signIn(data: User) {
   return await fetch(`${URL}/api/sign-in`, {
@@ -10,9 +10,7 @@ export async function signIn(data: User) {
     credentials: "include",
     body: JSON.stringify(data)
   }).then(r => {
-    if (r.status === 400 || r.status === 401) {
-      throw new Error('Не авторизовано')
-    }
+    checkResponse(r)
     return r.json()
   })
 }
@@ -39,9 +37,7 @@ export async function signUp(data: User) {
     },
     body: JSON.stringify(data)
   }).then(r => {
-    if (r.status === 400 || r.status === 401) {
-      throw new Error('Пользователь не добавлен')
-    }
+    checkResponse(r)
     return r.json()
   })
 }
@@ -71,6 +67,7 @@ export async function recoveryPassword(data: {email: string}) {
       },
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -87,6 +84,7 @@ export async function saveNewPassword(data: {password: string, recoveryToken: st
       },
       body: JSON.stringify(data)
     }).then(r => {
+      checkResponse(r)
       return r.json()
     })
   } catch (error) {
