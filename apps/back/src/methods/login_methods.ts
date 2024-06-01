@@ -5,7 +5,7 @@ import {COLLECTIONS} from "../constants";
 import {ERROR_NAME, CustomError} from "./error_messages_methods";
 import {insertEntity} from "./db_methods";
 
-const hashPass = async (password: string) => {
+export const hashPass = async (password: string) => {
   try {
     return await bcrypt.hash(password, 12)
   } catch (e) {

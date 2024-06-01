@@ -2,7 +2,7 @@ import {Application} from "express";
 import {MongoClient, ObjectId, WithId} from "mongodb";
 import {CustomError, ERROR_NAME, errorHandler} from "../methods/error_messages_methods";
 import {
-  assignValueToField,
+  assignIdToField,
   checkAPIAccessToken,
   findEntityById, generateAccessToken, generateAPIAccessToken, generateRefreshToken,
   insertEntity,
@@ -55,7 +55,7 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
         const { insertedId: profileId } = await insertEntity(client, COLLECTIONS.PROFILES, profile)
         if (!profileId) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'profile_routes', line: 56})
         await modifyNestedArrayFieldById(client, COLLECTIONS.USERS, new ObjectId(userId), profileId, FIELDS_NAMES.PROFILES_IDS)
-        await assignValueToField(client, COLLECTIONS.USERS, new ObjectId(userId), FIELDS_NAMES.ACTIVE_PROFILE_ID, profileId)
+        await assignIdToField(client, COLLECTIONS.USERS, new ObjectId(userId), FIELDS_NAMES.ACTIVE_PROFILE_ID, profileId)
         const accessToken = generateAccessToken(profileId.toHexString())
         const apiAccessToken = generateAPIAccessToken(userId, profileId.toHexString())
         const refreshToken = generateRefreshToken(userId)

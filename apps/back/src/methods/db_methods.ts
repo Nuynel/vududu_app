@@ -57,7 +57,7 @@ export const modifyNestedArrayFieldById = async <T extends Document>(
   )
 }
 
-export const assignValueToField = async <T extends Document> (
+export const assignIdToField = async <T extends Document> (
   client: MongoClient,
   collectionName: COLLECTIONS,
   identifierId: ObjectId,
@@ -69,6 +69,23 @@ export const assignValueToField = async <T extends Document> (
     {
       $set: {
         [assignedFieldName]: new ObjectId(newId)
+      }
+    } as UpdateFilter<T>
+  )
+}
+
+export const assignValueToField = async <T extends Document> (
+  client: MongoClient,
+  collectionName: COLLECTIONS,
+  identifierId: ObjectId,
+  assignedFieldName: FIELDS_NAMES,
+  newValue: string | null,
+) => {
+  await client.db(DB_NAME).collection<T>(collectionName).updateOne(
+    { _id: new ObjectId(identifierId) } as Filter<T>,
+    {
+      $set: {
+        [assignedFieldName]: newValue
       }
     } as UpdateFilter<T>
   )

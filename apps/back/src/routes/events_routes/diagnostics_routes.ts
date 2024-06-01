@@ -2,19 +2,13 @@ import {Application} from "express";
 import {MongoClient} from "mongodb";
 import {
   BreederProfile,
-  DatabaseDog,
-  DatabaseProfile,
   Diagnostics,
   EVENT_TYPE,
-  History,
   KennelProfile
 } from "../../types";
 import {
-  findOneField,
   insertEntity,
-  assignValueToField,
   modifyNestedArrayFieldById,
-  // modifyNestedHistoryArrayFieldById
 } from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
 
