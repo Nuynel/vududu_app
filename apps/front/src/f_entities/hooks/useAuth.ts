@@ -8,6 +8,7 @@ import {refreshAccessToken} from "../../g_shared/methods/api";
 import {Paths} from "../../g_shared/constants/routes";
 
 import {EB_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
+import {isRoutePublic} from "../../g_shared/methods/helpers/navigationHelpers";
 
 const useAuth = () => {
   const [location, setLocation] = useLocation();
@@ -18,14 +19,18 @@ const useAuth = () => {
     loadAccessToken();
   }
   const getNewTokenPair = () => {
-    refreshAccessToken().then((newAccessToken) => {
-      setAccessToken(newAccessToken)
-      saveAccessToken(newAccessToken)
+    refreshAccessToken().then(({accessToken}: {accessToken: string | null}) => {
+      setAccessToken(accessToken)
+      saveAccessToken(accessToken)
+    }).catch((error) => {
+      console.error('Ошибка при обновлении access токена', error);
+      setAccessToken(null)
+      saveAccessToken(null)
     })
   }
 
   useEffect(() => {
-    if (!accessToken && location !== Paths.sign_in) {
+    if (!accessToken && !isRoutePublic(location)) {
       // если нет токена, то пользователя редиректит на экран входа
       // кейс - токен удалили при выходе, надо редирекнуть
       setLocation(Paths.sign_in);

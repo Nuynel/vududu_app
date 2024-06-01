@@ -5,6 +5,7 @@ import useSignIn from "./useSignIn";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {useEffect} from "react";
 import {toast} from "react-toastify";
+import {Paths} from "../../g_shared/constants/routes";
 
 const SignInScreen = () => {
   const {
@@ -21,6 +22,8 @@ const SignInScreen = () => {
 
   useEffect(() => {
     if (search === 'activated') toast.info('Профиль активирован!')
+    if (search === 'passwordUpdated') toast.info('Пароль обновлен!')
+    if (search === 'expired') toast.error('Срок действия ссылки истёк!')
   }, [search])
 
   return (
@@ -78,9 +81,14 @@ const SignInScreen = () => {
             </Box>
           </Button>
         </Form>
-        <Link to="/sign-up" style={{display: 'flex', justifyContent: 'center'}}>
+        <Link to={Paths.sign_up} style={{display: 'flex', justifyContent: 'center'}}>
           <Button secondary margin='xsmall'>
             Регистрация
+          </Button>
+        </Link>
+        <Link to={'/password-recovery'} style={{display: 'flex', justifyContent: 'center'}}>
+          <Button secondary margin='xsmall'>
+            Забыли пароль?
           </Button>
         </Link>
       </Card>

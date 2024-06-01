@@ -18,13 +18,17 @@ export enum Paths {
   dog_editor = '/dogs/:id/editor',
   litter_editor = '/dogs/litter/:id/editor',
   event_editor = '/events/:id/editor',
-  pedigrees = '/pedigrees'
+  pedigrees = '/pedigrees',
+  passwordRecovery = '/password-recovery',
+  passwordRecoveryFinish = '/password-recovery/:recoveryToken',
 }
 
 export const PublicRoutes = [
   Paths.sign_in,
   Paths.sign_up,
   Paths.confirmEmail,
+  Paths.passwordRecovery,
+  Paths.passwordRecoveryFinish,
 ] as const;
 
 export const PrivateRoutes = [

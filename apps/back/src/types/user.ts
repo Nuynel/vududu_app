@@ -31,6 +31,7 @@ export type User = NewUser & {
   createdAt: string;
   profileIds: ObjectId[];
   activeProfileId: ObjectId | string | null;
+  passwordRecoveryToken?: string | null;
   // добавить список пройденного онбординга?
 }
 

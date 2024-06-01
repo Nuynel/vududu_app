@@ -23,8 +23,8 @@ import {refreshAccessToken} from "./g_shared/methods/api";
     replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
   });
 
-  const accessToken: string | null = await refreshAccessToken();
-  if (accessToken) localStorage.setItem('accessToken', accessToken);
+  const { accessToken }: {accessToken: string | null} = await refreshAccessToken();
+  localStorage.setItem('accessToken', accessToken);
   navigationAfterInit();
 
   const root = ReactDOM.createRoot(

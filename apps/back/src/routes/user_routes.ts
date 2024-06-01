@@ -17,10 +17,22 @@ import {
   getTimestamp,
   constructLitterForClient,
   constructDogForClient,
-  getCookiesPayload
+  getCookiesPayload,
+  assignValueToField,
+  generateRecoveryToken,
+  hashPass,
+  checkRecoveryToken,
 } from "../methods";
-import {BreederProfile, DatabaseDog, DatabaseProfile, KennelProfile, Litter, PROFILE_TYPES, User} from "../types";
-import {COLLECTIONS} from "../constants";
+import {
+  BreederProfile,
+  DatabaseDog,
+  DatabaseProfile,
+  KennelProfile,
+  Litter,
+  PROFILE_TYPES,
+  User
+} from "../types";
+import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
@@ -118,6 +130,64 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
     }
   });
 
+  app.post('/api/password-recovery/init', async (req, res) => {
+    try {
+      const { email } = req.body;
+      console.log(getTimestamp(), 'REQUEST TO /POST/PASSWORD-RECOVERY/INIT, email >>> ', email)
+      if (!email) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 125})
+      const user = await findUserByEmail(client, email);
+      if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL, {file: 'user_routes', line: 127})
+      const recoveryToken = generateRecoveryToken(user._id.toHexString())
+      await assignValueToField(client, COLLECTIONS.USERS, user._id, FIELDS_NAMES.PASSWORD_RECOVERY_TOKEN, recoveryToken)
+      const mailOptions = {
+        from: 'vududu_support@vududu.ru',
+        to: email,
+        subject: 'Восстановление пароля',
+        text: 'Для восстановления пароля перейдите по ссылке',
+        html: '<p>Для восстановления пароля <a href="'+`${URL}/api/password-recovery?recoveryToken=${recoveryToken}`+'">перейдите по этой ссылке</a>. Ссылка будет действительна в течении 10 минут</p>'
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) return res.status(500).send('Mailing error: ' + error.message);
+        res.status(200).send({message: 'Письмо для подтверждения отправлено на адрес: ' + email});
+      });
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
+
+  app.get<{}, {}, {}, { recoveryToken: string }>('/api/password-recovery', async (req, res) => {
+    try {
+      console.log(getTimestamp(), 'REQUEST TO /GET/PASSWORD-RECOVERY, CONTINUE >>> ')
+      const {recoveryToken} = req.query;
+      if (!recoveryToken) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 164})
+      const {userId} = checkRecoveryToken(recoveryToken)
+      if (!userId) throw new CustomError(ERROR_NAME.INVALID_REFRESH_TOKEN, {file: 'user_routes', line: 165})
+      const user = await findUserById(client, userId);
+      if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 167})
+      console.log(getTimestamp(), '>>> CONTINUE FOR /GET/PASSWORD-RECOVERY, email >>> ', user.email, user.passwordRecoveryToken !== recoveryToken)
+      if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/sign-in/expired')
+      res.redirect(URL + `/password-recovery/${recoveryToken}`)
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
+
+  app.post<{}, {}, { password: string, recoveryToken: string }, {}>('/api/password-recovery', async (req, res) => {
+    try {
+      console.log(getTimestamp(), 'REQUEST TO /POST/PASSWORD-RECOVERY, CONTINUE >>> ')
+      const { password, recoveryToken } = req.body;
+      if (!recoveryToken || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 164})
+      const {userId} = checkRecoveryToken(recoveryToken)
+      console.log(getTimestamp(), '>>> CONTINUE FOR /POST/PASSWORD-RECOVERY, userId >>> ', userId)
+      if (!userId) throw new CustomError(ERROR_NAME.INVALID_REFRESH_TOKEN, {file: 'user_routes', line: 165})
+      const hashedPassword = await hashPass(password);
+      await assignValueToField(client, COLLECTIONS.USERS, new ObjectId(userId), FIELDS_NAMES.PASSWORD, hashedPassword)
+      await assignValueToField(client, COLLECTIONS.USERS, new ObjectId(userId), FIELDS_NAMES.PASSWORD_RECOVERY_TOKEN, null)
+      res.status(200).send({message: 'Пароль обновлен'});
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
 
   app.post('/api/sign-in', async (req, res) => {
     try {

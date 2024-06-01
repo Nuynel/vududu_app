@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {signIn} from "../../g_shared/methods/api";
-import { toast } from 'react-toastify';
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import {EB_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
 

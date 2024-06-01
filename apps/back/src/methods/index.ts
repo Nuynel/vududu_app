@@ -1,15 +1,27 @@
-import {Request} from "express";
 import {MongoClient, ObjectId, WithId} from "mongodb";
 import {DatabaseProfile, PROFILE_TYPES} from "../types";
 import {COLLECTIONS} from "../constants";
-import { generateAccessToken, generateAPIAccessToken, generateRefreshToken, checkAPIAccessToken, checkRefreshToken } from "./jwt_methods";
-import { isPasswordCorrect, checkIn } from "./login_methods";
+import {
+  generateAccessToken,
+  generateAPIAccessToken,
+  generateRefreshToken,
+  generateRecoveryToken,
+  checkAPIAccessToken,
+  checkRefreshToken,
+  checkRecoveryToken
+} from "./jwt_methods";
+import {
+  isPasswordCorrect,
+  checkIn,
+  hashPass
+} from "./login_methods";
 import {CustomError, ERROR_NAME, errorHandler} from "./error_messages_methods";
 import {
   insertEntity,
   findOneField,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
+  assignIdToField,
   assignValueToField,
   findUserByEmail,
   findUserById,
@@ -46,14 +58,17 @@ export {
   generateAccessToken,
   generateAPIAccessToken,
   generateRefreshToken,
+  generateRecoveryToken,
   checkAPIAccessToken,
   checkRefreshToken,
+  checkRecoveryToken,
   isPasswordCorrect,
   checkIn,
   insertEntity,
   findOneField,
   modifyNestedArrayFieldById,
   modifyNestedArrayField,
+  assignIdToField,
   assignValueToField,
   findUserByEmail,
   findUserById,
@@ -79,4 +94,5 @@ export {
   deleteEvent,
   getFieldNameByEventType,
   getTimestamp,
+  hashPass,
 }

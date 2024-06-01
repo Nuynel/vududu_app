@@ -20,5 +20,8 @@ export const isTokenExpired = (token: string) => {
 }
 
 export const isAuthenticated = (accessToken: string) => {
-  return accessToken && parseJwt(accessToken) && !isTokenExpired(accessToken);
+  return accessToken
+    && typeof accessToken === 'string'
+    && parseJwt(accessToken)
+    && !isTokenExpired(accessToken);
 };

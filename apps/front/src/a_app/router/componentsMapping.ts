@@ -15,6 +15,7 @@ import LitterInformationEditor from "../../c_pages/dogs/litterInformation/Litter
 import EventInformation from "../../c_pages/events/eventInformation/EventInformation";
 import EventInfoEditor from "../../c_pages/events/eventInformation/EventInfoEditor";
 import Pedigree from "../../c_pages/pedigree/Pedigree";
+import PasswordRecovery from "../../c_pages/password_recovery/PasswordRecovery";
 
 export const componentsMapping = {
   [Paths.events]: {
@@ -106,5 +107,15 @@ export const componentsMapping = {
     component: Pedigree,
     private: true,
     path: Paths.pedigrees,
+  },
+  [Paths.passwordRecovery]: {
+    component: PasswordRecovery,
+    private: false,
+    path: Paths.passwordRecovery,
+  },
+  [Paths.passwordRecoveryFinish]: {
+    component: PasswordRecovery,
+    private: false,
+    path: Paths.passwordRecoveryFinish,
   },
 }

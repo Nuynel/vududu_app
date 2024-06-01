@@ -12,8 +12,8 @@ type ProfileDataStore = {
   setUserData: (userData: UserData) => void,
 
   accessToken: string | null,
-  setAccessToken: (accessToken: string) => void,
-  saveAccessToken: (accessToken: string) => void,
+  setAccessToken: (accessToken: string | null) => void,
+  saveAccessToken: (accessToken: string | null) => void,
   removeAccessToken: () => void,
   loadAccessToken: () => void,
 

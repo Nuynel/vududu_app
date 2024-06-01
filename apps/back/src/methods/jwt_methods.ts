@@ -3,8 +3,9 @@ import jwt, {JwtPayload} from "jsonwebtoken";
 const ACCESS_SECRET_KEY = 'abirvalg'
 const API_ACCESS_SECRET_KEY = 'HollywoodRedTricolourPitPrait'
 const REFRESH_SECRET_KEY = 'ciclopentanoperhidrofenantreno'
+const RECOVERY_SECRET_KEY = 'vivaxairpowerfan'
 
-enum TOKEN_TYPES { ACCESS = 'ACCESS', API_ACCESS = 'API_ACCESS', REFRESH = 'REFRESH' }
+enum TOKEN_TYPES { ACCESS = 'ACCESS', API_ACCESS = 'API_ACCESS', REFRESH = 'REFRESH', RECOVERY = 'RECOVERY' }
 
 function isJwtPayload(decoded: string | JwtPayload): decoded is JwtPayload {
   return typeof decoded === 'object' && 'userId' in decoded && 'type' in decoded;
@@ -15,6 +16,8 @@ export const generateAPIAccessToken = (userId: string, profileId: string | null)
 
 export const generateRefreshToken = (id: string): string => jwt.sign({ userId: id, type: TOKEN_TYPES.REFRESH }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
 
+export const generateRecoveryToken = (id: string): string => jwt.sign({ userId: id, type: TOKEN_TYPES.RECOVERY }, RECOVERY_SECRET_KEY, { expiresIn: '10m' })
+
 const checkJWT = (token: string, key: string, tokenType: TOKEN_TYPES): { userId: string | null, profileId: string | null } => {
   const decoded = jwt.verify(token, key);
   const isTokenValid = isJwtPayload(decoded) && decoded.type === tokenType;
@@ -24,3 +27,5 @@ const checkJWT = (token: string, key: string, tokenType: TOKEN_TYPES): { userId:
 export const checkAPIAccessToken = (token: string) => checkJWT(token, API_ACCESS_SECRET_KEY, TOKEN_TYPES.API_ACCESS)
 
 export const checkRefreshToken = (token: string) => checkJWT(token, REFRESH_SECRET_KEY, TOKEN_TYPES.REFRESH)
+
+export const checkRecoveryToken = (token: string) => checkJWT(token, RECOVERY_SECRET_KEY, TOKEN_TYPES.RECOVERY)

@@ -1,5 +1,5 @@
 import {UserData, ProfileData, DogData, LitterData, EventData} from "../../types";
-import {signIn, signOut, signUp, getUser} from './user';
+import {signIn, signOut, signUp, getUser, recoveryPassword, saveNewPassword} from './user';
 import {createProfile, getProfile} from "./profile";
 import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
@@ -32,26 +32,16 @@ async function getInitialDataReq(): Promise<{
   }
 }
 
-async function refreshAccessToken(): Promise<string | null> {
-  try {
-    const response = await fetch(`${URL}/api/refresh-token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data.accessToken;
-    }
-  } catch (error) {
-    console.error('Ошибка при обновлении access токена', error);
-    if (window.location.pathname !== Paths.sign_in) {
-      navigate("/sign-in", { replace: true });
-    }
-    return null;
-  }
+async function refreshAccessToken(): Promise<{accessToken: string | null}> {
+  return await fetch(`${URL}/api/refresh-token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: "include",
+  }).then(r => {
+    return r.json()
+  }).catch(() => ({accessToken: null}))
 }
 
 export {
@@ -60,6 +50,8 @@ export {
   signOut,
   getUser,
   signUp,
+  recoveryPassword,
+  saveNewPassword,
   getInitialDataReq,
   createProfile,
   getProfile,

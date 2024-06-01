@@ -68,24 +68,6 @@ export enum FIELDS_NAMES {
   LITTER_TITLE = 'litterTitle',
   PUPPY_IDS = 'puppyIds',
   LITTER_ID = 'litterId',
+  PASSWORD_RECOVERY_TOKEN = 'passwordRecoveryToken',
+  PASSWORD = 'password',
 }
-
-
-// export const BASE_DOG_INFO_FIELD_NAMES = [
-//   FIELDS_NAMES.NAME,
-//   FIELDS_NAMES.FULL_NAME,
-//   FIELDS_NAMES.DATE_OF_BIRTH,
-//   FIELDS_NAMES.BREED,
-//   FIELDS_NAMES.GENDER,
-//   FIELDS_NAMES.MICROCHIP_NUMBER,
-//   FIELDS_NAMES.TATTOO_NUMBER,
-//   FIELDS_NAMES.COLOR,
-//   FIELDS_NAMES.IS_NEUTERED,
-//   FIELDS_NAMES.LITTER_TITLE,
-// ] as const
-
-// не уверена, что эта константа нужна, потому что path вроде только в одном месте указывается в каждом случае
-// export const PATHS = {
-//   DIAGNOSTICS: '/diagnostics',
-//
-// }
