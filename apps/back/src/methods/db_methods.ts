@@ -201,10 +201,12 @@ export const findStudsBySearchString = async(
   fieldName: FIELDS_NAMES,
   gender: GENDER,
   searchString: string,
+  breed: ObjectId
 ) => {
   return await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).find({
     [fieldName]: { $regex: searchString, $options: 'i' },
     gender,
+    breed,
   }, {
     projection: {
       _id: 1, // Для MongoDB идентификатор документа хранится в поле _id
@@ -255,7 +257,7 @@ export const findLittersByDate = async(
 export const updateBaseDogInfoById = async(
   client: MongoClient,
   id: ObjectId,
-  baseInfo: Pick<DatabaseDog, 'name' | 'fullName' | 'dateOfBirth' | 'breed' | 'gender' | 'microchipNumber' | 'tattooNumber' | 'color' | 'isNeutered' >
+  baseInfo: Pick<DatabaseDog, 'name' | 'fullName' | 'dateOfBirth' | 'breedId' | 'gender' | 'microchipNumber' | 'tattooNumber' | 'color' | 'isNeutered' >
 )=> {
   await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).updateOne(
     { _id: id } as Filter<DatabaseDog>,

@@ -134,12 +134,12 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER }>('/api/stud', async(req, res) => {
+  app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER, breedId: string }>('/api/stud', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
-      const { searchString, gender } = req.query;
-      const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
+      const { searchString, gender, breedId } = req.query;
+      const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString, new ObjectId(breedId));
       res.send({studs})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)

@@ -1,5 +1,5 @@
 import {MongoClient, ObjectId, WithId} from "mongodb";
-import {DatabaseDog, DatabaseEvent, EVENT_TYPE, Litter} from "../types";
+import {Breed, DatabaseDog, DatabaseEvent, EVENT_TYPE, Litter} from "../types";
 import {findEntityById} from "./db_methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "./error_messages_methods";
@@ -10,12 +10,13 @@ type HistoryRecord = {
   title: string | null,
 }
 
-type CommonClientDogFields = 'profileId' | 'litterId' | 'isLinkedToOwner' | 'breed' | 'gender'
+type CommonClientDogFields = 'profileId' | 'litterId' | 'isLinkedToOwner' | 'gender'
   | 'dateOfBirth' | 'name' | 'color' | 'puppyCardId' | 'puppyCardNumber' | 'microchipNumber' | 'tattooNumber'
   | 'fullName' | 'isNeutered' | 'type' | 'pedigreeNumber' | 'pedigreeId'
 
 type ClientDog = Pick<DatabaseDog, CommonClientDogFields> & {
   _id: ObjectId;
+  breed: string | null;
   litterData: {
     date: string[] | null,
     title: string | null,
@@ -106,7 +107,16 @@ const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<H
   return { id: litterId, title, date }
 }
 
+const getBreedName = async (client: MongoClient, breedId: ObjectId | null): Promise<string | null> => {
+  if (!breedId) return null;
+  const breedData = await findEntityById<Breed>(client, COLLECTIONS.BREEDS, new ObjectId(breedId))
+  if (!breedData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 114});
+  return breedData.name.rus
+}
+
 export const constructDogForClient = async (client: MongoClient, rawDogData: WithId<DatabaseDog>): Promise<ClientDog> => {
+  const breed = await getBreedName(client, rawDogData.breedId)
+
   const litterData = await getMainLitterData(client, rawDogData.litterId)
 
   const littersData = rawDogData.reproductiveHistory.litterIds ? await Promise.all(
@@ -141,6 +151,7 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
 
   return {
     ...rawDogData,
+    breed,
     litterData,
     diagnostics: null,
     treatments,
