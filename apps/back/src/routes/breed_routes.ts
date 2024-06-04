@@ -6,6 +6,7 @@ import {
   assignValueToField,
   errorHandler,
   findEntitiesByObjectIds,
+  findEntitiesBySearchString,
   findEntityById,
   findUserById,
   getCookiesPayload,
@@ -89,6 +90,18 @@ export const initBreedRoutes = (app: Application, client: MongoClient) => {
 
       res.status(200).send({message: `Статус породы обновлен, новый статус: ${status}`})
 
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
+
+  app.get<{}, { breeds: Breed[] }, {}, { searchString: string }>('/breeds', async (req, res) => {
+    try {
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp(), 'REQUEST TO /GET/BREEDS, profileId >>> ', profileId)
+      const { searchString } = req.query;
+      const breeds = await findEntitiesBySearchString<Breed>(client, FIELDS_NAMES.BREED_NAME_RUS, searchString);
+      res.status(200).send({breeds})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

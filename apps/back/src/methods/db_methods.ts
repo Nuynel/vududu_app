@@ -213,6 +213,16 @@ export const findStudsBySearchString = async(
   }).toArray();
 }
 
+export const findEntitiesBySearchString = async<T extends Document>(
+  client: MongoClient,
+  fieldName: FIELDS_NAMES,
+  searchString: string,
+) => {
+  return await client.db(DB_NAME).collection<T>(COLLECTIONS.DOGS).find({
+    [fieldName]: { $regex: searchString, $options: 'i' },
+  } as Filter<T>).toArray();
+}
+
 export const findPuppiesByDateOfBirth = async(
   client: MongoClient,
   dateOfBirth: string,
