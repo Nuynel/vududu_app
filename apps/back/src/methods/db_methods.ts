@@ -7,11 +7,16 @@ import {
   ContactList,
   Contact,
   DatabaseEvent,
-  DatabaseDog, GENDER, AntiparasiticTreatment, Vaccination,
+  DatabaseDog,
+  GENDER,
+  AntiparasiticTreatment,
+  Vaccination,
+  Breed,
+  BreedIssue,
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES, DB_NAME} from "../constants";
 
-type DatabaseTypes = DatabaseDog | User | DatabaseProfile | Litter | History | Contact | ContactList | DatabaseEvent
+type DatabaseTypes = DatabaseDog | User | DatabaseProfile | Litter | History | Contact | ContactList | DatabaseEvent | Breed | BreedIssue
 
 export const insertEntity = async(
   client: MongoClient,
@@ -165,11 +170,12 @@ export const findEntitiesByObjectIds = async<T extends Document>(
   client: MongoClient,
   collectionName: COLLECTIONS,
   objectIds: ObjectId[],
+  fieldName: FIELDS_NAMES = FIELDS_NAMES.ID,
 ): Promise<WithId<T>[]> => {
   return await client
     .db(DB_NAME)
     .collection<T>(collectionName)
-    .find({ _id: { $in: objectIds } } as Filter<T>).toArray() as WithId<T>[];
+    .find({ [fieldName]: { $in: objectIds } } as Filter<T>).toArray() as WithId<T>[];
 }
 
 export const activateProfileByActivator = async (
@@ -296,4 +302,15 @@ export const deleteEntityById = async<T extends Document>(
   return await client.db(DB_NAME).collection<T>(collectionName).deleteOne({
     _id: id
   } as Filter<T>)
+}
+
+export const findBreedByName = async<T extends Document>(
+  client: MongoClient,
+  name: string,
+) => {
+  console.log(name)
+  return await client
+    .db(DB_NAME)
+    .collection<Breed>(COLLECTIONS.BREEDS)
+    .findOne({ [FIELDS_NAMES.BREED_NAME_ENG]: name })
 }

@@ -8,6 +8,7 @@ import { initEventRoutes } from './event_routes';
 import { initEventsRoutes } from './events_routes';
 import { initProfileRoutes } from './profile_routes';
 import { initPedigreeRoutes } from './pedigree_routes';
+import { initBreedRoutes } from './breed_routes';
 
 
 export const initRoutes = (app: Application, client: MongoClient) => {
@@ -19,4 +20,5 @@ export const initRoutes = (app: Application, client: MongoClient) => {
   initProfileRoutes(app,client);
   initEventsRoutes(app,client);
   initPedigreeRoutes(app,client);
+  initBreedRoutes(app,client);
 }

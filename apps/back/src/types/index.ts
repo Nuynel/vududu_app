@@ -47,6 +47,8 @@ import {
   FemaleReproductiveHistory,
 } from "./dog";
 
+import {Breed, BreedIssue} from "./breed";
+
 // пользователь связан с одним или несколькими профилями
 // есть 6 (пока что) типов профилей: кинологическая федерация, национальный клуб породы, кинологический клуб,
 // питомник, заводчик, владелец кобеля
@@ -104,4 +106,7 @@ export {
   BaseDogInfo,
   MaleReproductiveHistory,
   FemaleReproductiveHistory,
+
+  Breed,
+  BreedIssue,
 }

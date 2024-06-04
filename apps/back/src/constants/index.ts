@@ -25,6 +25,8 @@ export enum COLLECTIONS {
   PROFILES = 'PROFILES',
   EVENTS = 'EVENTS',
   STUD_DOGS = 'STUD_DOGS',
+  BREEDS = 'BREEDS',
+  BREED_ISSUES = 'BREED_ISSUES',
 }
 
 export enum FIELDS_NAMES {
@@ -70,4 +72,7 @@ export enum FIELDS_NAMES {
   LITTER_ID = 'litterId',
   PASSWORD_RECOVERY_TOKEN = 'passwordRecoveryToken',
   PASSWORD = 'password',
+  BREED_NAME_ENG = 'name.eng',
+  BREED_ISSUE_ID = 'issueId',
+  BREED_STATUS = 'status'
 }
