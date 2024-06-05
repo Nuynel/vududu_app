@@ -3,14 +3,22 @@ import {MongoClient, ObjectId, WithId} from "mongodb";
 import {CustomError, ERROR_NAME, errorHandler} from "../methods/error_messages_methods";
 import {
   assignIdToField,
-  checkAPIAccessToken,
-  findEntityById, generateAccessToken, generateAPIAccessToken, generateRefreshToken,
+  findEntityById,
+  generateAccessToken,
+  generateAPIAccessToken,
+  generateRefreshToken,
   insertEntity,
   modifyNestedArrayFieldById,
   getTimestamp,
   getCookiesPayload,
 } from "../methods";
-import {BreederProfile, DatabaseProfile, KennelProfile, MaleDogOwnerProfile, PROFILE_TYPES} from "../types";
+import {
+  BreederProfile,
+  DatabaseProfile,
+  KennelProfile,
+  MaleDogOwnerProfile,
+  PROFILE_TYPES
+} from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {COOKIE_TOKEN_NAMES, setCookie} from "./user_routes";
 
@@ -41,6 +49,7 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
         name,
         type,
         connectedOrganisations,
+        breedIds: [],
         payments: {},
         permissions: {},
         documentIds: [],

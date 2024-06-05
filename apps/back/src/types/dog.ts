@@ -16,7 +16,7 @@ export type BaseDogData = { // в момент добавления щенка �
   profileId: ObjectId | string; // либо ID добавившего человека,  либо ID владельца (зависит от поля isLinkedToOwner)
   litterId: ObjectId | string | null; // когда собаку добавляем к уже имеющемуся помету
   isLinkedToOwner: boolean;
-  breedId: ObjectId | null;
+  breedId: ObjectId;
   gender: GENDER;
   dateOfBirth: string;
   // dateOfDeath: string;

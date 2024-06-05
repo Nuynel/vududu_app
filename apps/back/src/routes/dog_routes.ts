@@ -9,7 +9,8 @@ import {
   findEntityById,
   findPuppiesByDateOfBirth,
   findStudsBySearchString,
-  getCookiesPayload, getTimestamp,
+  getCookiesPayload,
+  getTimestamp,
   insertEntity,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
@@ -74,7 +75,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
-      await verifyProfileType(client, profileId)
+      const profile = await verifyProfileType(client, profileId)
 
       const newDogData: NewDog = {
         ...req.body,
@@ -87,6 +88,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
       await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
+      if (profile && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS);
+      }
       const dog = await constructDogForClient(client, {...newDog, _id: dogId})
       res.send({ message: 'Собака добавлена!', dog})
     } catch (e) {

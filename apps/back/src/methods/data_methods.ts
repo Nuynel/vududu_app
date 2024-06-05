@@ -16,7 +16,7 @@ type CommonClientDogFields = 'profileId' | 'litterId' | 'isLinkedToOwner' | 'gen
 
 type ClientDog = Pick<DatabaseDog, CommonClientDogFields> & {
   _id: ObjectId;
-  breed: string | null;
+  breedId: ObjectId;
   litterData: {
     date: string[] | null,
     title: string | null,
@@ -107,16 +107,7 @@ const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<H
   return { id: litterId, title, date }
 }
 
-const getBreedName = async (client: MongoClient, breedId: ObjectId | null): Promise<string | null> => {
-  if (!breedId) return null;
-  const breedData = await findEntityById<Breed>(client, COLLECTIONS.BREEDS, new ObjectId(breedId))
-  if (!breedData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 114});
-  return breedData.name.rus
-}
-
 export const constructDogForClient = async (client: MongoClient, rawDogData: WithId<DatabaseDog>): Promise<ClientDog> => {
-  const breed = await getBreedName(client, rawDogData.breedId)
-
   const litterData = await getMainLitterData(client, rawDogData.litterId)
 
   const littersData = rawDogData.reproductiveHistory.litterIds ? await Promise.all(
@@ -151,7 +142,6 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
 
   return {
     ...rawDogData,
-    breed,
     litterData,
     diagnostics: null,
     treatments,

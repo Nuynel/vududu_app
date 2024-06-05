@@ -76,4 +76,5 @@ export enum FIELDS_NAMES {
   BREED_ISSUE_ID = 'issueId',
   BREED_STATUS = 'status',
   BREED_NAME_RUS = 'name.rus',
+  BREED_IDS = 'breedIds',
 }
