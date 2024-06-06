@@ -24,6 +24,7 @@ import {
   checkRecoveryToken,
 } from "../methods";
 import {
+  Breed,
   BreederProfile,
   DatabaseDog,
   DatabaseProfile,
@@ -46,7 +47,7 @@ export enum COOKIE_TOKEN_NAMES {
 
 type SetCookiesParams = { res: Response, tokenName: COOKIE_TOKEN_NAMES, token: String }
 type UserData = { profileIds: ObjectId[], email: string }
-type ProfileDataFields = 'name' | 'type' | 'documentIds' | 'contactIds' | 'eventIds' | 'dogIds' | 'litterIds' | 'connectedOrganisations'
+type ProfileDataFields = 'name' | 'type' | 'documentIds' | 'contactIds' | 'eventIds' | 'dogIds' | 'litterIds' | 'connectedOrganisations' | 'breedIds'
 type ProfilesWithDogs = KennelProfile | BreederProfile
 type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 
@@ -77,8 +78,10 @@ const pickProfileData = (profile: KennelProfile | BreederProfile ): ProfileData 
     eventIds,
     dogIds,
     litterIds,
-    connectedOrganisations} = profile
-  return { name, type, documentIds, contactIds, eventIds, dogIds, litterIds, connectedOrganisations }
+    connectedOrganisations,
+    breedIds,
+  } = profile
+  return { name, type, documentIds, contactIds, eventIds, dogIds, litterIds, connectedOrganisations, breedIds }
 }
 
 export const isProfileHasDogs = (profile: DatabaseProfile): profile is ProfilesWithDogs => {
@@ -271,6 +274,8 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
         rawDogsData.map((rawDogData) => constructDogForClient(client, rawDogData))
       )
 
+      const breeds = await findEntitiesByIds<Breed>(client, COLLECTIONS.BREEDS, profileData.breedIds)
+
       const rawLittersData: WithId<Litter>[] = await findEntitiesByIds<Litter>(client, COLLECTIONS.LITTERS, profileData.litterIds)
 
       const litters = await Promise.all(
@@ -278,7 +283,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
 
       const events: WithId<Event>[] = await findEntitiesByIds<Event>(client, COLLECTIONS.EVENTS, profileData.eventIds)
 
-      return res.send({userData, profileData, dogs, litters, events})
+      return res.send({userData, profileData, dogs, litters, events, breeds})
       // пока что разрабатываем получение начальных данных для питомников и заводчиков, другие кейсы не покрываем
       // const dogList =
     } catch (e) {
