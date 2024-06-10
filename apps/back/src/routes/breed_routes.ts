@@ -9,6 +9,7 @@ import {
   findEntitiesBySearchString,
   findEntityById,
   findUserById,
+  getAllDocuments,
   getCookiesPayload,
   getTimestamp,
   insertEntity
@@ -18,19 +19,19 @@ import {BREED_STATUSES} from "../types/breed";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 
 export const initBreedRoutes = (app: Application, client: MongoClient) => {
-  app.post<{}, {}, {newBreed: Pick<Breed, 'name'> & Pick<BreedIssue, 'breedDescription'>}, {}>('/api/breed', async (req, res) => {
+  app.post<{}, {}, {name: {rus: string, eng: string} , breedDescription: string}, {}>('/api/breed', async (req, res) => {
     try {
       const {userId, profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/BREED, userId >>> ', userId)
 
-      const { newBreed } = req.body
+      const { name, breedDescription } = req.body
 
       const user = await findUserById(client, userId)
 
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'breed_routes', line: 40})
 
       const newDatabaseBreed: Breed = {
-        name: newBreed.name,
+        name,
         group: null,
         organisations: [],
         status: BREED_STATUSES.MODERATED,
@@ -44,7 +45,7 @@ export const initBreedRoutes = (app: Application, client: MongoClient) => {
       const newBreedIssue: BreedIssue = {
         status: BREED_STATUSES.MODERATED,
         breedId,
-        breedDescription: newBreed.breedDescription,
+        breedDescription,
         comment: null,
         profileId: new ObjectId(profileId),
         email: user.email
@@ -95,12 +96,28 @@ export const initBreedRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get<{}, { breeds: Breed[] }, {}, { searchString: string }>('/breeds', async (req, res) => {
+  app.get<{}, { breeds: Breed[] }, {}, { searchString: string }>('/api/breeds', async (req, res) => {
     try {
       const {userId, profileId} = getCookiesPayload(req);
-      console.log(getTimestamp(), 'REQUEST TO /GET/BREEDS, userId >>> ', userId, ' >>> profileId >>> ', profileId)
+      console.log(getTimestamp(), 'REQUEST TO /GET/BREEDS with searchString, userId >>> ', userId, ' >>> profileId >>> ', profileId)
       const { searchString } = req.query;
-      const breeds = await findEntitiesBySearchString<Breed>(client, FIELDS_NAMES.BREED_NAME_RUS, searchString);
+
+      const rawBreedsData = searchString
+        ? await findEntitiesBySearchString<Breed>(client, COLLECTIONS.BREEDS, FIELDS_NAMES.BREED_NAME_RUS, searchString)
+        : await getAllDocuments<Breed>(client, COLLECTIONS.BREEDS)
+      const profileBreedsIssues = await findEntitiesByObjectIds<BreedIssue>(client, COLLECTIONS.BREED_ISSUES, [new ObjectId(profileId)], FIELDS_NAMES.PROFILE_ID)
+
+      const issueIds = profileBreedsIssues.map(breedIssue => breedIssue._id.toHexString())
+
+      const breeds = rawBreedsData.filter((breed) => (
+        !breed.status || // todo временная проверка для неправильно внесенных пород
+        breed.status === BREED_STATUSES.APPROVED || (
+            breed.status === BREED_STATUSES.MODERATED
+            && breed.issueId
+            && issueIds.includes(breed.issueId.toHexString())
+        ))
+      )
+
       res.status(200).send({breeds})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)

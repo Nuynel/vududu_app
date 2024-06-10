@@ -89,7 +89,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
       await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
       if (profile && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
-        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS);
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(newDog.breedId), FIELDS_NAMES.BREED_IDS);
       }
       const dog = await constructDogForClient(client, {...newDog, _id: dogId})
       res.send({ message: 'Собака добавлена!', dog})
@@ -138,7 +138,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER, breedId: string }>('/api/stud', async(req, res) => {
+  app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER, breedId: string}>('/api/stud', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
@@ -166,10 +166,11 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/DOG, profileId >>> ', profileId)
+      const profile = await verifyProfileType(client, profileId)
       const {baseDogInfo} = req.body;
       const { id } = req.query;
 
-      await updateBaseDogInfoById(client, new ObjectId(id), baseDogInfo)
+      await updateBaseDogInfoById(client, new ObjectId(id), {...baseDogInfo, breedId: new ObjectId(baseDogInfo.breedId)})
 
       if (baseDogInfo.litterId) await modifyNestedArrayField(
         client,
@@ -179,6 +180,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         FIELDS_NAMES.PUPPY_IDS,
         new ObjectId(id),
       )
+      if (profile && !profile.breedIds.includes(new ObjectId(baseDogInfo.breedId))) {
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(baseDogInfo.breedId), FIELDS_NAMES.BREED_IDS);
+      }
       res.status(200).send({message: 'Base dog info was updated successfully!'})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)

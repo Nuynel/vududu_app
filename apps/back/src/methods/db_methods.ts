@@ -152,7 +152,7 @@ export const findEntityById = async <T extends Document>(
     .findOne({ _id: id } as Filter<T>)
 }
 
-export const findEntitiesByIds = async <T extends Document>(
+export const findEntitiesByIds = async <T extends Document>( // todo unnecessary function, see next
   client: MongoClient,
   collectionName: COLLECTIONS,
   ids: ObjectId[],
@@ -201,7 +201,7 @@ export const findStudsBySearchString = async(
   fieldName: FIELDS_NAMES,
   gender: GENDER,
   searchString: string,
-  breedId: ObjectId
+  breedId: ObjectId,
 ) => {
   return await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).find({
     [fieldName]: { $regex: searchString, $options: 'i' },
@@ -217,10 +217,11 @@ export const findStudsBySearchString = async(
 
 export const findEntitiesBySearchString = async<T extends Document>(
   client: MongoClient,
+  collectionName: COLLECTIONS,
   fieldName: FIELDS_NAMES,
   searchString: string,
 ) => {
-  return await client.db(DB_NAME).collection<T>(COLLECTIONS.DOGS).find({
+  return await client.db(DB_NAME).collection<T>(collectionName).find({
     [fieldName]: { $regex: searchString, $options: 'i' },
   } as Filter<T>).toArray();
 }
@@ -316,13 +317,7 @@ export const deleteEntityById = async<T extends Document>(
   } as Filter<T>)
 }
 
-export const findBreedByName = async<T extends Document>(
+export const getAllDocuments = async<T extends Document>(
   client: MongoClient,
-  name: string,
-) => {
-  console.log(name)
-  return await client
-    .db(DB_NAME)
-    .collection<Breed>(COLLECTIONS.BREEDS)
-    .findOne({ [FIELDS_NAMES.BREED_NAME_ENG]: name })
-}
+  collectionName: COLLECTIONS,
+) => await client.db(DB_NAME).collection<T>(collectionName).find().toArray()
