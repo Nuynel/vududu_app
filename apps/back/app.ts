@@ -1,10 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+import {MongoClient} from 'mongodb';
 import path from 'path';
-import { initRoutes } from "./src/routes";
+import {initRoutes} from "./src/routes";
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import {createBaseBreedCollection} from "./src/integrations/createBaseBreedCollection";
 
 const PORT = process.env.PORT || 8000;
 // const MONGO_URI = process.env.MONGODB_URI || 'mongodb://nuynel:secretPassword@localhost:27017';
@@ -38,12 +39,11 @@ app.use(express.static(path.join(__dirname, '../front')));
 
 app.use('/api', router);
 
-// Обслуживание React приложения
-
-
 const startServer = async () => {
   await mongoDataBase.connect()
   initRoutes(app, mongoDataBase)
+
+  // await createBaseBreedCollection(mongoDataBase)
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../front', 'index.html'));
