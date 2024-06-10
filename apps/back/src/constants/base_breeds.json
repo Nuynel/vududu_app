@@ -1,4 +1,5 @@
 [
+  {"name": {"rus": "Метис", "eng": "Crossbreed"}, "group": null},
   {"name": {"rus": "Австралийский келпи", "eng": "Australian Kelpie"}, "group": 1},
   {"name": {"rus": "Австралийская короткохвостая пастушья собака", "eng": "Australian Stumpy Tail Cattle Dog"}, "group": 1},
   {"name": {"rus": "Австралийская овчарка", "eng": "Australian Shepherd"}, "group": 1},
@@ -366,7 +367,8 @@
   {"name": {"rus": "Тайган", "eng": "Taigan"}, "group": 10},
   {"name": {"rus": "Уиппет", "eng": "Whippet"}, "group": 10},
   {"name": {"rus": "Хортая борзая", "eng": "Hortaya Borzaya"}, "group": 10},
-  {"name": {"rus": "Южнорусская степная борзая", "eng": "South Russian Steppe Hound"}, "group": 10}
+  {"name": {"rus": "Южнорусская степная борзая", "eng": "South Russian Steppe Hound"}, "group": 10},
+  {"name": {"rus": "Прайтер", "eng": "Praiter"}, "group": null}
 ]
 
 

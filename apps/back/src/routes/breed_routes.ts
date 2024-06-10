@@ -110,7 +110,6 @@ export const initBreedRoutes = (app: Application, client: MongoClient) => {
       const issueIds = profileBreedsIssues.map(breedIssue => breedIssue._id.toHexString())
 
       const breeds = rawBreedsData.filter((breed) => (
-        !breed.status || // todo временная проверка для неправильно внесенных пород
         breed.status === BREED_STATUSES.APPROVED || (
             breed.status === BREED_STATUSES.MODERATED
             && breed.issueId

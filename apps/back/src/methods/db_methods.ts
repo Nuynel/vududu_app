@@ -201,12 +201,10 @@ export const findStudsBySearchString = async(
   fieldName: FIELDS_NAMES,
   gender: GENDER,
   searchString: string,
-  breedId: ObjectId,
 ) => {
   return await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).find({
     [fieldName]: { $regex: searchString, $options: 'i' },
     gender,
-    breedId,
   }, {
     projection: {
       _id: 1, // Для MongoDB идентификатор документа хранится в поле _id

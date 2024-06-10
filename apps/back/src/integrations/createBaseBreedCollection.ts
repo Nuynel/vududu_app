@@ -1,11 +1,11 @@
 import {MongoClient} from "mongodb";
 import {COLLECTIONS, DB_NAME, FIELDS_NAMES} from "../constants";
 import {Breed} from "../types";
-import BREEDS from "../constants/fci_breeds.json";
+import BREEDS from "../constants/base_breeds.json";
 import {BREED_STATUSES} from "../types/breed";
 import {insertEntity} from "../methods";
 
-type RawBreedData = {name: {rus: string, eng: string}, group: number}
+type RawBreedData = {name: {rus: string, eng: string}, group: number | null}
 
 const findBreedByName = async<T extends Document>(
   client: MongoClient,
