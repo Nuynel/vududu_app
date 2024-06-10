@@ -79,6 +79,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       const newDogData: NewDog = {
         ...req.body,
+        breedId: req.body.breedId ? new ObjectId(req.body.breedId) : null,
         profileId: new ObjectId(profileId),
         litterId: req.body.litterId ? new ObjectId(req.body.litterId) : null,
         isLinkedToOwner: true,
