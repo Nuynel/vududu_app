@@ -1,19 +1,22 @@
 import {useEffect, useState} from "react";
 import {useParams} from "wouter";
-import {BaseDogInfo, DogData} from "../../../g_shared/types";
+import {BaseDogInfo, DogData, Breed} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {getFormatTimezoneOffset} from "../../../g_shared/methods/helpers";
-import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
+import {getBreeds, getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
+import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
 
 
 const DogInformationEditor = () => {
   const [dog, changeDog] = useState<DogData | null>(null);
-  const [litters, changeLitters] = useState<{_id: string, litterTitle: string}[]>([])
+  const [litters, changeLitters] = useState<{_id: string, litterTitle: string}[]>([]);
+  const [breeds, changeBreeds] = useState<Breed[]>([]);
 
   const params: {id: string} = useParams();
 
   const {getDogById, setDogsData, dogsData, getLitterById} = useProfileDataStore();
+  const {getInitialData} = useGetInitialData()
 
   const handleInputChange = (key, value) => {
     switch (key) {
@@ -63,14 +66,15 @@ const DogInformationEditor = () => {
           ({_id}) => ({_id, litterTitle: getLitterById(_id).litterTitle})
         ))
       })
+      getBreeds().then(({breeds: newBreeds}) => changeBreeds(newBreeds))
     }
   }, [dog])
 
   const handleSubmit = () => {
     const newBaseDogInfo: BaseDogInfo = {
       litterId: dog.litterId,
-      litterTitle: dog.litterTitle,
-      breed: dog.breed,
+      litterTitle: dog.litterTitle, //todo зачем тут litterTitle?
+      breedId: dog.breedId,
       gender: dog.gender,
       dateOfBirth: dog.dateOfBirth,
       color: dog.color,
@@ -81,11 +85,18 @@ const DogInformationEditor = () => {
       tattooNumber: dog.tattooNumber,
       isNeutered: dog.isNeutered,
     }
-    updateBaseDogInfo(newBaseDogInfo, dog._id).then(
-      () => {
+    updateBaseDogInfo(newBaseDogInfo, dog._id)
+      .then(async () => {
         setDogsData(dogsData.map((dogData => dogData._id === dog._id ? dog : dogData)))
+        return await getInitialData()
+      })
+      .then(() => {
         window.history.back()
-    })
+      })
+  }
+
+  const handleSearch = (searchString: string) => {
+    getBreeds(searchString).then(({breeds: newBreeds}) => changeBreeds(newBreeds))
   }
 
   if (!dog) return null;
@@ -96,8 +107,10 @@ const DogInformationEditor = () => {
       entityType={'dog'}
       entity={dog}
       handleInputChange={handleInputChange}
+      handleSearch={handleSearch}
       handleSubmit={handleSubmit}
       litters={litters}
+      breeds={breeds}
     />
   )
 }

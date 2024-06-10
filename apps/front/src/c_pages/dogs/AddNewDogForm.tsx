@@ -1,22 +1,24 @@
-import {Button, Form, FormField, Heading, Box} from "grommet";
+import {Button, Form, FormField, Heading, Box, Text, Select} from "grommet";
 import {newDogFormConfig} from "./formsConfig";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
+  Breed,
   DogData,
   NewDog,
   NewDogFormFields
 } from "../../g_shared/types";
-import {createDog} from "../../g_shared/methods/api";
+import {createDog, getBreeds} from "../../g_shared/methods/api";
 import {fixTimezone} from "../../g_shared/methods/helpers";
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 
 const initNewDogData: Pick<NewDog, NewDogFormFields> = {
   name: '',
   fullName: '',
   dateOfBirth: '',
-  breed: '',
+  breedId: null,
   gender: null,
   microchipNumber: '',
   tattooNumber: '',
@@ -31,8 +33,9 @@ const initNewDogData: Pick<NewDog, NewDogFormFields> = {
 
 const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
   const [newDogData, changeNewDogData] = useState<Pick<NewDog, NewDogFormFields>>({...initNewDogData})
-
+  const [breeds, changeBreeds] = useState<Breed[]>([])
   const {pushNewDog} = useProfileDataStore()
+  const {getInitialData} = useGetInitialData()
 
   const {isSmall} = useResponsiveGrid()
 
@@ -65,12 +68,23 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
   const handleSubmit = () => {
     const dogData = createDogData()
     createDog(dogData)
-      .then(({dog}: {dog: DogData}) => {
+      .then(async ({dog}: {dog: DogData}) => {
         pushNewDog(dog)
+        return await getInitialData()
+      })
+      .then(() => {
         hideCard()
       })
       .catch((e) =>{ console.error(e) })
   }
+
+  const handleSearch = (searchString: string) => {
+    getBreeds(searchString).then(({breeds: newBreeds}) => changeBreeds(newBreeds))
+  }
+
+  useEffect(() => {
+    getBreeds().then(({breeds: newBreeds}) => changeBreeds(newBreeds))
+  }, [])
 
   return (
     <Box pad={"medium"} width={isSmall ? 'auto' : 'large'}>
@@ -82,6 +96,31 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
         {Object.keys(initNewDogData).map((key) => {
           const fieldConfig = newDogFormConfig[key]
           const Field = fieldConfig.component
+          if (key === 'breedId') return (
+            <Box>
+              <FormField
+                key={fieldConfig.id}
+                name={fieldConfig.label}
+                htmlFor={fieldConfig.id}
+                label={fieldConfig.label}
+              >
+                <Select
+                  id={fieldConfig.id}
+                  name={fieldConfig.label}
+                  value={breeds.find(breed => breed._id === newDogData.breedId)}
+                  options={breeds}
+                  labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
+                  onSearch={(searchString) => handleSearch(searchString)}
+                  placeholder='Название породы'
+                  onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                />
+              </FormField>
+              <Text size={"small"} margin={{bottom: 'small'}}>
+                Если вашей породы нет в списке, вы можете добавить её в профиле
+              </Text>
+            </Box>
+          )
+
           return (
             <FormField
               key={fieldConfig.id}

@@ -26,11 +26,15 @@ export const baseInfoFieldsConfig = {
     placeholder: new Date(),
     handler: ({value}, key, method) => method(key, value),
   },
-  breed: {
-    id: 'breed-input-id',
+  breedId: {
+    id: 'breed-id-input-id',
     label: 'Порода',
     placeholder: 'Прайтер',
-    handler: (event, key, method) => method(key, event.target.value),
+    handler: (event, key, method) => {
+      console.log(event.option)
+      method('breedId', event.option._id)
+    },
+    searchHandler: (searchString, method) => method(searchString),
   },
   gender: {
     id: 'gender-input-id',

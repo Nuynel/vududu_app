@@ -3,7 +3,7 @@ import {
   DogData,
   LitterData,
   ProfileData, ConnectedOrganisations, KennelConnectedOrganizations, BreederConnectedOrganizations,
-  ProfileStorage, UserData, EventData,
+  ProfileStorage, UserData, EventData, Breed,
 } from "../../g_shared/types";
 
 type ProfileDataStore = {
@@ -44,6 +44,12 @@ type ProfileDataStore = {
   pushNewEvent: (eventData: EventData) => void,
   getEventsByIds: () => Record<string, EventData>,
   getEventById: (id: string) => EventData,
+
+  breedsData: Breed[],
+  setBreedsData: (breedsData: Breed[]) => void,
+  pushNewBreed: (breedData: Breed) => void,
+  getBreedsByIds: () => Record<string, Breed>,
+  getBreedById: (id: string) => Breed,
 }
 
 export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({
@@ -105,4 +111,14 @@ export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({
   }, {}),
   getEventById: (id) => get().getEventsByIds()[id],
 
+  breedsData: [],
+  setBreedsData: (newBreedsData) => set((state: ProfileDataStore): ProfileDataStore => ({...state, breedsData: newBreedsData})),
+  pushNewBreed: (newBreedData) => set((state: ProfileDataStore): ProfileDataStore => ({...state, breedsData: [...state.breedsData, newBreedData]})),
+  getBreedsByIds: () => get().breedsData.reduce((acc, breedData) => {
+    return {
+      ...acc,
+      [breedData._id]: breedData
+    }
+  }, {}),
+  getBreedById: (id) => get().getBreedsByIds()[id],
 }))

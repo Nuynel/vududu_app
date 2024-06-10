@@ -12,6 +12,7 @@ const useGetInitialData = () => {
     setDogsData,
     setLittersData,
     setEventsData,
+    setBreedsData,
   } = useProfileDataStore();
 
   const {accessToken} = useProfileDataStore();
@@ -19,12 +20,13 @@ const useGetInitialData = () => {
   const getInitialData = async () => {
     if (isAuthenticated(accessToken)) {
       try {
-        const { userData, profileData, dogs, litters, events } = await getInitialDataReq()
+        const { userData, profileData, dogs, litters, events, breeds } = await getInitialDataReq()
         setUserData(userData);
         if (profileData) setProfileData(profileData);
         setDogsData(dogs);
         setLittersData(litters);
         setEventsData(events);
+        setBreedsData(breeds);
         // sessionStorage.setItem('isSessionInitializationFinished', 'true')
       } catch (e) {
         console.error('Error in useGetInitialData > getInitialData > try/catch block > Error information > ', e)

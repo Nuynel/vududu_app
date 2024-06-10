@@ -24,12 +24,12 @@ export const newDogFormConfig = {
     format: 'dd/mm/yyyy',
     handler: ({value}, key, method) => method(key, value),
   },
-  breed: {
-    component: TextInput,
-    id: 'breed-input-id',
+  breedId: {
+    component: Select,
+    id: 'breed-id-input-id',
     label: 'Порода',
     placeholder: 'Прайтер',
-    handler: (event, key, method) => method(key, event.target.value),
+    handler: (event, key, method) => method(key, event.option._id),
   },
   gender: {
     component: RadioButtonGroup,

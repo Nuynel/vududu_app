@@ -10,17 +10,7 @@ import {ObjectId} from "mongodb";
 export type NewLitter = {
   fatherId: ObjectId | string;
   motherId: ObjectId | string;
-  // parents: {
-  //   father: {
-  //     fullName: string | null,
-  //     name: string | null,
-  //   },
-  //   mother: {
-  //     fullName: string | null,
-  //     name: string | null,
-  //   }
-  // };
-  // litterTitle: string;
+  breedId: ObjectId | null;
   dateOfBirth: string;
   registrationId: ObjectId | null; // ссылка на документ (общепометная карта)
   puppyIds: ObjectId[];

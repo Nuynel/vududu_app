@@ -1,10 +1,11 @@
-import {UserData, ProfileData, DogData, LitterData, EventData} from "../../types";
+import {UserData, ProfileData, DogData, LitterData, EventData, Breed} from "../../types";
 import {signIn, signOut, signUp, getUser, recoveryPassword, saveNewPassword} from './user';
 import {createProfile, getProfile} from "./profile";
 import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
 import {getPedigreeByDogId} from "./pedigrees";
+import {getBreeds, createBreed} from './breeds';
 
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
@@ -21,6 +22,7 @@ async function getInitialDataReq(): Promise<{
   dogs: DogData[],
   litters: LitterData[],
   events: EventData[],
+  breeds: Breed[],
 }> {
   try {
     return await fetch(`${URL}/api/initial-data`, {
@@ -76,4 +78,6 @@ export {
   updateTreatmentInfo,
   deleteEventsByIds,
   getPedigreeByDogId,
+  getBreeds,
+  createBreed,
 }

@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {useLocation, useParams} from "wouter";
 import EntityPage from "../../../e_features/EntityPage";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
-import {BlocksConfig, DogData, FieldData} from "../../../g_shared/types";
+import {BlocksConfig, Breed, DogData, FieldData} from "../../../g_shared/types";
 import {BLOCK_TYPES} from "../../../g_shared/types/components";
 import {formatSingleDate} from "../../../g_shared/methods/helpers";
 import {GENDER} from "../../../g_shared/types/dog";
@@ -12,14 +12,19 @@ import {getCommonFieldsConfig} from "../../../g_shared/methods/helpers/getCommon
 
 const DogInformation = () => {
   const [dog, setDog] = useState<DogData | null>(null);
+  const [breed, setBreed] = useState<Breed | null>(null);
   const [, setLocation] = useLocation();
 
   const params: {id: string} = useParams();
 
-  const {getDogById} = useProfileDataStore();
+  const {getDogById, getBreedById} = useProfileDataStore();
 
   useEffect(() => {
-    setDog(getDogById(params.id))
+    const currDog = getDogById(params.id)
+    if (currDog) {
+      setDog(currDog)
+      setBreed(getBreedById(currDog.breedId))
+    }
   }, [params])
 
   if (!dog) return null;
@@ -33,7 +38,7 @@ const DogInformation = () => {
   }
 
   const getCardsConfig = (): BlocksConfig => {
-    const commonFields: FieldData[] = dogBaseDataFields.map(fieldName => getCommonFieldsConfig(fieldName, dog))
+    const commonFields: FieldData[] = dogBaseDataFields.map(fieldName => getCommonFieldsConfig(fieldName, dog, breed))
 
     return {
       title: dog.name,

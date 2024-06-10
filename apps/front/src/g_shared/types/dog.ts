@@ -14,7 +14,7 @@ export type Puppy = { // в момент добавления щенка у не
   profileId: string; // либо ID добавившего человека,  либо ID владельца (зависит от поля isLinkedToOwner)
   litterId: string | null; // когда собаку добавляем к уже имеющемуся помету
   litterTitle: string | null; // дата и клички родителей
-  breed: string | null;
+  breedId: string | null;
   gender: GENDER;
   dateOfBirth: string;
   color: string | null;
@@ -31,7 +31,7 @@ export type NewDog = Puppy & { // взрослой собаке (не прина
   isNeutered: boolean | null; // данные о кастрации, null для собак, у которых isLinkedToOwner: false
 }
 
-export type NewDogFormFields = 'name' | 'fullName' | 'dateOfBirth' | 'breed' |
+export type NewDogFormFields = 'name' | 'fullName' | 'dateOfBirth' | 'breedId' |
   'gender' | 'microchipNumber' | 'tattooNumber' | 'color' | 'pedigreeNumber' | 'isNeutered'
 
 type PuppyReproductiveHistory = {
@@ -90,7 +90,7 @@ export type DogsStorage = {
 export type BaseDogInfo = {
   litterId: string | null;
   litterTitle: string | null;
-  breed: string | null;
+  breedId: string | null;
   gender: GENDER;
   dateOfBirth: string;
   color: string | null;

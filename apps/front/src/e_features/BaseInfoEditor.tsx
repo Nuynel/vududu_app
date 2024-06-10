@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {DogData, EventData, LitterData} from "../g_shared/types";
+import {Breed, DogData, EventData, LitterData} from "../g_shared/types";
 import {GENDER} from "../g_shared/types/dog";
 import {baseInfoFieldsConfig} from '../g_shared/constants/baseInfoEditorFieldsConfig'
 import {
@@ -27,13 +27,15 @@ type Props = {
   entity: DogData | (EventData & {status: string}) | LitterData,
   handleInputChange: (key, value) => void,
   handleSubmit: () => void,
+  handleSearch?: (string) => void,
   litters?: {_id: string, litterTitle: string}[],
+  breeds?: Breed[],
 }
 
 const commonDogEventFields = ['date', 'dogId', 'status', 'comments']
 
 const BaseInfoFieldsByEntity = {
-  dog: ['name', 'fullName', 'dateOfBirth', 'breed', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterTitle'],
+  dog: ['name', 'fullName', 'dateOfBirth', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterTitle'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
   heat: [...commonDogEventFields],
   treatment: [...commonDogEventFields, 'medication', 'validity'],
@@ -44,7 +46,7 @@ const isFutureEvent = (entity) => {
   return !entity.activated || (entity.status === 'overdue' || entity.status === 'planned')
 }
 
-const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSubmit, litters}: Props) => {
+const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSearch, handleSubmit, litters, breeds}: Props) => {
   const {getDogById} = useProfileDataStore();
   return (
     <Grid
@@ -90,7 +92,6 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSub
             switch (key) {
               case 'name':
               case 'fullName':
-              case 'breed':
               case 'microchipNumber':
               case 'tattooNumber':
               case 'pedigreeNumber':
@@ -279,6 +280,27 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSub
                       id={fieldConfig.id}
                       name={fieldConfig.label}
                       checked={entity[key]}
+                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                    />
+                  </FormField>
+                )
+              }
+              case 'breedId': {
+                return (
+                  <FormField
+                    key={fieldConfig.id}
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <Select
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={breeds.find(breed => 'breedId' in entity && breed._id === entity.breedId)}
+                      options={breeds}
+                      labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
+                      onSearch={(searchString) => fieldConfig.searchHandler(searchString, handleSearch)}
+                      placeholder='Название породы'
                       onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
                     />
                   </FormField>

@@ -2,7 +2,7 @@ export const dogBaseDataFields= [
   'name',
   'fullName',
   'dateOfBirth',
-  'breed',
+  'breedId',
   'gender',
   'microchipNumber',
   'tattooNumber',

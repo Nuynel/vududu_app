@@ -14,14 +14,15 @@ type Props = {
 }
 
 const DogCard = ({dogId}: Props) => {
-  const {getDogById} = useProfileDataStore();
+  const {getDogById, getBreedById} = useProfileDataStore();
   const {isSmall} = useResponsiveGrid()
   const [, setLocation] = useLocation();
 
   const getCardsConfig = (): FieldData[] => {
     const dog = getDogById(dogId);
+    const breed = getBreedById(dog.breedId);
     const fields = isSmall ? ['fullName'] : dogShortDataFields
-    return fields.map(fieldName => getCommonFieldsConfig(fieldName, dog))
+    return fields.map(fieldName => getCommonFieldsConfig(fieldName, dog, breed))
   }
 
   return (

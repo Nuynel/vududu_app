@@ -14,6 +14,7 @@ import {
 } from './event'
 import {FieldData, BlocksConfig} from './components'
 import {Pedigree} from './pedigrees'
+import {Breed} from "./breed";
 
 export {
   DecodedToken,
@@ -53,4 +54,6 @@ export {
   BlocksConfig,
 
   Pedigree,
+
+  Breed,
 }
