@@ -37,7 +37,13 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/LITTERS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
-      const newLitterData: NewLitter = { ...req.body }
+      const newLitterData: NewLitter = {
+        ...req.body,
+        fatherId: new ObjectId(req.body.fatherId),
+        motherId: new ObjectId(req.body.motherId),
+        puppyIds: req.body.puppyIds.map((puppyId: string) => new ObjectId(puppyId)),
+        breedId: req.body.breedId ? new ObjectId(req.body.breedId) : null,
+      }
       const isLinkedToOwner = await checkIsLitterLinkedToOwner(newLitterData.fatherId, newLitterData.motherId, profileId, client)
       const newLitter: Litter = { ...newLitterData, profileId: new ObjectId(profileId), isLinkedToOwner }
       const { insertedId: litterId } = await insertEntity(client, COLLECTIONS.LITTERS, newLitter)

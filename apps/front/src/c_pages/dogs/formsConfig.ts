@@ -129,5 +129,11 @@ export const newLitterFormConfig = {
     // searchHandler: (searchString, method) => method(searchString),
     // valueGetter: (puppyIds, attachedPuppiesList) => {puppyIds.find(puppy => )},
     labelKey: 'fullName',
+  },
+  breedId: {
+    component: TextInput,
+    label: 'Порода',
+    id: 'breed-id-input-id',
+    placeholder: 'Метис',
   }
 } as const;

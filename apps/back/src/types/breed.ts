@@ -24,7 +24,7 @@ export type Breed = {
 
 export type BreedIssue = {
   status: BREED_STATUSES,
-  breedId: ObjectId,
+  breedId: ObjectId | null,
   breedDescription: string,
   comment: string | null,
   profileId: ObjectId,

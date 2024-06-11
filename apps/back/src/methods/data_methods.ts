@@ -16,7 +16,7 @@ type CommonClientDogFields = 'profileId' | 'litterId' | 'isLinkedToOwner' | 'gen
 
 type ClientDog = Pick<DatabaseDog, CommonClientDogFields> & {
   _id: ObjectId;
-  breedId: ObjectId;
+  breedId: ObjectId | null;
   litterData: {
     date: string[] | null,
     title: string | null,

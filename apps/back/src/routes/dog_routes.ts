@@ -89,7 +89,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
       await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
-      if (profile && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
+      if (profile && newDog.breedId && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
         await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS);
       }
       const dog = await constructDogForClient(client, {...newDog, _id: dogId})
@@ -139,7 +139,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get<{}, { studs: DatabaseDog[] }, {}, { searchString: string, gender: GENDER}>('/api/stud', async(req, res) => {
+  app.get<{}, { studs: Pick<WithId<DatabaseDog>, '_id' | 'fullName' | 'breedId'>[] }, {}, { searchString: string, gender: GENDER}>('/api/stud', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
@@ -151,12 +151,12 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get<{}, { puppies: DatabaseDog[] }, {}, { dateOfBirth: string }>('/api/puppies', async(req, res) => {
+  app.get<{}, { puppies: Pick<WithId<DatabaseDog>, '_id' | 'fullName' | 'breedId'>[] }, {}, { dateOfBirth: string, breedId: string }>('/api/puppies', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/PUPPIES, profileId >>> ', profileId)
-      const { dateOfBirth } = req.query;
-      const puppies = await findPuppiesByDateOfBirth(client, dateOfBirth);
+      const { dateOfBirth, breedId } = req.query;
+      const puppies = await findPuppiesByDateOfBirth(client, dateOfBirth, breedId ? new ObjectId(breedId) : null);
       res.send({puppies})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
@@ -171,7 +171,11 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const {baseDogInfo} = req.body;
       const { id } = req.query;
 
-      await updateBaseDogInfoById(client, new ObjectId(id), {...baseDogInfo, breedId: new ObjectId(baseDogInfo.breedId)})
+      await updateBaseDogInfoById(
+        client,
+        new ObjectId(id),
+        {...baseDogInfo, breedId: baseDogInfo.breedId ? new ObjectId(baseDogInfo.breedId) : null}
+      )
 
       if (baseDogInfo.litterId) await modifyNestedArrayField(
         client,
@@ -181,7 +185,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         FIELDS_NAMES.PUPPY_IDS,
         new ObjectId(id),
       )
-      if (profile && !profile.breedIds.includes(new ObjectId(baseDogInfo.breedId))) {
+      if (profile && baseDogInfo.breedId && !profile.breedIds.includes(new ObjectId(baseDogInfo.breedId))) {
         await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(baseDogInfo.breedId), FIELDS_NAMES.BREED_IDS);
       }
       res.status(200).send({message: 'Base dog info was updated successfully!'})

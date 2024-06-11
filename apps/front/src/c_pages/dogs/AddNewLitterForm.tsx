@@ -1,4 +1,4 @@
-import {LitterData, NewLitter, NewLitterFormFields} from "../../g_shared/types";
+import {DogData, LitterData, NewLitter, NewLitterFormFields} from "../../g_shared/types";
 import * as React from "react";
 import {useState, useEffect} from "react";
 import {createLitter, getStuds, getPuppies} from "../../g_shared/methods/api";
@@ -19,12 +19,13 @@ const initNewLitterData: Pick<NewLitter, NewLitterFormFields> = {
   //   female: 0
   // },
   comments: '',
+  breedId: null,
 }
 
 // чего нет: profileId, litterId, puppyCardId, puppyCardNumber
 
 const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
-  const {pushNewLitter} = useProfileDataStore()
+  const {pushNewLitter, getBreedById} = useProfileDataStore()
   const [newLitterData, changeNewLitterData] = useState<Pick<NewLitter, NewLitterFormFields>>({...initNewLitterData})
   const {isSmall} = useResponsiveGrid()
 
@@ -62,9 +63,9 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
     }
   }
 
-  const [maleDogsList, changeMaleDogsList] = useState<{_id: string, fullName: string}[]>([])
-  const [femaleDogsList, changeFemaleDogsList] = useState<{_id: string, fullName: string}[]>([])
-  const [puppiesList, changePuppiesList] = useState<{_id: string, fullName: string}[]>([])
+  const [maleDogsList, changeMaleDogsList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
+  const [femaleDogsList, changeFemaleDogsList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
+  const [puppiesList, changePuppiesList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
 
   const createLitterData = (): NewLitter => {
     return {
@@ -95,11 +96,23 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
 
   useEffect(() => {
     if (newLitterData.dateOfBirth) {
-      getPuppies(newLitterData.dateOfBirth).then(({puppies}) => {
+      getPuppies(newLitterData.dateOfBirth, newLitterData.breedId).then(({puppies}) => {
         changePuppiesList(puppies)
       })
     }
   }, [newLitterData.dateOfBirth])
+
+  useEffect(() => {
+    if (newLitterData.motherId && newLitterData.fatherId) {
+      const motherBreed = femaleDogsList.find(stud => stud._id === newLitterData.motherId).breedId;
+      const fatherBreed = maleDogsList.find(stud => stud._id === newLitterData.fatherId).breedId;
+      if (fatherBreed === motherBreed) {
+        handleInputChange('breedId', fatherBreed);
+      } else {
+        handleInputChange('breedId', null);
+      }
+    }
+  }, [newLitterData.motherId, newLitterData.fatherId])
 
   return (
     <Box pad={"medium"} width={isSmall ? 'auto' : 'large'}>
@@ -137,6 +150,22 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
                 id={fieldConfig.id}
                 name={fieldConfig.label}
                 value={newLitterData[key]}
+                format={fieldConfig.format}
+                placeholder={fieldConfig.placeholder}
+                onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+              />
+            </FormField>
+          )})}
+        {['breedId'].map((key) => {
+          const fieldConfig = newLitterFormConfig[key]
+          const Field = fieldConfig.component
+          return (
+            <FormField key={fieldConfig.id} name={fieldConfig.label} htmlFor={fieldConfig.id} label={fieldConfig.label}>
+              <Field
+                disabled
+                id={fieldConfig.id}
+                name={fieldConfig.label}
+                value={getBreedById(newLitterData[key]).name.rus || 'ERROR'}
                 format={fieldConfig.format}
                 placeholder={fieldConfig.placeholder}
                 onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}

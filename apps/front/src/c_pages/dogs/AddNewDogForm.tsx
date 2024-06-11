@@ -13,6 +13,7 @@ import {fixTimezone} from "../../g_shared/methods/helpers";
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
+import {useBreeds} from "../../f_entities/hooks/useBreeds";
 
 const initNewDogData: Pick<NewDog, NewDogFormFields> = {
   name: '',
@@ -33,8 +34,8 @@ const initNewDogData: Pick<NewDog, NewDogFormFields> = {
 
 const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
   const [newDogData, changeNewDogData] = useState<Pick<NewDog, NewDogFormFields>>({...initNewDogData})
-  const [breeds, changeBreeds] = useState<Breed[]>([])
   const {pushNewDog} = useProfileDataStore()
+  const {breeds, getAllBreeds, searchBreeds} = useBreeds();
   const {getInitialData} = useGetInitialData()
 
   const {isSmall} = useResponsiveGrid()
@@ -78,13 +79,7 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
       .catch((e) =>{ console.error(e) })
   }
 
-  const handleSearch = (searchString: string) => {
-    getBreeds(searchString).then(({breeds: newBreeds}) => changeBreeds(newBreeds))
-  }
-
-  useEffect(() => {
-    getBreeds().then(({breeds: newBreeds}) => changeBreeds(newBreeds))
-  }, [])
+  useEffect(() => getAllBreeds(), [])
 
   return (
     <Box pad={"medium"} width={isSmall ? 'auto' : 'large'}>
@@ -97,9 +92,8 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
           const fieldConfig = newDogFormConfig[key]
           const Field = fieldConfig.component
           if (key === 'breedId') return (
-            <Box>
+            <Box key={fieldConfig.id}>
               <FormField
-                key={fieldConfig.id}
                 name={fieldConfig.label}
                 htmlFor={fieldConfig.id}
                 label={fieldConfig.label}
@@ -110,7 +104,7 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
                   value={breeds.find(breed => breed._id === newDogData.breedId)}
                   options={breeds}
                   labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
-                  onSearch={(searchString) => handleSearch(searchString)}
+                  onSearch={(searchString) => searchBreeds(searchString)}
                   placeholder='Название породы'
                   onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
                 />

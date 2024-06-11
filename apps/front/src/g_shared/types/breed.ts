@@ -4,8 +4,21 @@ export enum BREED_STATUSES {
   REJECTED = 'rejected'
 }
 
+export const CROSSBREED: Breed = {
+  _id: null,
+  name: {
+    rus: 'Метис',
+    eng: 'Crossbreed'
+  },
+  group: null,
+  organisations: [],
+  status: BREED_STATUSES.APPROVED,
+  standard: null,
+  images: null,
+}
+
 export type Breed = {
-  _id: string,
+  _id: string | null,
   name: {
     rus: string,
     eng: string,

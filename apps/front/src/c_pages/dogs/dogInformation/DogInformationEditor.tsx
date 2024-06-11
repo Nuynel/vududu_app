@@ -1,21 +1,22 @@
 import {useEffect, useState} from "react";
 import {useParams} from "wouter";
-import {BaseDogInfo, DogData, Breed} from "../../../g_shared/types";
+import {BaseDogInfo, DogData} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {getFormatTimezoneOffset} from "../../../g_shared/methods/helpers";
-import {getBreeds, getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
+import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
+import {useBreeds} from "../../../f_entities/hooks/useBreeds";
 
 
 const DogInformationEditor = () => {
   const [dog, changeDog] = useState<DogData | null>(null);
   const [litters, changeLitters] = useState<{_id: string, litterTitle: string}[]>([]);
-  const [breeds, changeBreeds] = useState<Breed[]>([]);
 
   const params: {id: string} = useParams();
 
   const {getDogById, setDogsData, dogsData, getLitterById} = useProfileDataStore();
+  const {breeds, getAllBreeds, searchBreeds} = useBreeds();
   const {getInitialData} = useGetInitialData()
 
   const handleInputChange = (key, value) => {
@@ -66,7 +67,7 @@ const DogInformationEditor = () => {
           ({_id}) => ({_id, litterTitle: getLitterById(_id).litterTitle})
         ))
       })
-      getBreeds().then(({breeds: newBreeds}) => changeBreeds(newBreeds))
+      getAllBreeds()
     }
   }, [dog])
 
@@ -95,10 +96,6 @@ const DogInformationEditor = () => {
       })
   }
 
-  const handleSearch = (searchString: string) => {
-    getBreeds(searchString).then(({breeds: newBreeds}) => changeBreeds(newBreeds))
-  }
-
   if (!dog) return null;
 
   return (
@@ -107,7 +104,7 @@ const DogInformationEditor = () => {
       entityType={'dog'}
       entity={dog}
       handleInputChange={handleInputChange}
-      handleSearch={handleSearch}
+      handleSearch={searchBreeds}
       handleSubmit={handleSubmit}
       litters={litters}
       breeds={breeds}

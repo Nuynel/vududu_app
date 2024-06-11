@@ -1,5 +1,5 @@
 import {checkResponse, URL} from "./index";
-import {BaseDogInfo, NewDog} from "../../types";
+import {BaseDogInfo, DogData, NewDog} from "../../types";
 import {GENDER} from "../../types/dog";
 
 export async function createDog(data: Omit<NewDog, 'profileId' | 'litterTitle'>) {
@@ -38,7 +38,9 @@ export async function deleteDog (id: string) {
   }
 }
 
-export async function getStuds (searchString: string, gender: GENDER) {
+export async function getStuds (searchString: string, gender: GENDER)
+  : Promise<{studs: Pick<DogData, '_id' | 'fullName' | 'breedId'>[]}>
+{
   try{
     const queryParams = new URLSearchParams({searchString, gender}).toString();
     return await fetch(`${URL}/api/stud?${queryParams}`, {
@@ -56,9 +58,11 @@ export async function getStuds (searchString: string, gender: GENDER) {
   }
 }
 
-export async function getPuppies (dateOfBirth: string) {
+export async function getPuppies (dateOfBirth: string, breedId: string | null)
+  : Promise<{puppies: Pick<DogData, '_id' | 'fullName' | 'breedId'>[]}>
+{
   try{
-    const queryParams = new URLSearchParams({dateOfBirth}).toString();
+    const queryParams = new URLSearchParams({dateOfBirth, breedId: breedId || ''}).toString();
     return await fetch(`${URL}/api/puppies?${queryParams}`, {
       method: 'GET',
       headers: {

@@ -49,7 +49,7 @@ type ProfileDataStore = {
   setBreedsData: (breedsData: Breed[]) => void,
   pushNewBreed: (breedData: Breed) => void,
   getBreedsByIds: () => Record<string, Breed>,
-  getBreedById: (id: string) => Breed,
+  getBreedById: (id: string | null) => Breed,
 }
 
 export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({

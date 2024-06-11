@@ -1,9 +1,9 @@
 import {useEffect} from "react";
 import {getInitialDataReq} from '../../g_shared/methods/api'
 import {useProfileDataStore} from "../store/useProfileDataStore";
-import useAuth from './useAuth';
 import {isAuthenticated} from "../../g_shared/methods/helpers";
 import {EB_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
+import {CROSSBREED} from "../../g_shared/types/breed";
 
 const useGetInitialData = () => {
   const {
@@ -26,7 +26,7 @@ const useGetInitialData = () => {
         setDogsData(dogs);
         setLittersData(litters);
         setEventsData(events);
-        setBreedsData(breeds);
+        setBreedsData([...breeds, CROSSBREED]);
         // sessionStorage.setItem('isSessionInitializationFinished', 'true')
       } catch (e) {
         console.error('Error in useGetInitialData > getInitialData > try/catch block > Error information > ', e)

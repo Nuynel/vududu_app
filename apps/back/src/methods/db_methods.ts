@@ -207,8 +207,9 @@ export const findStudsBySearchString = async(
     gender,
   }, {
     projection: {
-      _id: 1, // Для MongoDB идентификатор документа хранится в поле _id
-      fullName: 1
+      _id: 1,
+      fullName: 1,
+      breedId: 1,
     }
   }).toArray();
 }
@@ -227,14 +228,17 @@ export const findEntitiesBySearchString = async<T extends Document>(
 export const findPuppiesByDateOfBirth = async(
   client: MongoClient,
   dateOfBirth: string,
+  breedId: ObjectId | null,
 ) => {
   return await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).find({
     dateOfBirth,
+    breedId,
     litterId: null,
   }, {
     projection: {
       _id: 1,
       fullName: 1,
+      breedId: 1,
     }
   }).toArray();
 }
