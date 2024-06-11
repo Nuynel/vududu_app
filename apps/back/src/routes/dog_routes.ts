@@ -90,7 +90,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
       await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
       if (profile && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
-        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(newDog.breedId), FIELDS_NAMES.BREED_IDS);
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS);
       }
       const dog = await constructDogForClient(client, {...newDog, _id: dogId})
       res.send({ message: 'Собака добавлена!', dog})
