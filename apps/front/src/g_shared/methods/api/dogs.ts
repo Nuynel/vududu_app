@@ -1,8 +1,8 @@
 import {checkResponse, URL} from "./index";
-import {BaseDogInfo, DogData, NewDog} from "../../types";
+import {IncomingDogData, OutgoingDogData} from "../../types";
 import {GENDER} from "../../types/dog";
 
-export async function createDog(data: Omit<NewDog, 'profileId' | 'litterTitle'>) {
+export async function createDog(data: Omit<OutgoingDogData, 'litterId'>): Promise<{message: string, dog: IncomingDogData}> {
   try{
     return await fetch(`${URL}/api/dog`, {
       method: 'POST',
@@ -20,7 +20,7 @@ export async function createDog(data: Omit<NewDog, 'profileId' | 'litterTitle'>)
   }
 }
 
-export async function deleteDog (id: string) {
+export async function deleteDog (id: string): Promise<{message: string}> {
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/dog?${queryParams}`, {
@@ -39,7 +39,7 @@ export async function deleteDog (id: string) {
 }
 
 export async function getStuds (searchString: string, gender: GENDER)
-  : Promise<{studs: Pick<DogData, '_id' | 'fullName' | 'breedId'>[]}>
+  : Promise<{studs: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[]}>
 {
   try{
     const queryParams = new URLSearchParams({searchString, gender}).toString();
@@ -59,7 +59,7 @@ export async function getStuds (searchString: string, gender: GENDER)
 }
 
 export async function getPuppies (dateOfBirth: string, breedId: string | null)
-  : Promise<{puppies: Pick<DogData, '_id' | 'fullName' | 'breedId'>[]}>
+  : Promise<{puppies: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[]}>
 {
   try{
     const queryParams = new URLSearchParams({dateOfBirth, breedId: breedId || ''}).toString();
@@ -78,7 +78,7 @@ export async function getPuppies (dateOfBirth: string, breedId: string | null)
   }
 }
 
-export async function updateBaseDogInfo (baseDogInfo: BaseDogInfo, id: string) {
+export async function updateBaseDogInfo (rawDogInfo: OutgoingDogData, id: string): Promise<{message: string}> {
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/dog?${queryParams}`, {
@@ -87,7 +87,7 @@ export async function updateBaseDogInfo (baseDogInfo: BaseDogInfo, id: string) {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({baseDogInfo})
+      body: JSON.stringify({rawDogInfo})
     }).then(r => {
       checkResponse(r)
       return r.json()

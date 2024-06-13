@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Breed, DogData, EventData, LitterData} from "../g_shared/types";
+import {Breed, IncomingDogData, EventData, IncomingLitterData} from "../g_shared/types";
 import {GENDER} from "../g_shared/types/dog";
 import {baseInfoFieldsConfig} from '../g_shared/constants/baseInfoEditorFieldsConfig'
 import {
@@ -24,7 +24,7 @@ import {getRuTranslate} from "../g_shared/constants/translates";
 type Props = {
   title: string,
   entityType: keyof typeof BaseInfoFieldsByEntity,
-  entity: DogData | (EventData & {status: string}) | LitterData,
+  entity: IncomingDogData | (EventData & {status: string}) | IncomingLitterData,
   handleInputChange: (key, value) => void,
   handleSubmit: () => void,
   handleSearch?: (string) => void,
@@ -35,7 +35,7 @@ type Props = {
 const commonDogEventFields = ['date', 'dogId', 'status', 'comments']
 
 const BaseInfoFieldsByEntity = {
-  dog: ['name', 'fullName', 'dateOfBirth', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterTitle'],
+  dog: ['name', 'fullName', 'dateOfBirth', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
   heat: [...commonDogEventFields],
   treatment: [...commonDogEventFields, 'medication', 'validity'],
@@ -306,7 +306,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                   </FormField>
                 )
               }
-              case 'litterTitle': {
+              case 'litterData': {
                 return (
                   <FormField
                     key={fieldConfig.id}
@@ -317,7 +317,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <Select
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={litters.find(litter => 'litterId' in entity && litter._id === entity.litterId)}
+                      value={litters.find(litter => 'litterData' in entity && litter._id === entity.litterData?.id)}
                       options={litters}
                       labelKey='litterTitle'
                       placeholder='дд/мм/гггг, Отец/Мать'

@@ -1,7 +1,7 @@
 import {checkResponse, URL} from "./index";
-import {NewLitter} from "../../types";
+import {IncomingLitterData, OutgoingLitterData} from "../../types";
 
-export async function createLitter(data: NewLitter) {
+export async function createLitter(data: OutgoingLitterData): Promise<{ litter: IncomingLitterData }> {
   try{
     return await fetch(`${URL}/api/litter`, {
       method: 'POST',
@@ -19,9 +19,11 @@ export async function createLitter(data: NewLitter) {
   }
 }
 
-export async function getLittersByDate(date: string): Promise<{litters: {_id: string}[]}> {
+export async function getLittersByDate(date: string, breedId: string | null)
+  : Promise<{litters: Pick<IncomingLitterData, '_id' | 'litterTitle'>[]}> {
   try{
-    const queryParams = new URLSearchParams({date}).toString();
+    const queryParams = new URLSearchParams({date, breedId: breedId || ''}).toString();
+    console.log(queryParams)
     return await fetch(`${URL}/api/litters?${queryParams}`, {
       method: 'GET',
       headers: {
@@ -37,7 +39,8 @@ export async function getLittersByDate(date: string): Promise<{litters: {_id: st
   }
 }
 
-export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, id: string) {
+export async function updateBaseLitterInfo (data: Pick<OutgoingLitterData, 'comments'>, id: string)
+  : Promise<{message: string}> {
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/litter?${queryParams}`, {
@@ -46,7 +49,7 @@ export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, 
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({baseLitterInfo})
+      body: JSON.stringify(data)
     }).then(r => {
       checkResponse(r)
       return r.json()
@@ -56,7 +59,8 @@ export async function updateBaseLitterInfo (baseLitterInfo: {comments: string}, 
   }
 }
 
-export async function deleteLitter (id: string) {
+export async function deleteLitter (id: string)
+  : Promise<{message: string}> {
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/litter?${queryParams}`, {

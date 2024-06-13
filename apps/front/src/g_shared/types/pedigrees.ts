@@ -1,6 +1,6 @@
-import {DogData} from "./dog";
+import {IncomingDogData} from "./dog";
 
-export type Pedigree = (DogData & {
+export type Pedigree = (IncomingDogData & {
   father: Pedigree | null,
   mother: Pedigree | null,
   position: string,

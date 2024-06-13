@@ -3,7 +3,7 @@ import {
   User,
   DatabaseProfile,
   History,
-  Litter,
+  DatabaseLitter,
   ContactList,
   Contact,
   DatabaseEvent,
@@ -16,7 +16,7 @@ import {
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES, DB_NAME} from "../constants";
 
-type DatabaseTypes = DatabaseDog | User | DatabaseProfile | Litter | History | Contact | ContactList | DatabaseEvent | Breed | BreedIssue
+type DatabaseTypes = DatabaseDog | User | DatabaseProfile | DatabaseLitter | History | Contact | ContactList | DatabaseEvent | Breed | BreedIssue
 
 export const insertEntity = async(
   client: MongoClient,
@@ -245,10 +245,12 @@ export const findPuppiesByDateOfBirth = async(
 
 export const findLittersByDate = async(
   client: MongoClient,
-  date: string,
-) => {
-  return await client.db(DB_NAME).collection<Litter>(COLLECTIONS.LITTERS).find({
-    dateOfBirth: date,
+  dateOfBirth: string,
+  breedId: ObjectId | null,
+): Promise<Pick<WithId<DatabaseLitter>, '_id' | 'litterTitle'>[]> => {
+  return await client.db(DB_NAME).collection<DatabaseLitter>(COLLECTIONS.LITTERS).find({
+    dateOfBirth,
+    breedId,
   }, {
     projection: {
       _id: 1,
@@ -260,7 +262,19 @@ export const findLittersByDate = async(
 export const updateBaseDogInfoById = async(
   client: MongoClient,
   id: ObjectId,
-  baseInfo: Pick<DatabaseDog, 'name' | 'fullName' | 'dateOfBirth' | 'breedId' | 'gender' | 'microchipNumber' | 'tattooNumber' | 'color' | 'isNeutered' >
+  baseInfo: Pick<DatabaseDog,
+    | 'gender'
+    | 'dateOfBirth'
+    | 'color'
+    | 'name'
+    | 'fullName'
+    | 'microchipNumber'
+    | 'pedigreeNumber'
+    | 'tattooNumber'
+    | 'isNeutered'
+    | 'litterId'
+    | 'breedId'
+  >
 )=> {
   await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).updateOne(
     { _id: id } as Filter<DatabaseDog>,
@@ -273,13 +287,13 @@ export const updateBaseDogInfoById = async(
 export const updateBaseLitterInfoById = async(
   client: MongoClient,
   id: ObjectId,
-  baseInfo: Pick<Litter, 'comments'>
+  baseInfo: Pick<DatabaseLitter, 'comments'>
 ) => {
-  await client.db(DB_NAME).collection<Litter>(COLLECTIONS.LITTERS).updateOne(
-    { _id: id } as Filter<Litter>,
+  await client.db(DB_NAME).collection<DatabaseLitter>(COLLECTIONS.LITTERS).updateOne(
+    { _id: id } as Filter<DatabaseLitter>,
     {
       $set: baseInfo
-    } as UpdateFilter<Litter>
+    } as UpdateFilter<DatabaseLitter>
   )
 }
 

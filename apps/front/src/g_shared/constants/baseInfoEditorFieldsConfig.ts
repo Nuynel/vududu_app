@@ -81,13 +81,15 @@ export const baseInfoFieldsConfig = {
     label: 'Собака кастрирована?',
     handler: (event, key, method) => method(key, event.target.checked),
   },
-  litterTitle: {
+  litterData: {
     id: 'litter-title-input-id',
     label: 'Помет',
     placeholder: 'дд/мм/гггг, Отец/Мать',
     handler: (event, key, method) => {
-      method(key, event.option.litterTitle)
-      method('litterId', event.option._id)
+      method(key, {
+        id: event.option._id,
+        title: event.option.litterTitle,
+      })
     },
   },
   fatherFullName: {

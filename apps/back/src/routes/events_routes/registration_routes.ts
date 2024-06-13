@@ -1,6 +1,6 @@
 import {Application} from "express";
 import {MongoClient} from "mongodb";
-import {BreederProfile, EVENT_TYPE, KennelProfile, Litter, Registration} from "../../types";
+import {BreederProfile, EVENT_TYPE, KennelProfile, DatabaseLitter, Registration} from "../../types";
 import {insertEntity, assignIdToField, modifyNestedArrayFieldById} from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
 
@@ -9,7 +9,7 @@ export const initRegistrationRoutes = (app: Application, client: MongoClient) =>
     const { profileId, date, comments, dogId, connectedEvents, litterId, documentId, activated } = req.body;
     const registrationEvent: Registration = { profileId, date, comments, dogId, connectedEvents, litterId, documentId, eventType: EVENT_TYPE.REGISTRATION, activated }
     const { insertedId: registrationInsertedId } = await insertEntity(client, COLLECTIONS.REGISTRATIONS, registrationEvent)
-    await assignIdToField<Litter>(client, COLLECTIONS.LITTERS, litterId, FIELDS_NAMES.REGISTRATION_ID, registrationInsertedId)
+    await assignIdToField<DatabaseLitter>(client, COLLECTIONS.LITTERS, litterId, FIELDS_NAMES.REGISTRATION_ID, registrationInsertedId)
     await modifyNestedArrayFieldById<KennelProfile | BreederProfile>(client, COLLECTIONS.PROFILES, profileId, registrationInsertedId, FIELDS_NAMES.EVENT_IDS)
     res.send({ message: 'Актировка добавлена!' })
   })

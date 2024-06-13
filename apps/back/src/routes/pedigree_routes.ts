@@ -1,6 +1,6 @@
 import {Application} from "express";
 import {MongoClient, ObjectId} from "mongodb";
-import {DatabaseDog, Litter} from "../types";
+import {DatabaseDog, DatabaseLitter} from "../types";
 import {errorHandler, findEntityById, getCookiesPayload, getTimestamp} from "../methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
@@ -46,7 +46,7 @@ const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | st
     }
   }
 
-  const litter = await findEntityById<Litter>(client, COLLECTIONS.LITTERS, new ObjectId(dog.litterId))
+  const litter = await findEntityById<DatabaseLitter>(client, COLLECTIONS.LITTERS, new ObjectId(dog.litterId))
   if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 50})
 
   return {

@@ -1,4 +1,4 @@
-import {Application, raw, Response} from 'express';
+import {Application, Response} from 'express';
 import {MongoClient, ObjectId, WithId} from 'mongodb';
 import { createTransport } from 'nodemailer';
 import {
@@ -26,12 +26,13 @@ import {
 import {
   Breed,
   BreederProfile,
+  ClientDog,
   DatabaseDog,
   DatabaseProfile,
   KennelProfile,
-  Litter,
+  DatabaseLitter,
   PROFILE_TYPES,
-  User
+  User, ClientLitter
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
@@ -98,6 +99,15 @@ export const setCookie = ({res, tokenName, token}: SetCookiesParams) => {
     // secure: process.env.NODE_ENV === 'production',
   });
   return res;
+}
+
+type GetInitialDataResBody = {
+  userData: UserData,
+  profileData: ProfileData | null,
+  dogs: ClientDog[] | null,
+  litters: ClientLitter[] | null,
+  events: WithId<Event>[] | null,
+  breeds: WithId<Breed>[] | null,
 }
 
 export const initUserRoutes = (app: Application, client: MongoClient) => {
@@ -250,54 +260,38 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.get('/api/initial-data', async(req, res) => {
+  app.get<{}, GetInitialDataResBody, {}, {}>('/api/initial-data', async(req, res) => {
     try {
       const {userId, profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/INITIAL-DATA, userId >>> ', userId, ' >>> profileId >>> ', profileId)
       const user: WithId<User> | null = await findUserById(client, userId)
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 190})
       const userData = pickUserData(user)
-      if (
-        !profileId
-        || typeof profileId !== 'string'
-        // || !userData.profileIds.includes(new ObjectId(profileId))
-      ) return res.send({userData})
-      // надо получить необходимые данные пользователя, данные текущего профиля,
-      // данные о собаках, данные о событиях, данные о документах, данные о контактах
+      if (!profileId) return res.send({userData, profileData: null, dogs: null, litters: null, events: null, breeds: null})
       const profile: WithId<DatabaseProfile> | null = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
       if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 200})
       if (!isProfileHasDogs(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'user_routes', line: 201})
       const profileData = pickProfileData(profile)
       const rawDogsData: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profileData.dogIds)
 
-      const dogs = await Promise.all(
+      const dogs: ClientDog[] = await Promise.all(
         rawDogsData.map((rawDogData) => constructDogForClient(client, rawDogData))
       )
 
-      const breeds = await findEntitiesByIds<Breed>(client, COLLECTIONS.BREEDS, profileData.breedIds)
+      const breeds: WithId<Breed>[] = await findEntitiesByIds<Breed>(client, COLLECTIONS.BREEDS, profileData.breedIds)
 
-      const rawLittersData: WithId<Litter>[] = await findEntitiesByIds<Litter>(client, COLLECTIONS.LITTERS, profileData.litterIds)
+      const rawLittersData: WithId<DatabaseLitter>[] = await findEntitiesByIds<DatabaseLitter>(client, COLLECTIONS.LITTERS, profileData.litterIds)
 
-      const litters = await Promise.all(
+      const litters: ClientLitter[] = await Promise.all(
         rawLittersData.map((rawLitterData) => constructLitterForClient(client, rawLitterData)))
 
       const events: WithId<Event>[] = await findEntitiesByIds<Event>(client, COLLECTIONS.EVENTS, profileData.eventIds)
 
       return res.send({userData, profileData, dogs, litters, events, breeds})
-      // пока что разрабатываем получение начальных данных для питомников и заводчиков, другие кейсы не покрываем
-      // const dogList =
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   })
-
-  app.put('/api/user', async (req, res) => {
-
-  })
-
-  app.delete('/api/user', async (req, res) => {
-
-  });
 
   app.post('/api/refresh-token', async (req, res) => {
     console.log(getTimestamp(), 'REQUEST TO /POST/REFRESH-TOKEN')

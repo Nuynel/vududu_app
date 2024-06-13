@@ -1,41 +1,37 @@
-import {NewDog} from "./dog";
+export type IncomingLitterData = {
+  _id: string;
 
-export type NewLitter = {
+  profileId: string;
+
   fatherId: string;
   motherId: string;
-  dateOfBirth: string;
-  registrationId: null; // ссылка на документ (общепометная карта)
-  puppyIds: string[];
-  breedId: string | null;
-  // puppiesCount: {
-  //   male: number | null,
-  //   female: number | null,
-  //   // dead: number | null, надо будет узнать у заводчиков, хотят ли они вносить эту информацию
-  // };
-  litterCardId: null;
-  comments: string | null;
-}
-
-export type LitterData = NewLitter & {
-  _id: string;
-  profileId: string;
-  isLinkedToOwner: boolean;
-  fatherFullName: string | null,
-  fatherName: string | null,
-  motherFullName: string | null,
-  motherName: string | null,
   litterTitle: string;
+  breedId: string | null;
+  dateOfBirth: string;
+  comments: string | null;
+  puppyIds: string[];
+
+  fatherFullName: string,
+  motherFullName: string,
   puppiesData: {
     id: string,
     name: string | null,
     fullName: string | null,
-  }[]
+  }[],
 }
 
 export type LittersStore = {
-  littersData: LitterData[]
-  setLittersData: (littersData: LitterData[]) => void,
+  littersData: IncomingLitterData[]
+  setLittersData: (littersData: IncomingLitterData[]) => void,
 }
 
-export type NewLitterFormFields = 'fatherId' | 'motherId' | 'dateOfBirth' | 'comments' | 'puppyIds' | 'breedId'
-  // | 'puppiesCount'
+export type RawLitterFields =
+  | 'fatherId'
+  | 'motherId'
+  | 'dateOfBirth'
+  | 'comments'
+  | 'puppyIds'
+  | 'breedId'
+  | 'litterTitle'
+
+export type OutgoingLitterData = Pick<IncomingLitterData, RawLitterFields>

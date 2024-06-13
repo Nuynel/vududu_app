@@ -1,8 +1,8 @@
 import { DecodedToken } from "./token";
 import { User, UserData } from "./user";
 import { ProfileData, ProfileStorage, ConnectedOrganisations, KennelConnectedOrganizations, BreederConnectedOrganizations } from "./profile";
-import { Puppy, NewDog, NewDogFormFields, ReproductiveHistory, DogData, DogsStorage, BaseDogInfo, HistoryRecord } from "./dog";
-import { NewLitter, LitterData, LittersStore, NewLitterFormFields } from "./litter";
+import { IncomingDogData, OutgoingDogData, DogsStorage, RawDogFields } from "./dog";
+import { IncomingLitterData, OutgoingLitterData, LittersStore, RawLitterFields } from "./litter";
 import {
   Event,
   Treatment,
@@ -16,6 +16,12 @@ import {FieldData, BlocksConfig} from './components'
 import {Pedigree} from './pedigrees'
 import {Breed} from "./breed";
 
+type HistoryRecord = {
+  id: string,
+  title: string | null,
+  date?: string[] | null,
+}
+
 export {
   DecodedToken,
 
@@ -28,19 +34,17 @@ export {
   BreederConnectedOrganizations,
   KennelConnectedOrganizations,
 
-  Puppy,
-  NewDog,
-  NewDogFormFields,
-  ReproductiveHistory,
-  DogData,
+  IncomingDogData,
+  OutgoingDogData,
   DogsStorage,
-  BaseDogInfo,
+  RawDogFields,
+
   HistoryRecord,
 
-  NewLitter,
-  LitterData,
+  IncomingLitterData,
+  OutgoingLitterData,
   LittersStore,
-  NewLitterFormFields,
+  RawLitterFields,
 
   Event,
   Treatment,

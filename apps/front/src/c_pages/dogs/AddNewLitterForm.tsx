@@ -1,4 +1,4 @@
-import {DogData, LitterData, NewLitter, NewLitterFormFields} from "../../g_shared/types";
+import {IncomingDogData, OutgoingLitterData} from "../../g_shared/types";
 import * as React from "react";
 import {useState, useEffect} from "react";
 import {createLitter, getStuds, getPuppies} from "../../g_shared/methods/api";
@@ -9,24 +9,18 @@ import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import {fixTimezone} from "../../g_shared/methods/helpers";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 
-const initNewLitterData: Pick<NewLitter, NewLitterFormFields> = {
+const initNewLitterData: Omit<OutgoingLitterData, 'litterTitle'> = {
   fatherId: '',
   motherId: '',
   dateOfBirth: '',
-  puppyIds: [],
-  // puppiesCount: {
-  //   male: 0,
-  //   female: 0
-  // },
   comments: '',
+  puppyIds: [],
   breedId: null,
 }
 
-// чего нет: profileId, litterId, puppyCardId, puppyCardNumber
-
 const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
   const {pushNewLitter, getBreedById} = useProfileDataStore()
-  const [newLitterData, changeNewLitterData] = useState<Pick<NewLitter, NewLitterFormFields>>({...initNewLitterData})
+  const [newLitterData, changeNewLitterData] = useState<Omit<OutgoingLitterData, 'litterTitle'>>({...initNewLitterData})
   const {isSmall} = useResponsiveGrid()
 
   const handleInputChange = (key, value) => {
@@ -34,50 +28,52 @@ const AddNewLitterForm = ({hideCard}: {hideCard: () => void}) => {
       case 'dateOfBirth': {
         const dateWithTimezone = fixTimezone(value)
         return changeNewLitterData(
-          (prevState): Pick<NewLitter, NewLitterFormFields> => (
+          (prevState): Omit<OutgoingLitterData, 'litterTitle'> => (
             {...prevState, [key]: dateWithTimezone}
           ))
       }
       case 'puppyIds': {
         if (value) {
           if (newLitterData.puppyIds.includes(value)) {
-            return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+            return changeNewLitterData((prevState): Omit<OutgoingLitterData, 'litterTitle'> => (
               {...prevState, [key]: prevState.puppyIds.filter(id => id !== value)}
             ))
           } else {
-            return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+            return changeNewLitterData((prevState): Omit<OutgoingLitterData, 'litterTitle'> => (
               {...prevState, [key]: [...prevState.puppyIds, value]}
             ))
           }
         } else {
-          return changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+          return changeNewLitterData((prevState): Omit<OutgoingLitterData, 'litterTitle'> => (
             {...prevState, [key]: []}
           ))
         }
       }
       default: {
-        changeNewLitterData((prevState): Pick<NewLitter, NewLitterFormFields> => (
+        changeNewLitterData((prevState): Omit<OutgoingLitterData, 'litterTitle'> => (
           {...prevState, [key]: value}
         ))
       }
     }
   }
 
-  const [maleDogsList, changeMaleDogsList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
-  const [femaleDogsList, changeFemaleDogsList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
-  const [puppiesList, changePuppiesList] = useState<Pick<DogData, '_id' | 'fullName' | 'breedId'>[]>([])
+  const [maleDogsList, changeMaleDogsList] = useState<Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[]>([])
+  const [femaleDogsList, changeFemaleDogsList] = useState<Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[]>([])
+  const [puppiesList, changePuppiesList] = useState<Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[]>([])
 
-  const createLitterData = (): NewLitter => {
+  const createLitterData = (): OutgoingLitterData => {
+    const fatherFullName = maleDogsList.find((dog) => dog._id === newLitterData.fatherId).fullName
+    const motherFullName = femaleDogsList.find((dog) => dog._id === newLitterData.motherId).fullName
+
     return {
       ...newLitterData,
-      registrationId: null,
-      litterCardId: null,
+      litterTitle: `${newLitterData.dateOfBirth}, ${fatherFullName}/${motherFullName}`,
     }
   }
 
   const handleSubmit = () => {
     const litterData = createLitterData()
-    createLitter(litterData).then(({litter}: {litter: LitterData}) => {
+    createLitter(litterData).then(({litter}) => {
       pushNewLitter(litter)
       hideCard()
     }).catch((e) =>{

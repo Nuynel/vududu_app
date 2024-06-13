@@ -4,21 +4,20 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import {
   Breed,
-  DogData,
-  NewDog,
-  NewDogFormFields
+  OutgoingDogData,
 } from "../../g_shared/types";
-import {createDog, getBreeds} from "../../g_shared/methods/api";
+import {createDog} from "../../g_shared/methods/api";
 import {fixTimezone} from "../../g_shared/methods/helpers";
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 import {useBreeds} from "../../f_entities/hooks/useBreeds";
 
-const initNewDogData: Pick<NewDog, NewDogFormFields> = {
+const initNewDogData: Omit<OutgoingDogData, 'litterId'> = {
   name: '',
   fullName: '',
   dateOfBirth: '',
+  dateOfDeath: '',
   breedId: null,
   gender: null,
   microchipNumber: '',
@@ -33,7 +32,7 @@ const initNewDogData: Pick<NewDog, NewDogFormFields> = {
 // чего нет: profileId, litterId, puppyCardId, puppyCardNumber
 
 const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
-  const [newDogData, changeNewDogData] = useState<Pick<NewDog, NewDogFormFields>>({...initNewDogData})
+  const [newDogData, changeNewDogData] = useState<Omit<OutgoingDogData, 'litterId'>>({...initNewDogData})
   const {pushNewDog} = useProfileDataStore()
   const {breeds, getAllBreeds, searchBreeds} = useBreeds();
   const {getInitialData} = useGetInitialData()
@@ -45,31 +44,21 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
       case 'dateOfBirth': {
         const dateWithTimezone = fixTimezone(value);
         return changeNewDogData(
-          (prevState): Pick<NewDog, NewDogFormFields> => (
+          (prevState): Omit<OutgoingDogData, 'litterId'> => (
             {...prevState, [key]: dateWithTimezone}
           ))
       }
       default: {
-        changeNewDogData((prevState): Pick<NewDog, NewDogFormFields> => (
+        changeNewDogData((prevState): Omit<OutgoingDogData, 'litterId'> => (
           {...prevState, [key]: value}
         ))
       }
     }
   }
 
-  const createDogData = (): Omit<NewDog, 'profileId' | 'litterTitle'> => {
-    return {
-      ...newDogData,
-      litterId: null,
-      puppyCardId: null,
-      puppyCardNumber: null,
-    }
-  }
-
   const handleSubmit = () => {
-    const dogData = createDogData()
-    createDog(dogData)
-      .then(async ({dog}: {dog: DogData}) => {
+    createDog(newDogData)
+      .then(async ({dog}) => {
         pushNewDog(dog)
         return await getInitialData()
       })

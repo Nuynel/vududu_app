@@ -1,4 +1,11 @@
-import {UserData, ProfileData, DogData, LitterData, EventData, Breed} from "../../types";
+import {
+  UserData,
+  ProfileData,
+  EventData,
+  Breed,
+  IncomingDogData,
+  IncomingLitterData
+} from "../../types";
 import {signIn, signOut, signUp, getUser, recoveryPassword, saveNewPassword} from './user';
 import {createProfile, getProfile} from "./profile";
 import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
@@ -19,8 +26,8 @@ export const checkResponse = (r: Response) => {
 async function getInitialDataReq(): Promise<{
   userData: UserData,
   profileData: ProfileData,
-  dogs: DogData[],
-  litters: LitterData[],
+  dogs: IncomingDogData[],
+  litters: IncomingLitterData[],
   events: EventData[],
   breeds: Breed[],
 }> {

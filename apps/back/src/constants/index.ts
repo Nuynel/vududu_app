@@ -68,6 +68,8 @@ export enum FIELDS_NAMES {
   COLOR = 'color',
   IS_NEUTERED = 'isNeutered',
   LITTER_TITLE = 'litterTitle',
+  LITTER_DATA = 'litterData',
+  LITTER_DATA_ID = 'litterData._id',
   PUPPY_IDS = 'puppyIds',
   LITTER_ID = 'litterId',
   PASSWORD_RECOVERY_TOKEN = 'passwordRecoveryToken',

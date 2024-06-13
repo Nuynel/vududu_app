@@ -1,7 +1,7 @@
 import {Box, FormField, Select, Text} from "grommet";
 import * as React from "react";
 import useResponsiveGrid from "../../../f_entities/hooks/useResponsiveGrid";
-import {DogData} from "../../../g_shared/types";
+import {IncomingDogData} from "../../../g_shared/types";
 import {useEffect, useState} from "react";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 
@@ -12,7 +12,7 @@ type Props = {
 
 const ProbandSelect = ({probandId, changeProbandId}: Props) => {
   const {isSmall} = useResponsiveGrid(true);
-  const [dogsList, changeDogsList] = useState<DogData[]>([])
+  const [dogsList, changeDogsList] = useState<IncomingDogData[]>([])
   const {dogsData} = useProfileDataStore();
 
   const getDogs = (searchString: string) => {

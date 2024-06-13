@@ -1,4 +1,5 @@
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
+import {HistoryRecord} from "./index";
 
 export enum GENDER {
   MALE = 'MALE',
@@ -7,66 +8,26 @@ export enum GENDER {
 
 export enum DOG_TYPES {
   PUPPY = 'PUPPY',
-  DOG = 'DOG',
+  STUD = 'STUD',
   MALE_DOG = 'MALE_DOG',
   FEMALE_DOG = 'FEMALE_DOG',
 }
 
-export type BaseDogData = { // в момент добавления щенка у него может не быть ни полной клички, ни документов
-  profileId: ObjectId | string; // либо ID добавившего человека,  либо ID владельца (зависит от поля isLinkedToOwner)
-  litterId: ObjectId | string | null; // когда собаку добавляем к уже имеющемуся помету
-  isLinkedToOwner: boolean;
-  breedId: ObjectId | null;
-  gender: GENDER;
-  dateOfBirth: string;
-  // dateOfDeath: string;
-  name: string | null; // домашняя кличка (может быть даже цвет ошейника)
-  color: string | null;
-  puppyCardId: ObjectId | string | null; // ссылка на документ (щенячку)
-  puppyCardNumber: string | null;
-  microchipNumber: string | null;
-  tattooNumber: string | null;
-  fullName: string | null; // имя как в документах (null на случай когда добавляют щенков вместе с пометом)
-  isNeutered: boolean | null; // данные о кастрации, null для собак, у которых isLinkedToOwner: false
+
+export type PuppyReproductiveHistory = {
+  heatIds: null;
+  mateIds: null;
+  pregnancyIds: null;
+  birthIds: null;
+  litterIds: null;
 }
 
-export type Puppy = BaseDogData & {
-  type: DOG_TYPES.PUPPY;
-  reproductiveHistory: PuppyReproductiveHistory;
-  pedigreeNumber: null;
-  pedigreeId: null;
-  treatmentIds: null;
-  diagnosticIds: null;
-}
-
-export type NewDog = BaseDogData & { // взрослой собаке (не принадлежащей пользователю) добавляется номер родословной и полная кличка
-  pedigreeNumber: string | null;
-  pedigreeId: null;
-}
-
-export type Dog = NewDog & { // в базу данных взрослая собака добавляется с пустым списком пометов в репр. истории
-  reproductiveHistory: DogReproductiveHistory;
-  type: DOG_TYPES.DOG;
-  treatmentIds: null;
-  diagnosticIds: null;
-  // isLinkedToOwner: false;
-}
-
-export type ExtendedDog = NewDog & {
-  diagnosticIds: ObjectId[]; // автоматически добавляется при добавлении собаки
-  treatmentIds: ObjectId[];
-  pedigreeId: ObjectId | null; // ссылка на документ (родуха)
-  // isLinkedToOwner: true;
-}
-
-export type MaleExtendedDog = ExtendedDog & {
-  reproductiveHistory: MaleReproductiveHistory;
-  type: DOG_TYPES.MALE_DOG;
-}
-
-export type FemaleExtendedDog = ExtendedDog & {
-  reproductiveHistory: FemaleReproductiveHistory;
-  type: DOG_TYPES.FEMALE_DOG,
+export type DogReproductiveHistory = {
+  heatIds: null;
+  mateIds: null;
+  pregnancyIds: null;
+  birthIds: null;
+  litterIds: ObjectId[];
 }
 
 export type MaleReproductiveHistory = {
@@ -85,35 +46,68 @@ export type FemaleReproductiveHistory = {
   litterIds: ObjectId[];
 }
 
-type DogReproductiveHistory = {
-  heatIds: null;
-  mateIds: null;
-  pregnancyIds: null;
-  birthIds: null;
-  litterIds: ObjectId[];
+type ReproductiveHistory = {
+  heatIds: null | ObjectId[];
+  mateIds: null | ObjectId[];
+  pregnancyIds: null | ObjectId[];
+  birthIds: null | ObjectId[];
+  litterIds: null | ObjectId[];
 }
 
-type PuppyReproductiveHistory = {
-  heatIds: null;
-  mateIds: null;
-  pregnancyIds: null;
-  birthIds: null;
-  litterIds: null;
+export type DatabaseDog = {
+  name: string | null; // домашняя кличка (может быть даже цвет ошейника)
+  fullName: string; // todo добавить null на случай когда добавляют щенков вместе с пометом
+  dateOfBirth: string;
+  dateOfDeath: string;
+  breedId: ObjectId | null;
+  gender: GENDER;
+  microchipNumber: string | null;
+  tattooNumber: string | null;
+  pedigreeNumber: string | null;
+  color: string | null;
+  isNeutered: boolean | null; // данные о кастрации, null для собак, у которых isLinkedToOwner: false
+
+  creatorProfileId: ObjectId;
+  ownerProfileId: ObjectId | null;
+  breederProfileId: ObjectId | null;
+
+  litterId: ObjectId | null; // в базе данных тут только ObjectId, но клиенту будем отдавать HistoryRecord
+  reproductiveHistory: ReproductiveHistory;
+  treatmentIds: ObjectId[] | null;
+  diagnosticIds: ObjectId[] | null;
+
+  puppyCardId: ObjectId | null; // ссылка на документ (щенячку)
+  puppyCardNumber: string | null;
+  type: DOG_TYPES;
+  pedigreeId: ObjectId | null;
 }
 
-export type DatabaseDog = Puppy | Dog | MaleExtendedDog | FemaleExtendedDog;
+export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHistory' | 'diagnosticIds' | 'treatmentIds'> & {
+  litterData: HistoryRecord | null;
+  diagnostics: HistoryRecord[] | null;
+  treatments: HistoryRecord[] | null;
+  vaccinations: HistoryRecord[] | null;
+  reproductiveHistory: {
+    litters: HistoryRecord[] | null;
+    heats: ObjectId[] | null;
+    mates: ObjectId[] | null;
+    births: ObjectId[] | null;
+  }
+}
 
-export type BaseDogInfo = Pick<BaseDogData,
-  | 'litterId'
-  | 'breedId'
-  | 'gender'
-  | 'dateOfBirth'
-  | 'color'
+export type RawDogFields =
   | 'name'
   | 'fullName'
+  | 'dateOfBirth'
+  | 'dateOfDeath'
+  | 'gender'
   | 'microchipNumber'
   | 'tattooNumber'
+  | 'pedigreeNumber'
+  | 'color'
   | 'isNeutered'
-> & {
-  litterTitle: string | null;
+
+export type RawDogData = Pick<DatabaseDog, RawDogFields> & {
+  litterId: string | null;
+  breedId: string | null;
 }

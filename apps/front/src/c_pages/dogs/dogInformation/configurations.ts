@@ -9,5 +9,5 @@ export const dogBaseDataFields= [
   'pedigreeNumber',
   'color',
   'isNeutered',
-  'litterTitle'
+  'litterData'
 ] as const;

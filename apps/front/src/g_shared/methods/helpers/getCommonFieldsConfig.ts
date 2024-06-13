@@ -1,8 +1,8 @@
-import {Breed, DogData} from "../../types";
+import {Breed, IncomingDogData} from "../../types";
 import {formatSingleDate} from "./dateTimeHelpers";
 import {GENDER} from "../../types/dog";
 
-export const getCommonFieldsConfig = (fieldName: string, dog: DogData, breed: Breed) => {
+export const getCommonFieldsConfig = (fieldName: string, dog: IncomingDogData, breed: Breed) => {
   switch (fieldName) {
     case 'dateOfBirth': return {
       key: fieldName,
@@ -10,11 +10,11 @@ export const getCommonFieldsConfig = (fieldName: string, dog: DogData, breed: Br
       link: false,
       linkValue: null,
     }
-    case 'litterTitle': return {
+    case 'litterData': return {
       key: fieldName,
-      value: dog.litterTitle || '-',
-      link: !!dog.litterId,
-      linkValue: `/dogs/litter/${dog.litterId}`,
+      value: dog.litterData ? dog.litterData.title : '-',
+      link: !!dog?.litterData?.id,
+      linkValue: `/dogs/litter/${dog.litterData ? dog.litterData.id : ''}`,
     }
     case 'isNeutered': return {
       key: fieldName,

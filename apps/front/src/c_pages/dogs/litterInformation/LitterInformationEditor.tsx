@@ -1,19 +1,19 @@
 import {useEffect, useState} from "react";
 import {useParams} from "wouter";
-import {LitterData} from "../../../g_shared/types";
+import {IncomingLitterData, OutgoingLitterData} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import {updateBaseLitterInfo} from "../../../g_shared/methods/api";
 
 const LitterInformationEditor = () => {
-  const [litter, changeLitter] = useState<LitterData | null>(null);
+  const [litter, changeLitter] = useState<IncomingLitterData | null>(null);
 
   const params: {id: string} = useParams();
 
   const {getLitterById, setLittersData, littersData} = useProfileDataStore();
 
   const handleInputChange = (key, value) => {
-    changeLitter((prevState): LitterData => (
+    changeLitter((prevState): IncomingLitterData => (
       {...prevState, [key]: value}
     ))
   }
@@ -29,7 +29,7 @@ const LitterInformationEditor = () => {
   }, [params])
 
   const handleSubmit = () => {
-    const newBaseLitterInfo: {comments: string} = {
+    const newBaseLitterInfo: Pick<OutgoingLitterData, 'comments'> = {
       comments: litter.comments
     }
     updateBaseLitterInfo(newBaseLitterInfo, litter._id).then(

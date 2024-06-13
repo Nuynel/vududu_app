@@ -1,49 +1,8 @@
 import {MongoClient, ObjectId, WithId} from "mongodb";
-import {Breed, DatabaseDog, DatabaseEvent, EVENT_TYPE, Litter} from "../types";
+import {HistoryRecord, DatabaseDog, DatabaseEvent, EVENT_TYPE, DatabaseLitter, ClientLitter, ClientDog} from "../types";
 import {findEntityById} from "./db_methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "./error_messages_methods";
-
-type HistoryRecord = {
-  id: string | ObjectId,
-  date: string[] | null,
-  title: string | null,
-}
-
-type CommonClientDogFields = 'profileId' | 'litterId' | 'isLinkedToOwner' | 'gender'
-  | 'dateOfBirth' | 'name' | 'color' | 'puppyCardId' | 'puppyCardNumber' | 'microchipNumber' | 'tattooNumber'
-  | 'fullName' | 'isNeutered' | 'type' | 'pedigreeNumber' | 'pedigreeId'
-
-type ClientDog = Pick<DatabaseDog, CommonClientDogFields> & {
-  _id: ObjectId;
-  breedId: ObjectId | null;
-  litterData: {
-    date: string[] | null,
-    title: string | null,
-  }
-  diagnostics: null | ObjectId[] | HistoryRecord[];
-  treatments: null | ObjectId[] | HistoryRecord[];
-  vaccinations: null | ObjectId[] | HistoryRecord[];
-  reproductiveHistory: {
-    litters: null | HistoryRecord[];
-    heats: null | ObjectId[] | HistoryRecord[];
-    mates: null | ObjectId[] | HistoryRecord[];
-    births: null | ObjectId[] | HistoryRecord[];
-  }
-}
-
-type ClientLitter = Litter & {
-  fatherFullName: string | null,
-  fatherName: string | null,
-  motherFullName: string | null,
-  motherName: string | null,
-  litterTitle: string,
-  puppiesData: {
-    id: ObjectId | string,
-    name: string | null,
-    fullName: string | null,
-  }[]
-}
 
 export const formatSingleDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -54,7 +13,7 @@ export const formatSingleDate = (dateString: string) => {
   return `${day}.${month}.${year}`;
 };
 
-export const constructLitterForClient = async (client: MongoClient, rawLitterData: WithId<Litter>): Promise<ClientLitter> => {
+export const constructLitterForClient = async (client: MongoClient, rawLitterData: WithId<DatabaseLitter>): Promise<ClientLitter> => {
 
   // todo добавить номер родословных отца и матери, список документов (общепометка, договор вязки, акт вязки)
 
@@ -65,12 +24,10 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
 
   const parentNames = {
     fatherFullName: father.fullName,
-    fatherName: father.name,
     motherFullName: mother.fullName,
-    motherName: mother.name,
   }
 
-  const litterTitle = `${formatSingleDate(rawLitterData.dateOfBirth)}, ${father.name}/${mother.name}`
+  const litterTitle = `${formatSingleDate(rawLitterData.dateOfBirth)}, ${father.fullName}/${mother.fullName}`
 
   const puppiesData: (WithId<DatabaseDog> | null)[] = (await Promise.all(rawLitterData.puppyIds.map(
     puppyId => findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(puppyId))
@@ -82,15 +39,13 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
     litterTitle,
     puppiesData: puppiesData.map(puppyData => {
       if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
-      return { id: puppyData._id, name: puppyData.name, fullName: puppyData.fullName }
+      return { id: puppyData._id.toHexString(), name: puppyData.name, fullName: puppyData.fullName }
     })
   }
 }
 
-const getMainLitterData = async (client: MongoClient, litterId: string | ObjectId | null) => {
-
-  if (!litterId) return {title: null, date: null}
-  const litter = await findEntityById(client, COLLECTIONS.LITTERS, new ObjectId(litterId))
+const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<HistoryRecord> => {
+  const litter = await findEntityById(client, COLLECTIONS.LITTERS, litterId)
 
   if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 94});
 
@@ -99,16 +54,11 @@ const getMainLitterData = async (client: MongoClient, litterId: string | ObjectI
 
   if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 99});
 
-  return {date: [litter.dateOfBirth], title: `${father.name}/${mother.name}`}
-}
-
-const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<HistoryRecord> => {
-  const {title, date} = await getMainLitterData(client, litterId)
-  return { id: litterId, title, date }
+  return {id: litterId, date: [litter.dateOfBirth], title: `${father.fullName}/${mother.fullName}`}
 }
 
 export const constructDogForClient = async (client: MongoClient, rawDogData: WithId<DatabaseDog>): Promise<ClientDog> => {
-  const litterData = await getMainLitterData(client, rawDogData.litterId)
+  const litterData = rawDogData.litterId ? await getLitterData(client, rawDogData.litterId) : null
 
   const littersData = rawDogData.reproductiveHistory.litterIds ? await Promise.all(
     rawDogData.reproductiveHistory.litterIds.map(

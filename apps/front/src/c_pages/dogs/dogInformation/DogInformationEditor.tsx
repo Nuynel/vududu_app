@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useParams} from "wouter";
-import {BaseDogInfo, DogData} from "../../../g_shared/types";
+import {IncomingDogData, IncomingLitterData, OutgoingDogData} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {getFormatTimezoneOffset} from "../../../g_shared/methods/helpers";
 import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
@@ -10,8 +10,8 @@ import {useBreeds} from "../../../f_entities/hooks/useBreeds";
 
 
 const DogInformationEditor = () => {
-  const [dog, changeDog] = useState<DogData | null>(null);
-  const [litters, changeLitters] = useState<{_id: string, litterTitle: string}[]>([]);
+  const [dog, changeDog] = useState<IncomingDogData | null>(null);
+  const [litters, changeLitters] = useState<Pick<IncomingLitterData, '_id' | 'litterTitle'>[]>([]);
 
   const params: {id: string} = useParams();
 
@@ -25,25 +25,30 @@ const DogInformationEditor = () => {
         if (value && value.includes('Z')) {
           const dateWithTimeZone = value.replace('Z', getFormatTimezoneOffset())
           return changeDog(
-            (prevState): DogData => (
-              {...prevState, [key]: dateWithTimeZone, litterId: null, litterTitle: null}
+            (prevState): IncomingDogData => (
+              {...prevState, [key]: dateWithTimeZone, litterData: null}
             ))
         }
         if (value && value.length >= 10) {
           const dateWithTime = (new Date(value)).setHours(12)
           const dateWithTimeZone = (new Date(dateWithTime)).toISOString().replace('Z', getFormatTimezoneOffset())
           return changeDog(
-            (prevState): DogData => (
-              {...prevState, [key]: dateWithTimeZone, litterId: null, litterTitle: null}
+            (prevState): IncomingDogData => (
+              {...prevState, [key]: dateWithTimeZone, litterData: null}
             ))
         }
         return changeDog(
-          (prevState): DogData => (
-            {...prevState, [key]: value, litterId: null, litterTitle: null}
+          (prevState): IncomingDogData => (
+            {...prevState, [key]: value, litterData: null}
           ))
       }
+      case 'breedId': {
+        changeDog((prevState): IncomingDogData => (
+          {...prevState, [key]: value, litterData: prevState[key] === value ? prevState.litterData : null}
+        ))
+      }
       default: {
-        changeDog((prevState): DogData => (
+        changeDog((prevState): IncomingDogData => (
           {...prevState, [key]: value}
         ))
       }
@@ -62,7 +67,7 @@ const DogInformationEditor = () => {
 
   useEffect(() => {
     if (dog) {
-      getLittersByDate(dog.dateOfBirth).then(({litters}) => {
+      getLittersByDate(dog.dateOfBirth, dog.breedId).then(({litters}) => {
         changeLitters(litters.map(
           ({_id}) => ({_id, litterTitle: getLitterById(_id).litterTitle})
         ))
@@ -72,12 +77,12 @@ const DogInformationEditor = () => {
   }, [dog])
 
   const handleSubmit = () => {
-    const newBaseDogInfo: BaseDogInfo = {
-      litterId: dog.litterId,
-      litterTitle: dog.litterTitle, //todo зачем тут litterTitle?
+    const newBaseDogInfo: OutgoingDogData = {
+      litterId: dog.litterData?.id || null,
       breedId: dog.breedId,
       gender: dog.gender,
       dateOfBirth: dog.dateOfBirth,
+      dateOfDeath: dog.dateOfDeath,
       color: dog.color,
       name: dog.name,
       fullName: dog.fullName,

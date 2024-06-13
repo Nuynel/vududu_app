@@ -1,9 +1,14 @@
 import {create} from "zustand";
 import {
-  DogData,
-  LitterData,
-  ProfileData, ConnectedOrganisations, KennelConnectedOrganizations, BreederConnectedOrganizations,
-  ProfileStorage, UserData, EventData, Breed,
+  IncomingDogData,
+  IncomingLitterData,
+  ProfileData,
+  ConnectedOrganisations,
+  BreederConnectedOrganizations,
+  ProfileStorage,
+  UserData,
+  EventData,
+  Breed,
 } from "../../g_shared/types";
 
 type ProfileDataStore = {
@@ -27,17 +32,17 @@ type ProfileDataStore = {
   connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations>
   setProfileData: (profileData: ProfileData) => void,
 
-  dogsData: DogData[],
-  setDogsData: (dogsData: DogData[]) => void,
-  pushNewDog: (dogData: DogData) => void,
-  getDogsByIds: () => Record<string, DogData>
-  getDogById: (id: string) => DogData,
+  dogsData: IncomingDogData[],
+  setDogsData: (dogsData: IncomingDogData[]) => void,
+  pushNewDog: (dogData: IncomingDogData) => void,
+  getDogsByIds: () => Record<string, IncomingDogData>
+  getDogById: (id: string) => IncomingDogData,
 
-  littersData: LitterData[]
-  setLittersData: (littersData: LitterData[]) => void,
-  pushNewLitter: (litterData: LitterData) => void,
-  getLittersByIds: () => Record<string, LitterData>
-  getLitterById: (id: string) => LitterData,
+  littersData: IncomingLitterData[]
+  setLittersData: (littersData: IncomingLitterData[]) => void,
+  pushNewLitter: (litterData: IncomingLitterData) => void,
+  getLittersByIds: () => Record<string, IncomingLitterData>
+  getLitterById: (id: string) => IncomingLitterData,
 
   eventsData: EventData[],
   setEventsData: (eventsData: EventData[]) => void,
