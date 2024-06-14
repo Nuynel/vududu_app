@@ -17,7 +17,7 @@ const initNewDogData: Omit<OutgoingDogData, 'litterId'> = {
   name: '',
   fullName: '',
   dateOfBirth: '',
-  dateOfDeath: '',
+  dateOfDeath: null,
   breedId: null,
   gender: null,
   microchipNumber: '',
@@ -41,7 +41,8 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
 
   const handleInputChange = (key, value) => {
     switch (key) {
-      case 'dateOfBirth': {
+      case 'dateOfBirth':
+      case 'dateOfDeath': {
         const dateWithTimezone = fixTimezone(value);
         return changeNewDogData(
           (prevState): Omit<OutgoingDogData, 'litterId'> => (
@@ -101,6 +102,36 @@ const AddNewDogForm = ({hideCard}: {hideCard: () => void}) => {
               <Text size={"small"} margin={{bottom: 'small'}}>
                 Если вашей породы нет в списке, вы можете добавить её в профиле
               </Text>
+            </Box>
+          )
+
+          if (key === 'dateOfDeath') return (
+            <Box key={fieldConfig.id}>
+              <Button
+                margin='small'
+                secondary
+                label="Добавить дату гибели"
+                onClick={() => handleInputChange('dateOfDeath', (new Date()).toISOString())}
+              />
+              {
+                newDogData[key] !== null && (
+                  <FormField
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <Field
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={newDogData[key]}
+                      format={fieldConfig.format}
+                      options={fieldConfig.options}
+                      placeholder={fieldConfig.placeholder}
+                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                    />
+                  </FormField>
+                )
+              }
             </Box>
           )
 

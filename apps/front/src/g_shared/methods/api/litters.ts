@@ -23,7 +23,6 @@ export async function getLittersByDate(date: string, breedId: string | null)
   : Promise<{litters: Pick<IncomingLitterData, '_id' | 'litterTitle'>[]}> {
   try{
     const queryParams = new URLSearchParams({date, breedId: breedId || ''}).toString();
-    console.log(queryParams)
     return await fetch(`${URL}/api/litters?${queryParams}`, {
       method: 'GET',
       headers: {

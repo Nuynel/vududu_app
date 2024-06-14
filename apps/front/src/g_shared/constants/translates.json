@@ -9,7 +9,11 @@
   },
   "dateOfBirth": {
     "ru": "Дата рождения",
-    "en": "Date of Birth"
+    "en": "Date of birth"
+  },
+  "dateOfDeath": {
+    "ru": "Дата гибели",
+    "en": "Date of death"
   },
   "date": {
     "ru": "Дата",

@@ -24,6 +24,13 @@ export const newDogFormConfig = {
     format: 'dd/mm/yyyy',
     handler: ({value}, key, method) => method(key, value),
   },
+  dateOfDeath: {
+    component: DateInput,
+    id: 'date-of-death-input-id',
+    label: 'Дата гибели',
+    format: 'dd/mm/yyyy',
+    handler: ({value}, key, method) => method(key, value),
+  },
   breedId: {
     component: Select,
     id: 'breed-id-input-id',

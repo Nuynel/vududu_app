@@ -18,7 +18,7 @@ export type IncomingDogData = {
   name: string | null;
   fullName: string; // имя как в документах (null на случай когда добавляют щенков вместе с пометом)
   dateOfBirth: string;
-  dateOfDeath: string;
+  dateOfDeath: string | null;
   breedId: string | null;
   gender: GENDER;
   microchipNumber: string | null;

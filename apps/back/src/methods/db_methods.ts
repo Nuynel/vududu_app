@@ -33,7 +33,7 @@ export const modifyNestedArrayField = async <T extends Document> (
   identifierFieldName: FIELDS_NAMES,
   modifiedFieldName: FIELDS_NAMES,
   pushedId: ObjectId | null,
-  modifyType: '$push' | '$set' | '$pull' = '$push'
+  modifyType: '$push' | '$set' | '$pull' | '$addToSet' = '$push'
 ) => {
   return await client.db(DB_NAME).collection<T>(collectionName).updateOne(
     { [identifierFieldName]: identifierId } as Filter<T>,
@@ -51,11 +51,12 @@ export const modifyNestedArrayFieldById = async <T extends Document>(
   identifierId: ObjectId,
   pushedId: ObjectId,
   modifiedFieldName: FIELDS_NAMES,
+  modifyType: '$push' | '$set' | '$pull' | '$addToSet' = '$push'
 ) => {
   return await client.db(DB_NAME).collection<T>(collectionName).updateOne(
     { _id: identifierId } as Filter<T>,
     {
-      $push: {
+      [modifyType]: {
         [modifiedFieldName]: pushedId,
       }
     } as UpdateFilter<T>

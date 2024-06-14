@@ -35,7 +35,7 @@ type Props = {
 const commonDogEventFields = ['date', 'dogId', 'status', 'comments']
 
 const BaseInfoFieldsByEntity = {
-  dog: ['name', 'fullName', 'dateOfBirth', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
+  dog: ['name', 'fullName', 'dateOfBirth', 'dateOfDeath', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
   heat: [...commonDogEventFields],
   treatment: [...commonDogEventFields, 'medication', 'validity'],
@@ -77,7 +77,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
         background={'white'}
         border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
       >
-        <Heading level={3}>
+        <Heading level={3} margin={{vertical: "small"}}>
           {title}
         </Heading>
       </Box>
@@ -88,6 +88,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
         >
           {BaseInfoFieldsByEntity[entityType].map((key) => {
             const fieldConfig = baseInfoFieldsConfig[key]
+            const hasPuppies = 'reproductiveHistory' in entity && !!entity.reproductiveHistory.litters.length;
 
             switch (key) {
               case 'name':
@@ -220,6 +221,38 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                   </FormField>
                 )
               }
+              case 'dateOfDeath': {
+                return (
+                  <Box key={fieldConfig.id}>
+                    {entity[key] === null && (
+                      <Button
+                        margin='small'
+                        secondary
+                        label="Добавить дату гибели"
+                        onClick={() => handleInputChange('dateOfDeath', (new Date()).toISOString())}
+                      />
+                    )}
+                    {
+                      entity[key] !== null && (
+                        <FormField
+                          name={fieldConfig.label}
+                          htmlFor={fieldConfig.id}
+                          label={fieldConfig.label}
+                        >
+                          <DateInput
+                            disabled={entityType === 'litter'}
+                            id={fieldConfig.id}
+                            name={fieldConfig.label}
+                            value={entity[key]}
+                            format='dd.mm.yyyy'
+                            onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                          />
+                        </FormField>
+                      )
+                    }
+                  </Box>
+                )
+              }
               case 'date': {
                 return (
                   <FormField
@@ -252,12 +285,12 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                       name={fieldConfig.label}
                       value={entity[key]}
                       options={[{
-                        disabled: false,
+                        disabled: hasPuppies,
                         id: GENDER.MALE,
                         value: GENDER.MALE,
                         label: 'Кобель'
                       }, {
-                        disabled: false,
+                        disabled: hasPuppies,
                         id: GENDER.FEMALE,
                         value: GENDER.FEMALE,
                         label: 'Сука'
@@ -298,6 +331,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                       name={fieldConfig.label}
                       value={breeds.find(breed => 'breedId' in entity && breed._id === entity.breedId)}
                       options={breeds}
+                      disabled={hasPuppies}
                       labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
                       onSearch={(searchString) => fieldConfig.searchHandler(searchString, handleSearch)}
                       placeholder='Название породы'

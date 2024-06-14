@@ -10,6 +10,12 @@ export const getCommonFieldsConfig = (fieldName: string, dog: IncomingDogData, b
       link: false,
       linkValue: null,
     }
+    case 'dateOfDeath': return {
+      key: fieldName,
+      value: dog.dateOfDeath ? formatSingleDate(dog.dateOfDeath) : '-',
+      link: false,
+      linkValue: null,
+    }
     case 'litterData': return {
       key: fieldName,
       value: dog.litterData ? dog.litterData.title : '-',

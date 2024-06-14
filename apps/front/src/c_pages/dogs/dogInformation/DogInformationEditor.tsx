@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useParams} from "wouter";
 import {IncomingDogData, IncomingLitterData, OutgoingDogData} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
-import {getFormatTimezoneOffset} from "../../../g_shared/methods/helpers";
+import {fixTimezone} from "../../../g_shared/methods/helpers";
 import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
@@ -20,31 +20,19 @@ const DogInformationEditor = () => {
   const {getInitialData} = useGetInitialData()
 
   const handleInputChange = (key, value) => {
+    const originalDogData = getDogById(dog._id)[key];
     switch (key) {
-      case 'dateOfBirth': {
-        if (value && value.includes('Z')) {
-          const dateWithTimeZone = value.replace('Z', getFormatTimezoneOffset())
-          return changeDog(
-            (prevState): IncomingDogData => (
-              {...prevState, [key]: dateWithTimeZone, litterData: null}
-            ))
-        }
-        if (value && value.length >= 10) {
-          const dateWithTime = (new Date(value)).setHours(12)
-          const dateWithTimeZone = (new Date(dateWithTime)).toISOString().replace('Z', getFormatTimezoneOffset())
-          return changeDog(
-            (prevState): IncomingDogData => (
-              {...prevState, [key]: dateWithTimeZone, litterData: null}
-            ))
-        }
+      case 'dateOfBirth':
+      case 'dateOfDeath': {
+        const dateWithTimezone = fixTimezone(value);
         return changeDog(
           (prevState): IncomingDogData => (
-            {...prevState, [key]: value, litterData: null}
+            {...prevState, [key]: dateWithTimezone, litterData: dateWithTimezone === originalDogData ? originalDogData.litterData : null}
           ))
       }
       case 'breedId': {
-        changeDog((prevState): IncomingDogData => (
-          {...prevState, [key]: value, litterData: prevState[key] === value ? prevState.litterData : null}
+        return changeDog((prevState): IncomingDogData => (
+          {...prevState, [key]: value, litterData: value === originalDogData ? originalDogData.litterData : null}
         ))
       }
       default: {

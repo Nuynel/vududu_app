@@ -20,6 +20,12 @@ export const baseInfoFieldsConfig = {
     format: 'dd/mm/yyyy',
     handler: ({value}, key, method) => method(key, value),
   },
+  dateOfDeath: {
+    id: 'date-of-death-input-id',
+    label: 'Дата гибели',
+    format: 'dd/mm/yyyy',
+    handler: ({value}, key, method) => method(key, value),
+  },
   date: {
     id: 'date-input-id',
     label: 'Дата',

@@ -58,7 +58,7 @@ export type DatabaseDog = {
   name: string | null; // домашняя кличка (может быть даже цвет ошейника)
   fullName: string; // todo добавить null на случай когда добавляют щенков вместе с пометом
   dateOfBirth: string;
-  dateOfDeath: string;
+  dateOfDeath: string | null;
   breedId: ObjectId | null;
   gender: GENDER;
   microchipNumber: string | null;

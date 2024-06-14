@@ -18,19 +18,18 @@ import {
 } from "../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {
-  RawDogData,
   ClientDog,
   DatabaseDog,
   DatabaseEvent,
-  DOG_TYPES,
-  GENDER,
-  // Litter,
   DatabaseLitter,
-  PuppyReproductiveHistory,
-  DogReproductiveHistory,
-  MaleReproductiveHistory,
-  FemaleReproductiveHistory,
   DatabaseProfile,
+  DOG_TYPES,
+  DogReproductiveHistory,
+  FemaleReproductiveHistory,
+  GENDER,
+  MaleReproductiveHistory,
+  PuppyReproductiveHistory,
+  RawDogData,
 } from "../types";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
@@ -88,8 +87,8 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
       await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
-      if (profile && newDog.breedId && !profile.breedIds.includes(new ObjectId(newDog.breedId))) {
-        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS);
+      if (profile && newDog.breedId) {
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS, '$addToSet');
       }
       const dog = await constructDogForClient(client, {...newDog, _id: dogId})
       res.send({ message: 'Собака добавлена!', dog})
@@ -172,6 +171,8 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const {rawDogInfo} = req.body;
       const { id } = req.query;
 
+      const previousDogData: WithId<DatabaseDog> | null = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
+      if (!previousDogData) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 191})
       await updateBaseDogInfoById(
         client,
         new ObjectId(id),
@@ -189,9 +190,24 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         FIELDS_NAMES.ID,
         FIELDS_NAMES.PUPPY_IDS,
         new ObjectId(id),
+        '$addToSet'
       )
-      if (profile && rawDogInfo.breedId && !profile.breedIds.includes(new ObjectId(rawDogInfo.breedId))) {
-        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(rawDogInfo.breedId), FIELDS_NAMES.BREED_IDS);
+
+      const isAssociatedLitterChanged = !!rawDogInfo.litterId && (previousDogData.litterId !== new ObjectId(rawDogInfo.litterId))
+      const isAssociatedLitterRemoved = !rawDogInfo.litterId
+
+      if (previousDogData.litterId && (isAssociatedLitterChanged || isAssociatedLitterRemoved)) await modifyNestedArrayField(
+        client,
+        COLLECTIONS.LITTERS,
+        new ObjectId(previousDogData.litterId),
+        FIELDS_NAMES.ID,
+        FIELDS_NAMES.PUPPY_IDS,
+        new ObjectId(id),
+        '$pull'
+      )
+
+      if (profile && rawDogInfo.breedId) {
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(rawDogInfo.breedId), FIELDS_NAMES.BREED_IDS, '$addToSet');
       }
       res.status(200).send({message: 'Base dog info was updated successfully!'})
     } catch (e) {
