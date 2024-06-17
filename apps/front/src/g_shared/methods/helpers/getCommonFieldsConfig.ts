@@ -20,7 +20,7 @@ export const getCommonFieldsConfig = (fieldName: string, dog: IncomingDogData, b
       key: fieldName,
       value: dog.litterData ? dog.litterData.title : '-',
       link: !!dog?.litterData?.id,
-      linkValue: `/dogs/litter/${dog.litterData ? dog.litterData.id : ''}`,
+      linkValue: `/litters/litter/${dog.litterData ? dog.litterData.id : ''}`,
     }
     case 'isNeutered': return {
       key: fieldName,

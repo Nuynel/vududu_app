@@ -10,12 +10,14 @@ import ConfirmEmail from "../../c_pages/confirm_email/ConfirmEmail";
 import CreateProfile from "../../c_pages/profile/CreateProfile";
 import DogInformation from "../../c_pages/dogs/dogInformation/DogInformation";
 import DogInformationEditor from "../../c_pages/dogs/dogInformation/DogInformationEditor";
+import DogInformationCreator from "../../c_pages/dogs/dogInformation/AddNewDogForm";
 import LitterInformation from "../../c_pages/dogs/litterInformation/LitterInformation";
 import LitterInformationEditor from "../../c_pages/dogs/litterInformation/LitterInformationEditor";
 import EventInformation from "../../c_pages/events/eventInformation/EventInformation";
 import EventInfoEditor from "../../c_pages/events/eventInformation/EventInfoEditor";
 import Pedigree from "../../c_pages/pedigree/Pedigree";
 import PasswordRecovery from "../../c_pages/password_recovery/PasswordRecovery";
+import LitterInformationCreator from "../../c_pages/dogs/litterInformation/AddNewLitterForm";
 
 export const componentsMapping = {
   [Paths.events]: {
@@ -83,6 +85,11 @@ export const componentsMapping = {
     private: true,
     path: Paths.dog_editor,
   },
+  [Paths.dog_creator]: {
+    component: DogInformationCreator,
+    private: true,
+    path: Paths.dog_creator,
+  },
   [Paths.litter]: {
     component: LitterInformation,
     private: true,
@@ -92,6 +99,11 @@ export const componentsMapping = {
     component: LitterInformationEditor,
     private: true,
     path: Paths.litter_editor,
+  },
+  [Paths.litter_creator]: {
+    component: LitterInformationCreator,
+    private: true,
+    path: Paths.litter_creator,
   },
   [Paths.event]: {
     component: EventInformation,

@@ -7,6 +7,7 @@ import {formatSingleDate} from "../../../g_shared/methods/helpers";
 import {BLOCK_TYPES} from "../../../g_shared/types/components";
 import {getFieldsConfigFromPuppiesList} from "../helpers";
 import {litterBaseDataFields} from './configurations'
+import {Paths} from "../../../g_shared/constants/routes";
 
 const LitterInformation = () => {
   const [litter, setLitter] = useState<IncomingLitterData | null>(null);
@@ -24,7 +25,7 @@ const LitterInformation = () => {
 
 
   const openLitterEditor = () => {
-    setLocation(`/dogs/litter/${params.id}/editor`);
+    setLocation(`/litters/litter/${params.id}/editor`);
   }
 
   const getCardsConfig = (): BlocksConfig => {
@@ -34,13 +35,13 @@ const LitterInformation = () => {
           key: fieldName,
           value: litter.fatherFullName,
           link: true,
-          linkValue: `/dogs/${litter.fatherId}`,
+          linkValue: `/dogs/dog/${litter.fatherId}`,
         }
         case 'motherFullName': return {
           key: fieldName,
           value:  litter.motherFullName,
           link: true,
-          linkValue: `/dogs/${litter.motherId}`,
+          linkValue: `/dogs/dog/${litter.motherId}`,
         }
         case 'dateOfBirth': return {
           key: fieldName,
@@ -76,7 +77,7 @@ const LitterInformation = () => {
     <EntityPage
       config={getCardsConfig()}
       openBaseInfoEditor={openLitterEditor}
-      closeEntityPage={() => setLocation('/dogs')}
+      closeEntityPage={() => setLocation(Paths.dogs)}
     />
   )
 }

@@ -17,6 +17,6 @@ export const getFieldsConfigFromPuppiesList = (puppies: {id: string, name: strin
     key: puppy.id,
     value: puppy.fullName || puppy.name,
     link: true,
-    linkValue: `/dogs/${puppy.id}`
+    linkValue: `/dogs/dog/${puppy.id}`
   }))
 }

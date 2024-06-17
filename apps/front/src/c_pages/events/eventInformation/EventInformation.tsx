@@ -50,7 +50,7 @@ const EventInformation = () => {
           key: fieldName,
           value: getDogName(),
           link: true,
-          linkValue: `/dogs/${event.dogId}`,
+          linkValue: `/dogs/dog/${event.dogId}`,
         }
         case 'status': return {
           key: fieldName,

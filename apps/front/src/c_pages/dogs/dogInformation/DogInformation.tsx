@@ -7,6 +7,7 @@ import {BLOCK_TYPES} from "../../../g_shared/types/components";
 import {getFieldsConfigFromHistoryRecords} from "../helpers";
 import {dogBaseDataFields} from './configurations'
 import {getCommonFieldsConfig} from "../../../g_shared/methods/helpers/getCommonFieldsConfig";
+import {Paths} from "../../../g_shared/constants/routes";
 
 const DogInformation = () => {
   const [dog, setDog] = useState<IncomingDogData | null>(null);
@@ -28,11 +29,11 @@ const DogInformation = () => {
   if (!dog) return null;
 
   const openDogEditor = () => {
-    setLocation(`/dogs/${params.id}/editor`);
+    setLocation(`/dogs/dog/${params.id}/editor`);
   }
 
   const closeDogPage = () => {
-    setLocation('/dogs');
+    setLocation(Paths.dogs);
   }
 
   const getCardsConfig = (): BlocksConfig => {
@@ -59,7 +60,7 @@ const DogInformation = () => {
         {
           blockName: 'litters',
           blockType: BLOCK_TYPES.ARRAY,
-          blockFields: getFieldsConfigFromHistoryRecords(dog.reproductiveHistory.litters, '/dogs/litter')
+          blockFields: getFieldsConfigFromHistoryRecords(dog.reproductiveHistory.litters, '/litters/litter')
         },
       ]
     }

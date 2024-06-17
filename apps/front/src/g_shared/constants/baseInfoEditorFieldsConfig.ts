@@ -139,5 +139,30 @@ export const baseInfoFieldsConfig = {
     label: 'Продолжительность действия в неделях',
     placeholder: '12',
     handler: (value, key, method) => method(key, value),
+  },
+  fatherId: {
+    id: 'father-id-input-id',
+    label: 'Отец',
+    placeholder: 'Полная кличка кобеля',
+    labelKey: 'fullName',
+    handler: (event, key, method) => method(key, event.option._id),
+    searchHandler: (searchString, method) => method(searchString, GENDER.MALE),
+    valueGetter: (dogsList, fatherId) => {dogsList.find(stud => stud._id === fatherId)},
+  },
+  motherId: {
+    id: 'mother-id-input-id',
+    label: 'Мать',
+    placeholder: 'Полная кличка суки',
+    labelKey: 'fullName',
+    handler: (event, key, method) => method(key, event.option._id),
+    searchHandler: (searchString, method) => method(searchString, GENDER.FEMALE),
+    valueGetter: (dogsList, motherId) => {dogsList.find(stud => stud._id === motherId)},
+  },
+  puppyIds: {
+    id: 'puppies-id-input-id',
+    label: 'Щенки',
+    placeholder: 'Выберите щенков',
+    labelKey: 'fullName',
+    handler: (event, key, method) => method(key, event.option._id),
   }
 } as const;

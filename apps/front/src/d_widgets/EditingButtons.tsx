@@ -5,12 +5,13 @@ import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
 
 type Props = {
   isEditingModeActive: boolean,
-  children: React.ReactNode,
+  children?: React.ReactNode,
   switchEditingMode: () => void,
   showPopup: () => void,
+  openCreator: () => void,
 }
 
-const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showPopup}: Props) => {
+const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showPopup, openCreator}: Props) => {
   const {isSmall} = useResponsiveGrid()
   const getBlockWidth = () => {
     return isSmall ? '100%' : window.innerWidth - 250
@@ -58,7 +59,7 @@ const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showP
         fill={false}
         style={{width: '48px', borderRadius: '24px'}}
         primary
-        onClick={showPopup}
+        onClick={openCreator}
       />
     </Box>
   )

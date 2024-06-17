@@ -74,6 +74,7 @@ const CalendarScreen = () => {
         isEditingModeActive={massEditing}
         switchEditingMode={() => switchEditingMode(!massEditing)}
         showPopup={() => setShow(true)}
+        openCreator={() => {}}
       >
         {massEditing && <ActivateButton eventTypeFilter={eventTypeFilter} activate={() => {}}/>}
       </EditingButtons>

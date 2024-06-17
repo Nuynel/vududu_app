@@ -1,5 +1,12 @@
 import * as React from 'react'
-import {Breed, IncomingDogData, EventData, IncomingLitterData} from "../g_shared/types";
+import {
+  Breed,
+  IncomingDogData,
+  EventData,
+  IncomingLitterData,
+  RawDogFields,
+  RawLitterFields
+} from "../g_shared/types";
 import {GENDER} from "../g_shared/types/dog";
 import {baseInfoFieldsConfig} from '../g_shared/constants/baseInfoEditorFieldsConfig'
 import {
@@ -14,7 +21,7 @@ import {
   RadioButtonGroup,
   CheckBox,
   Select,
-  TextArea
+  TextArea, SelectMultiple
 } from "grommet";
 import {CloseIcon} from '../g_shared/icons';
 import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
@@ -24,12 +31,21 @@ import {getRuTranslate} from "../g_shared/constants/translates";
 type Props = {
   title: string,
   entityType: keyof typeof BaseInfoFieldsByEntity,
-  entity: IncomingDogData | (EventData & {status: string}) | IncomingLitterData,
+  entity:
+    | IncomingDogData
+    | Pick<IncomingDogData, RawDogFields | 'litterData'>
+    | Pick<IncomingLitterData, RawLitterFields>
+    | (EventData & {status: string})
+    | IncomingLitterData,
   handleInputChange: (key, value) => void,
   handleSubmit: () => void,
-  handleSearch?: (string) => void,
+  handleSearch?: (searchString: string) => void,
+  handleSearchByGender?: (searchString: string, gender: GENDER) => void,
   litters?: {_id: string, litterTitle: string}[],
   breeds?: Breed[],
+  maleDogsList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
+  femaleDogsList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
+  puppiesList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
 }
 
 const commonDogEventFields = ['date', 'dogId', 'status', 'comments']
@@ -37,6 +53,7 @@ const commonDogEventFields = ['date', 'dogId', 'status', 'comments']
 const BaseInfoFieldsByEntity = {
   dog: ['name', 'fullName', 'dateOfBirth', 'dateOfDeath', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
+  newLitter: ['fatherId', 'motherId', 'dateOfBirth', 'breedId', 'comments', 'puppyIds'],
   heat: [...commonDogEventFields],
   treatment: [...commonDogEventFields, 'medication', 'validity'],
   vaccination: [...commonDogEventFields, 'medication', 'validity'],
@@ -46,7 +63,7 @@ const isFutureEvent = (entity) => {
   return !entity.activated || (entity.status === 'overdue' || entity.status === 'planned')
 }
 
-const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSearch, handleSubmit, litters, breeds}: Props) => {
+const BaseInfoEditor = (props: Props) => {
   const {getDogById} = useProfileDataStore();
   return (
     <Grid
@@ -78,17 +95,17 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
         border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
       >
         <Heading level={3} margin={{vertical: "small"}}>
-          {title}
+          {props.title}
         </Heading>
       </Box>
       <Box gridArea='content' overflow='scroll' background={'white'}>
         <Form
-          onSubmit={handleSubmit}
+          onSubmit={props.handleSubmit}
           style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}
         >
-          {BaseInfoFieldsByEntity[entityType].map((key) => {
+          {BaseInfoFieldsByEntity[props.entityType].map((key) => {
             const fieldConfig = baseInfoFieldsConfig[key]
-            const hasPuppies = 'reproductiveHistory' in entity && !!entity.reproductiveHistory.litters.length;
+            const hasPuppies = 'reproductiveHistory' in props.entity && !!props.entity.reproductiveHistory.litters.length;
 
             switch (key) {
               case 'name':
@@ -109,9 +126,9 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <TextInput
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
+                      value={props.entity[key]}
                       placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -127,9 +144,9 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <TextArea
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
+                      value={props.entity[key]}
                       placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -146,9 +163,9 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                       disabled
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={getDogById(entity[key]).name || getDogById(entity[key]).fullName}
+                      value={getDogById(props.entity[key]).name || getDogById(props.entity[key]).fullName}
                       placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -165,18 +182,18 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                       disabled
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={getRuTranslate(entity[key])}
+                      value={getRuTranslate(props.entity[key])}
                       placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
-                    { ['heat', 'vaccination', 'treatment'].includes(entityType) && (entity[key] === 'overdue' || entity[key] === 'planned') && (
+                    { ['heat', 'vaccination', 'treatment'].includes(props.entityType) && (props.entity[key] === 'overdue' || props.entity[key] === 'planned') && (
                       <Button
                         focusIndicator={false}
                         margin='small'
                         label={'Активировать'}
                         fill={false}
                         primary
-                        onClick={() => handleInputChange('status', 'archived')}
+                        onClick={() => props.handleInputChange('status', 'archived')}
                       />
                     )}
                   </FormField>
@@ -195,9 +212,9 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                       disabled
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
+                      value={props.entity[key]}
                       placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -211,12 +228,12 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     label={fieldConfig.label}
                   >
                     <DateInput
-                      disabled={entityType === 'litter'}
+                      disabled={props.entityType === 'litter'}
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
+                      value={props.entity[key]}
                       format='dd.mm.yyyy'
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -224,28 +241,28 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
               case 'dateOfDeath': {
                 return (
                   <Box key={fieldConfig.id}>
-                    {entity[key] === null && (
+                    {props.entity[key] === null && (
                       <Button
                         margin='small'
                         secondary
                         label="Добавить дату гибели"
-                        onClick={() => handleInputChange('dateOfDeath', (new Date()).toISOString())}
+                        onClick={() => props.handleInputChange('dateOfDeath', (new Date()).toISOString())}
                       />
                     )}
                     {
-                      entity[key] !== null && (
+                      props.entity[key] !== null && (
                         <FormField
                           name={fieldConfig.label}
                           htmlFor={fieldConfig.id}
                           label={fieldConfig.label}
                         >
                           <DateInput
-                            disabled={entityType === 'litter'}
+                            disabled={props.entityType === 'litter'}
                             id={fieldConfig.id}
                             name={fieldConfig.label}
-                            value={entity[key]}
+                            value={props.entity[key]}
                             format='dd.mm.yyyy'
-                            onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                            onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                           />
                         </FormField>
                       )
@@ -262,12 +279,12 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     label={fieldConfig.label}
                   >
                     <DateInput
-                      disabled={!isFutureEvent(entity)}
+                      disabled={!isFutureEvent(props.entity)}
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
-                      format={entityType === 'heat' ? 'dd/mm/yyyy-dd/mm/yyyy' : 'dd.mm.yyyy'}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      value={props.entity[key]}
+                      format={props.entityType === 'heat' ? 'dd/mm/yyyy-dd/mm/yyyy' : 'dd.mm.yyyy'}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -283,7 +300,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <RadioButtonGroup
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={entity[key]}
+                      value={props.entity[key]}
                       options={[{
                         disabled: hasPuppies,
                         id: GENDER.MALE,
@@ -296,7 +313,7 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                         label: 'Сука'
                       }]}
                       // placeholder={fieldConfig.placeholder}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -312,8 +329,8 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <CheckBox
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      checked={entity[key]}
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      checked={props.entity[key]}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -329,13 +346,13 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <Select
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={breeds.find(breed => 'breedId' in entity && breed._id === entity.breedId)}
-                      options={breeds}
-                      disabled={hasPuppies}
+                      value={props.breeds.find(breed => 'breedId' in props.entity && breed._id === props.entity.breedId)}
+                      options={props.breeds}
+                      disabled={hasPuppies || props.entityType === 'newLitter'}
                       labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
-                      onSearch={(searchString) => fieldConfig.searchHandler(searchString, handleSearch)}
+                      onSearch={(searchString) => fieldConfig.searchHandler(searchString, props.handleSearch)}
                       placeholder='Название породы'
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )
@@ -351,11 +368,54 @@ const BaseInfoEditor = ({title, entityType, entity, handleInputChange, handleSea
                     <Select
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={litters.find(litter => 'litterData' in entity && litter._id === entity.litterData?.id)}
-                      options={litters}
+                      value={props.litters.find(litter => 'litterData' in props.entity && litter._id === props.entity.litterData?.id)}
+                      options={props.litters}
                       labelKey='litterTitle'
                       placeholder='дд/мм/гггг, Отец/Мать'
-                      onChange={(event) => fieldConfig.handler(event, key, handleInputChange)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                    />
+                  </FormField>
+                )
+              }
+              case 'fatherId':
+              case 'motherId': {
+                const dogsList = key === 'fatherId' ? props.maleDogsList : props.femaleDogsList
+                return (
+                  <FormField
+                    key={fieldConfig.id}
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <Select
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={fieldConfig.valueGetter(dogsList, props.entity[key])}
+                      options={dogsList}
+                      labelKey={fieldConfig.labelKey}
+                      placeholder={fieldConfig.placeholder}
+                      onSearch={(searchString) => fieldConfig.searchHandler(searchString, props.handleSearchByGender)}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                    />
+                  </FormField>
+                )
+              }
+              case 'puppyIds': {
+                return (
+                  <FormField
+                    key={fieldConfig.id}
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <SelectMultiple
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={props.entity[key].map(puppyId => props.puppiesList.find(puppy => puppy._id === puppyId))}
+                      options={props.puppiesList}
+                      labelKey={fieldConfig.labelKey}
+                      placeholder={fieldConfig.placeholder}
+                      onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
                 )

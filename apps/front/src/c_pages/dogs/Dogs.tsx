@@ -1,18 +1,16 @@
 import {useState} from "react";
-import AddNewDogForm from "./AddNewDogForm";
-import {Box, Button, Grid, Layer} from "grommet";
+import {Box, Grid} from "grommet";
 import DogsList from "./DogsList";
 import LittersList from "./LittersList";
-import AddNewLitterForm from "./AddNewLitterForm";
-import {CloseIcon} from "../../g_shared/icons";
 import SectionHeader from "../../e_features/SectionHeader";
 import * as React from "react";
 import EditingButtons from "../../d_widgets/EditingButtons";
 import DeletePopup from "../../e_features/DeletePopup";
 import {deleteDog, deleteLitter} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
-import {useRoute} from "wouter";
+import {useLocation, useRoute} from "wouter";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {Paths} from "../../g_shared/constants/routes";
 
 enum DATA_TYPES {
   DOGS = 'DOGS',
@@ -22,11 +20,11 @@ enum DATA_TYPES {
 const DogsScreen = () => {
   const [show, setShow] = useState(false);
   const [matchDogsRoutes] = useRoute('/dogs/*?')
+  const [, setLocation] = useLocation();
   const [activeDataType, setActiveDataType] = useState<DATA_TYPES>(matchDogsRoutes ? DATA_TYPES.DOGS : DATA_TYPES.LITTERS)
   const [editingMode, switchEditingMode] = useState<boolean>(false)
   const [selectedId, changeSelectedId] = useState<string | null>(null)
   const {getInitialData} = useGetInitialData()
-  const hideCard = () => setShow(false)
 
   const {isSmall, columns, rows, areas} = useResponsiveGrid();
 
@@ -62,8 +60,8 @@ const DogsScreen = () => {
         <SectionHeader
           activeDataType={activeDataType}
           buttons={[
-            {type: DATA_TYPES.DOGS, label: 'Собаки', link: '/dogs'},
-            {type: DATA_TYPES.LITTERS, label: 'Пометы', link: '/litters'},
+            {type: DATA_TYPES.DOGS, label: 'Собаки', link: Paths.dogs},
+            {type: DATA_TYPES.LITTERS, label: 'Пометы', link: Paths.litters},
           ]}
           isLink
           setActiveDataType={setActiveDataType}
@@ -92,39 +90,18 @@ const DogsScreen = () => {
         isEditingModeActive={editingMode}
         switchEditingMode={() => switchEditingMode(!editingMode)}
         showPopup={() => setShow(true)}
-      >
+        openCreator={() => setLocation(matchDogsRoutes ? Paths.dog_creator : Paths.litter_creator)}
+      />
 
-      </EditingButtons>
-
-      {show && !editingMode && (
-        <Layer
-          onEsc={() => setShow(false)}
-          onClickOutside={() => setShow(false)}
-        >
-          {activeDataType === DATA_TYPES.DOGS ? (
-            <AddNewDogForm hideCard={hideCard}/>
-          ) : (
-            <AddNewLitterForm hideCard={hideCard}/>
-          )}
-          <Box style={{height: '48px', position: "absolute", top: 16, right: 20}}>
-            <Button
-              focusIndicator={false}
-              icon={<CloseIcon color='white' />}
-              fill={false}
-              style={{width: '48px', borderRadius: '24px'}}
-              primary
-              onClick={hideCard}
-            />
-          </Box>
-      </Layer>
-      )}
-      {show && editingMode && (
-        <DeletePopup text={getDeletePopupText()} closePopup={() => setShow(false)} deleteEntities={deleteEntities}/>
+      {show && (
+        <DeletePopup
+          text={getDeletePopupText()}
+          closePopup={() => setShow(false)}
+          deleteEntities={deleteEntities}
+        />
       )}
     </Grid>
   )
 }
 
 export default DogsScreen
-
-
