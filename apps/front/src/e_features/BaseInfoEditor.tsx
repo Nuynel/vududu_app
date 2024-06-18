@@ -65,6 +65,7 @@ const isFutureEvent = (entity) => {
 
 const BaseInfoEditor = (props: Props) => {
   const {getDogById} = useProfileDataStore();
+
   return (
     <Grid
       rows={['60px', 'auto']}
@@ -232,7 +233,7 @@ const BaseInfoEditor = (props: Props) => {
                       id={fieldConfig.id}
                       name={fieldConfig.label}
                       value={props.entity[key]}
-                      format='dd.mm.yyyy'
+                      format='дд.мм.гггг'
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
@@ -261,7 +262,7 @@ const BaseInfoEditor = (props: Props) => {
                             id={fieldConfig.id}
                             name={fieldConfig.label}
                             value={props.entity[key]}
-                            format='dd.mm.yyyy'
+                            format='дд.мм.гггг'
                             onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                           />
                         </FormField>
@@ -283,7 +284,7 @@ const BaseInfoEditor = (props: Props) => {
                       id={fieldConfig.id}
                       name={fieldConfig.label}
                       value={props.entity[key]}
-                      format={props.entityType === 'heat' ? 'dd/mm/yyyy-dd/mm/yyyy' : 'dd.mm.yyyy'}
+                      format={props.entityType === 'heat' ? 'дд.мм.гггг-дд.мм.гггг' : 'дд.мм.гггг'}
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
@@ -371,7 +372,7 @@ const BaseInfoEditor = (props: Props) => {
                       value={props.litters.find(litter => 'litterData' in props.entity && litter._id === props.entity.litterData?.id)}
                       options={props.litters}
                       labelKey='litterTitle'
-                      placeholder='дд/мм/гггг, Отец/Мать'
+                      placeholder='дд.мм.гггг, Отец/Мать'
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
