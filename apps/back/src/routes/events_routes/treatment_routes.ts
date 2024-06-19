@@ -1,59 +1,71 @@
 import {Application} from "express";
-import {MongoClient, ObjectId} from "mongodb";
+import {MongoClient, ObjectId, WithId} from "mongodb";
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc';
 import {
-  AntiparasiticTreatment,
+  DatabaseDogEvent,
+  RawTreatmentFields,
+  RawAntiparasiticTreatmentData,
+  ClientAntiparasiticTreatment,
+  RawVaccinationData,
+  ClientVaccination,
   EVENT_TYPE,
   DatabaseDog,
   KennelProfile,
-  BreederProfile, Vaccination,
+  BreederProfile,
 } from "../../types";
 import {
   errorHandler,
   getCookiesPayload, getTimestamp,
   insertEntity,
   modifyNestedArrayFieldById, updateBaseTreatmentInfoById,
-  verifyProfileType
+  verifyProfileType,
+  shiftDatesWithTimezone,
 } from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
+import {CustomError, ERROR_NAME} from "../../methods/error_messages_methods";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export function shiftDatesWithTimezone(dateString: string, days: number): string {
-  // TODO не работает нормально с таймзонами
-  // Создание объекта dayjs с учётом временной зоны из исходной строки
-  const date = dayjs.tz(dateString);
-  // Добавление дней
-  const shiftedDate = date.add(days, 'day');
-  // Возвращение изменённой даты в исходном формате
-  return shiftedDate.format();
+// todo у меня планируется только следующее событие, а хорошо бы лпанировать череду повторяющихся через промежуток событий
+
+type PrepareNewTreatmentProps = Pick<
+  | RawAntiparasiticTreatmentData | RawVaccinationData,
+  | 'profileId' | 'comments' | 'dogId' | 'eventType'
+> & { client: MongoClient }
+
+type PrepareNewTreatment = Omit<DatabaseDogEvent, 'date' | 'activated' | 'eventType' | 'validity' | 'medication'> & {
+  eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT | EVENT_TYPE.VACCINATION
 }
 
-type PrepareNewTreatmentProps = {
-  client: MongoClient,
-  profileId: string,
-  comments: string,
-  dogId: string,
-  eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT | EVENT_TYPE.VACCINATION,
+type PostTreatmentReq = Omit<RawAntiparasiticTreatmentData, 'profileId' | 'activated'> & {
+  repeat: boolean
+  frequencyInDays: number
 }
 
-type TreatmentSample = Omit<AntiparasiticTreatment, 'date' | 'validity' | 'medication' | 'activated'>
- | Omit<Vaccination, 'date' | 'validity' | 'medication' | 'activated'>
-
-// type test = (Pick<AntiparasiticTreatment, 'date' | 'validity' | 'medication' | 'activated'>) => Promise<>
+type PostTreatmentRes = {
+  message: string
+  newEvents: (WithId<ClientAntiparasiticTreatment> | WithId<ClientVaccination>)[]
+}
 
 const prepareToNewTreatmentInsert = ({client, profileId, comments, dogId, eventType}: PrepareNewTreatmentProps) => {
-  const treatment: TreatmentSample = {
+  const treatment: PrepareNewTreatment = {
     profileId: new ObjectId(profileId),
     comments,
-    dogId: new ObjectId(dogId),
     eventType,
+    dogId: new ObjectId(dogId),
+    documentId: null,
+    diagnosticsType: null,
+    vet: null,
+    partnerId: null,
+    litterId: null,
   }
 
-  return async ({date, validity, medication, activated}: Pick<AntiparasiticTreatment, 'date' | 'validity' | 'medication' | 'activated'>) => {
+  return async (
+    {date, validity, medication, activated}: Pick<RawAntiparasiticTreatmentData | RawVaccinationData, 'date' | 'validity' | 'medication' | 'activated'>
+  ): Promise<{ treatment: ClientAntiparasiticTreatment | ClientVaccination, treatmentInsertedId: ObjectId }> => {
     const { insertedId: treatmentInsertedId } = await insertEntity(
       client,
       COLLECTIONS.EVENTS,
@@ -80,13 +92,15 @@ const prepareToNewTreatmentInsert = ({client, profileId, comments, dogId, eventT
 }
 
 export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
-  app.post('/api/treatment', async (req, res) => {
+  app.post<{}, PostTreatmentRes, PostTreatmentReq, {}>('/api/treatment', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/TREATMENT, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       const { date, comments, validity, medication, dogId, repeat, frequencyInDays, eventType } = req.body;
+
+      if (!date || !dogId) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'heat_routes', line: 84})
 
       const addNewTreatment = prepareToNewTreatmentInsert({client, profileId, comments, dogId, eventType})
 
@@ -105,7 +119,7 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
         treatment: nextTreatment,
         treatmentInsertedId: nextTreatmentInsertedId,
       } = await addNewTreatment({
-        date: [shiftDatesWithTimezone(date[0], frequencyInDays)],
+        date: shiftDatesWithTimezone(date, frequencyInDays),
         medication: null,
         validity: null,
         activated: false
@@ -113,25 +127,17 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
 
       return res.send({
         message: 'Антипаразитарная обработка добавлена!',
-        newEvents: [{
-          ...treatment,
-          _id: treatmentInsertedId
-        },
-          {
-            ...nextTreatment,
-            _id: nextTreatmentInsertedId
-          }]
+        newEvents: [
+          { ...treatment, _id: treatmentInsertedId },
+          {...nextTreatment, _id: nextTreatmentInsertedId }
+        ]
       })
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   })
 
-  app.put<
-    {},
-    {},
-    {baseTreatmentInfo: Pick<AntiparasiticTreatment | Vaccination, 'comments' | 'date' | 'activated' | 'validity' | 'medication'>
-    }, {id: string}>('/api/treatment', async (req, res) => {
+  app.put<{}, {}, {baseTreatmentInfo: Pick<DatabaseDogEvent, RawTreatmentFields>}, {id: string}>('/api/treatment', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/TREATMENT, profileId >>> ', profileId)

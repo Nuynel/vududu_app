@@ -1,51 +1,52 @@
 import {Application} from "express";
-import {MongoClient, ObjectId} from "mongodb";
-import dayjs from 'dayjs'
-import {BreederProfile, DatabaseDog, DatabaseEvent, EVENT_TYPE, Heat, KennelProfile} from "../../types";
+import {MongoClient, ObjectId, WithId} from "mongodb";
 import {
+  BreederProfile,
+  ClientHeat,
+  DatabaseDog,
+  DatabaseDogEvent,
+  RawHeatFields,
+  EVENT_TYPE,
+  KennelProfile,
+  RawHeatData,
+} from "../../types";
+import {
+  errorHandler,
+  getCookiesPayload,
+  getTimestamp,
   insertEntity,
   modifyNestedArrayFieldById,
-  getCookiesPayload,
-  verifyProfileType, errorHandler, getTimestamp,
   updateBaseHeatInfoById,
+  verifyProfileType,
+  shiftDatesWithTimezone,
 } from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
+import {CustomError, ERROR_NAME} from "../../methods/error_messages_methods";
 
-export function shiftDatesWithTimezone(dateStrings: string[], days: number): string[] {
-  return dateStrings.map(dateString => {
-    // Создание объекта dayjs с учётом временной зоны из исходной строки
-    const date = dayjs.tz(dateString);
-    // Добавление дней
-    const shiftedDate = date.add(days, 'day');
-    console.log('PREV => ', dateString, 'NEXT => ', shiftedDate.format())
-    // Возвращение изменённой даты в исходном формате
-    return shiftedDate.format();
-  });
-}
-
-type PrepareNewHeatProps = {
+type PrepareNewHeatProps = Pick<RawHeatData, 'profileId' | 'comments' | 'dogId' | 'eventType'> & {
   client: MongoClient,
-  profileId: string,
-  comments: string,
-  dogId: string,
 }
 
-type BaseHeatInfo = {
-  comments: string,
-  date: string[],
-  status: string,
+type PrepareNewHeat = Omit<DatabaseDogEvent, 'date' | 'activated' | 'eventType'> & {
+  eventType: EVENT_TYPE.HEAT
 }
 
-const prepareToNewHeatInsert = ({client, profileId, comments, dogId}: PrepareNewHeatProps) => {
-  const heat: Omit<Heat, 'date' | 'activated'> = {
+const prepareToNewHeatInsert = ({client, profileId, comments, dogId, eventType}: PrepareNewHeatProps) => {
+  const heat: PrepareNewHeat = {
     profileId: new ObjectId(profileId),
     comments,
+    eventType,
     dogId: new ObjectId(dogId),
-    connectedEvents: { mate: null },
-    eventType: EVENT_TYPE.HEAT,
+    validity: null,
+    medication: null,
+    documentId: null,
+    diagnosticsType: null,
+    vet: null,
+    partnerId: null,
+    litterId: null,
   }
 
-  return async ({date, activated}: {date: string[], activated: boolean}) => {
+  return async ({date, activated}: {date: string[], activated: boolean}): Promise<{ heat: ClientHeat, heatInsertedId: ObjectId }> => {
     const { insertedId: heatInsertedId } = await insertEntity(client, COLLECTIONS.EVENTS, {...heat, date, activated})
 
     await modifyNestedArrayFieldById<DatabaseDog>(
@@ -63,23 +64,35 @@ const prepareToNewHeatInsert = ({client, profileId, comments, dogId}: PrepareNew
       FIELDS_NAMES.EVENT_IDS,
     )
 
-    return { heat: {...heat, date, activated}, heatInsertedId };
+    return {
+      heat: {
+        comments: heat.comments,
+        date,
+        activated,
+        profileId: heat.profileId,
+        dogId: heat.dogId,
+        eventType: heat.eventType,
+      },
+      heatInsertedId
+    };
   }
 }
 
 export const initHeatRoutes = (app: Application, client: MongoClient) => {
-  app.post('/api/heat', async (req, res) => {
+  app.post<{}, {message: string, newEvents: WithId<ClientHeat>[]}, Omit<RawHeatData, 'activated' | 'profileId'> & {repeat: true, frequencyInDays: number}, {}>('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/HEAT, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
       // при создании течки мы не можем добавить к ней событие вязки, потому что вязка происходит после начала течки
-      const { date, comments, dogId, repeat, frequencyInDays } = req.body;
+      const { date, comments, dogId, repeat, frequencyInDays, eventType } = req.body;
 
-      const addNewHeat = prepareToNewHeatInsert({client, profileId, comments, dogId})
+      if (!date || !dogId) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'heat_routes', line: 84})
 
-      const activated = new Date(date) < new Date()
+      const addNewHeat = prepareToNewHeatInsert({client, profileId, comments, dogId, eventType})
+
+      const activated = new Date(date[0]) < new Date()
 
       const {heatInsertedId, heat} = await addNewHeat({date, activated})
 
@@ -102,7 +115,7 @@ export const initHeatRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.put<{}, {}, {baseHeatInfo: Pick<DatabaseEvent, 'comments' | 'date' | 'activated'>}, {id: string}>('/api/heat', async (req, res) => {
+  app.put<{}, {}, {baseHeatInfo: Pick<DatabaseDogEvent, RawHeatFields>}, {id: string}>('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/HEAT, profileId >>> ', profileId)

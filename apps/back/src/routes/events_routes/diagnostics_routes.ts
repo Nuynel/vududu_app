@@ -1,27 +1,28 @@
 import {Application} from "express";
-import {MongoClient} from "mongodb";
-import {
-  BreederProfile,
-  Diagnostics,
-  EVENT_TYPE,
-  KennelProfile
-} from "../../types";
-import {
-  insertEntity,
-  modifyNestedArrayFieldById,
-} from "../../methods";
+import {MongoClient, ObjectId} from "mongodb";
+import {BreederProfile, DatabaseDogEvent, EVENT_TYPE, KennelProfile, RawDiagnosticsData} from "../../types";
+import {insertEntity, modifyNestedArrayFieldById,} from "../../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../../constants";
 
 export const initDiagnosticsRoutes = (app: Application, client: MongoClient) => {
-  app.post('/api/diagnostics', async (req, res) => {
-    const { profileId, date, comments, dogId, documentId, diagnosticsType, vet, activated } = req.body
-    const diagnostics: Diagnostics = { profileId, date, comments, dogId, documentId, diagnosticsType, vet, eventType: EVENT_TYPE.DIAGNOSTICS, activated }
+  app.post<{}, { message: string }, RawDiagnosticsData, {}>('/api/diagnostics', async (req, res) => {
+    const diagnostics: DatabaseDogEvent = {
+      ...req.body,
+      eventType: EVENT_TYPE.DIAGNOSTICS,
+      validity: null,
+      medication: null,
+      partnerId: null,
+      litterId: null,
+      profileId: new ObjectId(req.body.profileId),
+      dogId: new ObjectId(req.body.dogId),
+      documentId: new ObjectId(req.body.documentId), // todo создние события и документа в одном запросе. ??в типе поменять documentId string => string | null??
+    }
     const { insertedId: diagnosticsInsertedId } = await insertEntity(client, COLLECTIONS.DIAGNOSTICS, diagnostics)
     // await modifyNestedHistoryArrayFieldById<DatabaseDog>(client, COLLECTIONS.DOGS, dogId, {
     //   title: `${date} => ${diagnosticsType}`,
     //   id: diagnosticsInsertedId
     // }, FIELDS_NAMES.DIAGNOSTIC_IDS)
-    await modifyNestedArrayFieldById<KennelProfile | BreederProfile>(client, COLLECTIONS.PROFILES, profileId, diagnosticsInsertedId, FIELDS_NAMES.EVENT_IDS)
+    await modifyNestedArrayFieldById<KennelProfile | BreederProfile>(client, COLLECTIONS.PROFILES, new ObjectId(req.body.profileId), diagnosticsInsertedId, FIELDS_NAMES.EVENT_IDS)
     res.send({ message: 'Диагностическое исследование добавлено!' })
   })
 }

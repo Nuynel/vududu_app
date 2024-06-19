@@ -6,17 +6,16 @@ import {
   DatabaseLitter,
   ContactList,
   Contact,
-  DatabaseEvent,
+  DatabaseDogEvent,
   DatabaseDog,
   GENDER,
-  AntiparasiticTreatment,
-  Vaccination,
   Breed,
   BreedIssue,
+  RawTreatmentFields,
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES, DB_NAME} from "../constants";
 
-type DatabaseTypes = DatabaseDog | User | DatabaseProfile | DatabaseLitter | History | Contact | ContactList | DatabaseEvent | Breed | BreedIssue
+type DatabaseTypes = DatabaseDog | User | DatabaseProfile | DatabaseLitter | History | Contact | ContactList | DatabaseDogEvent | Breed | BreedIssue
 
 export const insertEntity = async(
   client: MongoClient,
@@ -301,26 +300,26 @@ export const updateBaseLitterInfoById = async(
 export const updateBaseHeatInfoById = async(
   client: MongoClient,
   id: ObjectId,
-  newHeatInfo: Pick<DatabaseEvent, 'comments' | 'date' | 'activated'>
+  newHeatInfo: Pick<DatabaseDogEvent, 'comments' | 'date' | 'activated'>
 )=> {
-  await client.db(DB_NAME).collection<DatabaseEvent>(COLLECTIONS.EVENTS).updateOne(
-    { _id: id } as Filter<DatabaseEvent>,
+  await client.db(DB_NAME).collection<DatabaseDogEvent>(COLLECTIONS.EVENTS).updateOne(
+    { _id: id } as Filter<DatabaseDogEvent>,
     {
       $set: newHeatInfo
-    } as UpdateFilter<DatabaseEvent>
+    } as UpdateFilter<DatabaseDogEvent>
   )
 }
 
 export const updateBaseTreatmentInfoById = async(
   client: MongoClient,
   id: ObjectId,
-  newTreatmentInfo: Pick<AntiparasiticTreatment | Vaccination, 'comments' | 'date' | 'activated' | 'validity' | 'medication'>
+  newTreatmentInfo: Pick<DatabaseDogEvent, RawTreatmentFields>
 )=> {
-  await client.db(DB_NAME).collection<DatabaseEvent>(COLLECTIONS.EVENTS).updateOne(
-    { _id: id } as Filter<DatabaseEvent>,
+  await client.db(DB_NAME).collection<DatabaseDogEvent>(COLLECTIONS.EVENTS).updateOne(
+    { _id: id } as Filter<DatabaseDogEvent>,
     {
       $set: newTreatmentInfo
-    } as UpdateFilter<DatabaseEvent>
+    } as UpdateFilter<DatabaseDogEvent>
   )
 }
 

@@ -21,13 +21,13 @@ import {
 // удаление собак и пометов только по одному
 
 export const initEventRoutes = (app: Application, client: MongoClient) => {
-  app.delete('/api/events', async (req, res) => {
+  app.delete<{}, { message: string }, { eventsIds: string[] }, {}>('/api/events', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /DELETE/EVENTS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
-      const { eventsIds }: {eventsIds: string[]} = req.body
+      const { eventsIds } = req.body
       await Promise.all(eventsIds.map((eventId) => deleteEvent(new ObjectId(eventId), client)))
 
       res.send({ message: 'События удалены!' })

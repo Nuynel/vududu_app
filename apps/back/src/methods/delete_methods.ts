@@ -1,4 +1,4 @@
-import {DatabaseDog, DatabaseEvent, DatabaseProfile, EVENT_TYPE} from "../types";
+import {DatabaseDog, DatabaseDogEvent, DatabaseProfile, EVENT_TYPE} from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {MongoClient, ObjectId} from "mongodb";
 import {deleteEntityById, findEntityById, modifyNestedArrayField} from "./db_methods";
@@ -49,10 +49,10 @@ export const deleteEventFromLinkedEntities = async (eventId: ObjectId, dogId: Ob
 }
 
 export const deleteEvent = async (eventId: ObjectId, client: MongoClient) => {
-  const event = await findEntityById<DatabaseEvent>(client, COLLECTIONS.EVENTS, eventId)
+  const event = await findEntityById<DatabaseDogEvent>(client, COLLECTIONS.EVENTS, eventId)
   if (!event) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 53})
   const {profileId, dogId} = event
   await deleteEventFromLinkedEntities(eventId, dogId, profileId, getFieldNameByEventType(event.eventType), client)
-  const eventDeleteResult = await deleteEntityById<DatabaseEvent>(client, eventId, COLLECTIONS.EVENTS)
+  const eventDeleteResult = await deleteEntityById<DatabaseDogEvent>(client, eventId, COLLECTIONS.EVENTS)
   if (!eventDeleteResult.deletedCount) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'delete_methods', line: 57})
 }

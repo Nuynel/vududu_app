@@ -20,7 +20,7 @@ import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {
   ClientDog,
   DatabaseDog,
-  DatabaseEvent,
+  DatabaseDogEvent,
   DatabaseLitter,
   DatabaseProfile,
   DOG_TYPES,
@@ -229,13 +229,13 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       if (dog.treatmentIds?.length) {
         await Promise.all(dog.treatmentIds.map(async (eventId) => {
           await deleteEventFromProfile(eventId, new ObjectId(profileId), client)
-          await deleteEntityById<DatabaseEvent>(client, eventId, COLLECTIONS.EVENTS)
+          await deleteEntityById<DatabaseDogEvent>(client, eventId, COLLECTIONS.EVENTS)
         }))
       }
       if (dog.reproductiveHistory?.heatIds?.length) {
         await Promise.all(dog.reproductiveHistory?.heatIds.map(async (eventId) => {
           await deleteEventFromProfile(eventId, new ObjectId(profileId), client)
-          await deleteEntityById<DatabaseEvent>(client, eventId, COLLECTIONS.EVENTS)
+          await deleteEntityById<DatabaseDogEvent>(client, eventId, COLLECTIONS.EVENTS)
         }))
       }
 

@@ -19,16 +19,22 @@ import { Document } from './document';
 import { DatabaseLitter, ClientLitter, RawLitterData } from "./litter";
 
 import {
-  AntiparasiticTreatment,
-  Diagnostics,
-  Heat,
-  Mate,
-  Pregnancy,
-  Birth,
-  Registration,
-  DatabaseEvent,
-  Vaccination,
+  DatabaseDogEvent,
   EVENT_TYPE,
+
+  RawDiagnosticsFields,
+  RawDiagnosticsData,
+  ClientDiagnostics,
+
+  RawTreatmentFields,
+  RawAntiparasiticTreatmentData,
+  ClientAntiparasiticTreatment,
+  RawVaccinationData,
+  ClientVaccination,
+
+  RawHeatFields,
+  RawHeatData,
+  ClientHeat,
   // EVENT_STATUSES,
 } from './events'
 
@@ -100,16 +106,22 @@ export {
   ClientLitter,
   RawLitterData,
 
-  AntiparasiticTreatment,
-  Diagnostics,
-  Heat,
-  Mate,
-  Pregnancy,
-  Birth,
-  Registration,
-  DatabaseEvent,
-  Vaccination,
+  DatabaseDogEvent,
   EVENT_TYPE,
+
+  RawDiagnosticsFields,
+  RawDiagnosticsData,
+  ClientDiagnostics,
+
+  RawTreatmentFields,
+  RawAntiparasiticTreatmentData,
+  ClientAntiparasiticTreatment,
+  RawVaccinationData,
+  ClientVaccination,
+
+  RawHeatFields,
+  RawHeatData,
+  ClientHeat,
 
   DatabaseDog,
   DOG_TYPES,

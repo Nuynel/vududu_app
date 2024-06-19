@@ -1,5 +1,5 @@
 import {MongoClient, ObjectId, WithId} from "mongodb";
-import {HistoryRecord, DatabaseDog, DatabaseEvent, EVENT_TYPE, DatabaseLitter, ClientLitter, ClientDog} from "../types";
+import {HistoryRecord, DatabaseDog, DatabaseDogEvent, EVENT_TYPE, DatabaseLitter, ClientLitter, ClientDog} from "../types";
 import {findEntityById} from "./db_methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "./error_messages_methods";
@@ -66,11 +66,11 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
     )
   ) : rawDogData.reproductiveHistory.litterIds
 
-  let allTreatments: (WithId<DatabaseEvent> | null)[] = []
+  let allTreatments: (WithId<DatabaseDogEvent> | null)[] = []
 
   if (rawDogData.treatmentIds) {
     allTreatments = await Promise.all(rawDogData.treatmentIds.map(id => {
-      return findEntityById<DatabaseEvent>(client, COLLECTIONS.EVENTS, id)
+      return findEntityById<DatabaseDogEvent>(client, COLLECTIONS.EVENTS, id)
     }))
   }
 

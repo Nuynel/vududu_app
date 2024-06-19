@@ -45,6 +45,7 @@ import {deleteEventFromDog, deleteEventFromProfile, deleteEvent, getFieldNameByE
 
 import {constructDogForClient, constructLitterForClient} from "./data_methods";
 import {getCookiesPayload} from "./validation_methods";
+import dayjs from "dayjs";
 
 export const verifyProfileType = async (client: MongoClient, profileId: string) => {
   const profile: WithId<DatabaseProfile> | null = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
@@ -52,6 +53,17 @@ export const verifyProfileType = async (client: MongoClient, profileId: string) 
     throw new CustomError(ERROR_NAME.INVALID_PAYLOAD, {file: 'src/methods/index', line: 37})
   }
   return profile
+}
+
+function shiftDatesWithTimezone(dateStrings: string[], days: number): string[] {
+  return dateStrings.map(dateString => {
+    // Создание объекта dayjs с учётом временной зоны из исходной строки
+    const date = dayjs.tz(dateString);
+    // Добавление дней
+    const shiftedDate = date.add(days, 'day');
+    // Возвращение изменённой даты в исходном формате
+    return shiftedDate.format();
+  });
 }
 
 const getTimestamp = () => new Date().toISOString();
@@ -99,4 +111,5 @@ export {
   getTimestamp,
   hashPass,
   getAllDocuments,
+  shiftDatesWithTimezone,
 }
