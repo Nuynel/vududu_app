@@ -10,7 +10,6 @@ import {
   ClientAntiparasiticTreatment,
   RawVaccinationData,
   ClientVaccination,
-  EVENT_TYPE,
   DatabaseDog,
   KennelProfile,
   BreederProfile,
@@ -36,22 +35,16 @@ type PrepareNewTreatmentProps = Pick<
   | 'profileId' | 'comments' | 'dogId' | 'eventType'
 > & { client: MongoClient }
 
-type PrepareNewTreatment = Omit<DatabaseDogEvent, 'date' | 'activated' | 'eventType' | 'validity' | 'medication'> & {
-  eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT | EVENT_TYPE.VACCINATION
-}
-
 type PostTreatmentReq = Omit<RawAntiparasiticTreatmentData, 'profileId' | 'activated'> & {
   repeat: boolean
   frequencyInDays: number
 }
 
-type PostTreatmentRes = {
-  message: string
-  newEvents: (WithId<ClientAntiparasiticTreatment> | WithId<ClientVaccination>)[]
-}
+type PostTreatmentRes = {message: string, newEvents: WithId<ClientAntiparasiticTreatment | ClientVaccination>[]}
+
 
 const prepareToNewTreatmentInsert = ({client, profileId, comments, dogId, eventType}: PrepareNewTreatmentProps) => {
-  const treatment: PrepareNewTreatment = {
+  const treatment: Omit<ClientAntiparasiticTreatment | ClientVaccination, 'date' | 'activated' | 'validity' | 'medication'> = {
     profileId: new ObjectId(profileId),
     comments,
     eventType,
@@ -65,7 +58,7 @@ const prepareToNewTreatmentInsert = ({client, profileId, comments, dogId, eventT
 
   return async (
     {date, validity, medication, activated}: Pick<RawAntiparasiticTreatmentData | RawVaccinationData, 'date' | 'validity' | 'medication' | 'activated'>
-  ): Promise<{ treatment: ClientAntiparasiticTreatment | ClientVaccination, treatmentInsertedId: ObjectId }> => {
+  ): Promise<WithId<ClientAntiparasiticTreatment | ClientVaccination>> => {
     const { insertedId: treatmentInsertedId } = await insertEntity(
       client,
       COLLECTIONS.EVENTS,
@@ -87,7 +80,14 @@ const prepareToNewTreatmentInsert = ({client, profileId, comments, dogId, eventT
       FIELDS_NAMES.EVENT_IDS,
     )
 
-    return { treatment: {...treatment, date, validity, medication, activated}, treatmentInsertedId };
+    return {
+      ...treatment,
+      date,
+      validity,
+      medication,
+      activated,
+      _id: treatmentInsertedId,
+    };
   }
 }
 
@@ -106,19 +106,12 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
 
       const activated = new Date(date[0]) < new Date()
 
-      const { treatment, treatmentInsertedId } =
-        await addNewTreatment({date, validity, medication, activated})
+      const treatment = await addNewTreatment({date, validity, medication, activated})
 
       if (!repeat) return res.send(
-        { message: 'Антипаразитарная обработка добавлена!', newEvents: [{
-            ...treatment,
-            _id: treatmentInsertedId
-          }] })
+        { message: 'Антипаразитарная обработка добавлена!', newEvents: [treatment] })
 
-      const {
-        treatment: nextTreatment,
-        treatmentInsertedId: nextTreatmentInsertedId,
-      } = await addNewTreatment({
+      const nextTreatment = await addNewTreatment({
         date: shiftDatesWithTimezone(date, frequencyInDays),
         medication: null,
         validity: null,
@@ -127,17 +120,14 @@ export const initTreatmentRoutes = (app: Application, client: MongoClient) => {
 
       return res.send({
         message: 'Антипаразитарная обработка добавлена!',
-        newEvents: [
-          { ...treatment, _id: treatmentInsertedId },
-          {...nextTreatment, _id: nextTreatmentInsertedId }
-        ]
+        newEvents: [treatment, nextTreatment]
       })
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   })
 
-  app.put<{}, {}, {baseTreatmentInfo: Pick<DatabaseDogEvent, RawTreatmentFields>}, {id: string}>('/api/treatment', async (req, res) => {
+  app.put<{}, {message: string}, {baseTreatmentInfo: Pick<DatabaseDogEvent, RawTreatmentFields>}, {id: string}>('/api/treatment', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/TREATMENT, profileId >>> ', profileId)

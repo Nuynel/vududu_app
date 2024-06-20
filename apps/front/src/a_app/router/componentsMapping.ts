@@ -18,6 +18,7 @@ import EventInfoEditor from "../../c_pages/events/eventInformation/EventInfoEdit
 import Pedigree from "../../c_pages/pedigree/Pedigree";
 import PasswordRecovery from "../../c_pages/password_recovery/PasswordRecovery";
 import LitterInformationCreator from "../../c_pages/dogs/litterInformation/AddNewLitterForm";
+import AddNewEventForm from "../../c_pages/events/eventInformation/AddNewEventForm";
 
 export const componentsMapping = {
   [Paths.events]: {
@@ -105,10 +106,15 @@ export const componentsMapping = {
     private: true,
     path: Paths.litter_creator,
   },
+  [Paths.event_creator]: {
+    component: AddNewEventForm,
+    private: true,
+    path: Paths.event_creator,
+  },
   [Paths.event]: {
     component: EventInformation,
     private: true,
-    path: Paths.litter_editor,
+    path: Paths.event,
   },
   [Paths.event_editor]: {
     component: EventInfoEditor,

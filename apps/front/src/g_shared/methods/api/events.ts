@@ -1,4 +1,4 @@
-import {EventData, Treatment, Heat} from "../../types";
+import {OutgoingTreatmentData, OutgoingHeatData, IncomingEventData} from "../../types";
 import {checkResponse, URL} from "./index";
 
 const eventURLs = {
@@ -7,7 +7,10 @@ const eventURLs = {
   VACCINATION: 'treatment',
 }
 
-export async function createEvent(data: Omit<EventData, '_id' | 'activated'>) {
+type CreateEventData = Omit<(OutgoingTreatmentData | OutgoingHeatData), '_id' | 'activated' | 'profileId'>
+
+export async function createEvent(data: CreateEventData)
+  : Promise<{message: string, newEvents: IncomingEventData[]}>{
   try{
     return await fetch(`${URL}/api/${eventURLs[data.eventType]}`, {
       method: 'POST',
@@ -25,7 +28,8 @@ export async function createEvent(data: Omit<EventData, '_id' | 'activated'>) {
   }
 }
 
-export async function updateHeatInfo (baseHeatInfo: Pick<Heat, 'comments' | 'date' | 'activated'>, id: string) {
+export async function updateHeatInfo (baseHeatInfo: Pick<OutgoingHeatData, 'comments' | 'date' | 'activated'>, id: string)
+  : Promise<{message: string}>{
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/heat?${queryParams}`, {
@@ -44,7 +48,8 @@ export async function updateHeatInfo (baseHeatInfo: Pick<Heat, 'comments' | 'dat
   }
 }
 
-export async function updateTreatmentInfo (baseTreatmentInfo: Pick<Treatment, 'comments' | 'date' | 'activated' | 'validity' | 'medication'>, id: string) {
+export async function updateTreatmentInfo (baseTreatmentInfo: Pick<OutgoingTreatmentData, 'comments' | 'date' | 'activated' | 'validity' | 'medication'>, id: string)
+  : Promise<{message: string}> {
   try {
     const queryParams = new URLSearchParams({id}).toString();
     return await fetch(`${URL}/api/treatment?${queryParams}`, {
@@ -63,7 +68,7 @@ export async function updateTreatmentInfo (baseTreatmentInfo: Pick<Treatment, 'c
   }
 }
 
-export async function deleteEventsByIds (eventsIds: string[]) {
+export async function deleteEventsByIds (eventsIds: string[]): Promise<{message: string}> {
   try {
     return await fetch(`${URL}/api/events`, {
       method: 'DELETE',

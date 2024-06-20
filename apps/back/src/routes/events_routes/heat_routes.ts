@@ -27,16 +27,17 @@ type PrepareNewHeatProps = Pick<RawHeatData, 'profileId' | 'comments' | 'dogId' 
   client: MongoClient,
 }
 
-type PrepareNewHeat = Omit<DatabaseDogEvent, 'date' | 'activated' | 'eventType'> & {
-  eventType: EVENT_TYPE.HEAT
-}
+type PostHeatPeq = Omit<RawHeatData, 'activated' | 'profileId'> & {repeat: true, frequencyInDays: number}
+
+type PostHeatPes = {message: string, newEvents: WithId<ClientHeat>[]}
 
 const prepareToNewHeatInsert = ({client, profileId, comments, dogId, eventType}: PrepareNewHeatProps) => {
-  const heat: PrepareNewHeat = {
+  const heat: Omit<ClientHeat, 'date' | 'activated'> = {
     profileId: new ObjectId(profileId),
     comments,
     eventType,
     dogId: new ObjectId(dogId),
+
     validity: null,
     medication: null,
     documentId: null,
@@ -46,7 +47,7 @@ const prepareToNewHeatInsert = ({client, profileId, comments, dogId, eventType}:
     litterId: null,
   }
 
-  return async ({date, activated}: {date: string[], activated: boolean}): Promise<{ heat: ClientHeat, heatInsertedId: ObjectId }> => {
+  return async ({date, activated}: {date: string[], activated: boolean}): Promise<WithId<ClientHeat>> => {
     const { insertedId: heatInsertedId } = await insertEntity(client, COLLECTIONS.EVENTS, {...heat, date, activated})
 
     await modifyNestedArrayFieldById<DatabaseDog>(
@@ -65,21 +66,16 @@ const prepareToNewHeatInsert = ({client, profileId, comments, dogId, eventType}:
     )
 
     return {
-      heat: {
-        comments: heat.comments,
-        date,
-        activated,
-        profileId: heat.profileId,
-        dogId: heat.dogId,
-        eventType: heat.eventType,
-      },
-      heatInsertedId
+      ...heat,
+      date,
+      activated,
+      _id: heatInsertedId,
     };
   }
 }
 
 export const initHeatRoutes = (app: Application, client: MongoClient) => {
-  app.post<{}, {message: string, newEvents: WithId<ClientHeat>[]}, Omit<RawHeatData, 'activated' | 'profileId'> & {repeat: true, frequencyInDays: number}, {}>('/api/heat', async (req, res) => {
+  app.post<{}, PostHeatPes, PostHeatPeq, {}>('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/HEAT, profileId >>> ', profileId)
@@ -94,28 +90,22 @@ export const initHeatRoutes = (app: Application, client: MongoClient) => {
 
       const activated = new Date(date[0]) < new Date()
 
-      const {heatInsertedId, heat} = await addNewHeat({date, activated})
+      const heat = await addNewHeat({date, activated})
 
-      if (!repeat) return res.send({ message: 'Течка добавлена!', newEvents: [{...heat, _id: heatInsertedId}] })
+      if (!repeat) return res.send({ message: 'Течка добавлена!', newEvents: [{...heat}] })
 
-      const {
-        heat: nextHeat,
-        heatInsertedId: nextHeatInsertedId,
-      } = await addNewHeat({date: shiftDatesWithTimezone(date, frequencyInDays), activated: false})
+      const nextHeat = await addNewHeat({date: shiftDatesWithTimezone(date, frequencyInDays), activated: false})
 
       return res.send({
         message: 'Течка добавлена!',
-        newEvents: [{...heat, _id: heatInsertedId}, {
-          ...nextHeat,
-          _id: nextHeatInsertedId
-        }],
+        newEvents: [heat, nextHeat],
       })
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   })
 
-  app.put<{}, {}, {baseHeatInfo: Pick<DatabaseDogEvent, RawHeatFields>}, {id: string}>('/api/heat', async (req, res) => {
+  app.put<{}, {message: string}, {baseHeatInfo: Pick<DatabaseDogEvent, RawHeatFields>}, {id: string}>('/api/heat', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/HEAT, profileId >>> ', profileId)

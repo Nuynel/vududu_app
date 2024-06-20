@@ -75,7 +75,7 @@ const DogInformationCreator = () => {
         return await getInitialData() // todo не перезапрашивать, а просто пушить локально
       })
       .then(() => window.history.back())
-      .catch((e) =>{ console.error(e) })
+      .catch((e) => console.error(e))
   }
 
   useEffect(() => {

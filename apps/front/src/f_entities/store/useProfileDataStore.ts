@@ -7,7 +7,7 @@ import {
   BreederConnectedOrganizations,
   ProfileStorage,
   UserData,
-  EventData,
+  IncomingEventData,
   Breed,
 } from "../../g_shared/types";
 
@@ -44,11 +44,11 @@ type ProfileDataStore = {
   getLittersByIds: () => Record<string, IncomingLitterData>
   getLitterById: (id: string) => IncomingLitterData,
 
-  eventsData: EventData[],
-  setEventsData: (eventsData: EventData[]) => void,
-  pushNewEvent: (eventData: EventData) => void,
-  getEventsByIds: () => Record<string, EventData>,
-  getEventById: (id: string) => EventData,
+  eventsData: IncomingEventData[],
+  setEventsData: (eventsData: IncomingEventData[]) => void,
+  pushNewEvent: (eventData: IncomingEventData) => void,
+  getEventsByIds: () => Record<string, IncomingEventData>,
+  getEventById: (id: string) => IncomingEventData,
 
   breedsData: Breed[],
   setBreedsData: (breedsData: Breed[]) => void,

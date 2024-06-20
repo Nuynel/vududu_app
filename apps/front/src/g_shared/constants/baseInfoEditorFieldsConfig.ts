@@ -1,4 +1,6 @@
 import {GENDER} from "../types/dog";
+import {CheckBox, RadioButtonGroup} from "grommet";
+import {EVENT_TYPE} from "../types/event";
 
 export const baseInfoFieldsConfig = {
   name: {
@@ -116,7 +118,7 @@ export const baseInfoFieldsConfig = {
     placeholder: 'Какие-либо заметки',
     handler: (event, key, method) => method(key, event.target.value),
   },
-  dogId: {
+  disabledDogId: {
     id: 'dog-id-input-id',
     label: 'Собака',
     placeholder: 'Бобик',
@@ -131,14 +133,14 @@ export const baseInfoFieldsConfig = {
   medication: {
     id: 'medication-input-id',
     label: 'Препарат',
-    placeholder: 'Запланировано',
-    handler: (value, key, method) => method(key, value),
+    placeholder: 'Милпразон',
+    handler: (value, key, method) => method(key, value.target.value),
   },
   validity: {
     id: 'validity-input-id',
     label: 'Продолжительность действия в неделях',
     placeholder: '12',
-    handler: (value, key, method) => method(key, value),
+    handler: (value, key, method) => method(key, value.target.value),
   },
   fatherId: {
     id: 'father-id-input-id',
@@ -147,7 +149,7 @@ export const baseInfoFieldsConfig = {
     labelKey: 'fullName',
     handler: (event, key, method) => method(key, event.option._id),
     searchHandler: (searchString, method) => method(searchString, GENDER.MALE),
-    valueGetter: (dogsList, fatherId) => {dogsList.find(stud => stud._id === fatherId)},
+    valueGetter: (dogsList, fatherId) => dogsList.find(stud => stud._id === fatherId),
   },
   motherId: {
     id: 'mother-id-input-id',
@@ -156,7 +158,16 @@ export const baseInfoFieldsConfig = {
     labelKey: 'fullName',
     handler: (event, key, method) => method(key, event.option._id),
     searchHandler: (searchString, method) => method(searchString, GENDER.FEMALE),
-    valueGetter: (dogsList, motherId) => {dogsList.find(stud => stud._id === motherId)},
+    valueGetter: (dogsList, motherId) => dogsList.find(stud => stud._id === motherId),
+  },
+  dogId: {
+    id: 'dog-id-input-id',
+    label: 'Собака',
+    placeholder: 'Полная кличка собаки',
+    labelKey: 'fullName',
+    handler: (event, key, method) => method(key, event.option._id),
+    searchHandler: (searchString, method) => method(searchString),
+    valueGetter: (dogsList, dogId) => dogsList.find(stud => stud._id === dogId),
   },
   puppyIds: {
     id: 'puppies-id-input-id',
@@ -164,5 +175,32 @@ export const baseInfoFieldsConfig = {
     placeholder: 'Выберите щенков',
     labelKey: 'fullName',
     handler: (event, key, method) => method(key, event.option._id),
+  },
+  eventType: {
+    id: 'event-type-input-id',
+    label: 'Тип события',
+    options: [{
+      disabled: false,
+      id: EVENT_TYPE.ANTIPARASITIC_TREATMENT,
+      value: EVENT_TYPE.ANTIPARASITIC_TREATMENT,
+      label: 'Антипаразитарная обработка'
+    }, {
+      disabled: false,
+      id: EVENT_TYPE.HEAT,
+      value: EVENT_TYPE.HEAT,
+      label: 'Течка'
+    }, {
+      disabled: false,
+      id: EVENT_TYPE.VACCINATION,
+      value: EVENT_TYPE.VACCINATION,
+      label: 'Вакцинация'
+    }],
+    handler: ({value}, key, method) => method(key, value),
+  },
+  repeat: {
+    label: 'Запланировать следующее событие',
+    id: 'repeat-checkbox-id',
+    toggle: true,
+    handler: (event, key, method) => method(key, event.target.checked),
   }
 } as const;

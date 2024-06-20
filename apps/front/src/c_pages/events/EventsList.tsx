@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
-import {DATA_TYPES, EVENT_TYPE, EventData} from "../../g_shared/types/event";
+import {DATA_TYPES, EVENT_TYPE, IncomingEventData} from "../../g_shared/types/event";
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import EntityList, {Entity} from "../../e_features/EntityList";
 import {compareDates, sortDates} from "../../g_shared/methods/helpers";
@@ -23,7 +23,7 @@ const EventsList = ({activeType, activeEventType, selectMode, selectedIds, switc
 
   const getDogName = (dogId) => dogsData.find(dogData => dogData._id === dogId).name
 
-  const getEntityList = (list: EventData[]): Entity[] => {
+  const getEntityList = (list: IncomingEventData[]): Entity[] => {
     return list.map(entity => ({
       _id: entity._id,
       icon: entity.eventType,

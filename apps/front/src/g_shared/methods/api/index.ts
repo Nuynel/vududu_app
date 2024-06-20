@@ -1,7 +1,7 @@
 import {
   UserData,
   ProfileData,
-  EventData,
+  IncomingEventData,
   Breed,
   IncomingDogData,
   IncomingLitterData
@@ -28,7 +28,7 @@ async function getInitialDataReq(): Promise<{
   profileData: ProfileData,
   dogs: IncomingDogData[],
   litters: IncomingLitterData[],
-  events: EventData[],
+  events: IncomingEventData[],
   breeds: Breed[],
 }> {
   try {

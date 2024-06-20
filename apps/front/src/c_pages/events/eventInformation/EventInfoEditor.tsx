@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {EventData, Heat, Treatment} from "../../../g_shared/types";
+import {IncomingEventData, OutgoingHeatData, OutgoingTreatmentData,} from "../../../g_shared/types";
 import {useParams} from "wouter";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {updateHeatInfo, updateTreatmentInfo} from "../../../g_shared/methods/api";
@@ -14,7 +14,7 @@ const getStatus = (dateDiff: number, isActivated: boolean) => {
   return 'planned'
 }
 const EventInfoEditor = () => {
-  const [event, changeEvent] = useState<EventData | null>(null);
+  const [event, changeEvent] = useState<IncomingEventData | null>(null);
   const [status, changeStatus] = useState<null | boolean>(null);
 
   const params: {id: string} = useParams();
@@ -27,7 +27,7 @@ const EventInfoEditor = () => {
         return changeStatus(true)
       }
       default: {
-        changeEvent((prevState): EventData => (
+        changeEvent((prevState): IncomingEventData => (
           {...prevState, [key]: value}
         ))
       }
@@ -48,7 +48,7 @@ const EventInfoEditor = () => {
   const handleSubmit = () => {
     switch (event.eventType) {
       case EVENT_TYPE.HEAT: {
-        const newBaseEventInfo: Pick<Heat, 'comments' | 'date' | 'activated'> = {
+        const newBaseEventInfo: Pick<OutgoingHeatData, 'comments' | 'date' | 'activated'> = {
           comments: event.comments,
           date: event.date,
           activated: status === null ? event.activated : status
@@ -61,7 +61,7 @@ const EventInfoEditor = () => {
       }
       case EVENT_TYPE.VACCINATION:
       case EVENT_TYPE.ANTIPARASITIC_TREATMENT: {
-        const newBaseEventInfo: Pick<Treatment, 'comments' | 'date' | 'activated' | 'validity' | 'medication'> = {
+        const newBaseEventInfo: Pick<OutgoingTreatmentData, 'comments' | 'date' | 'activated' | 'validity' | 'medication'> = {
           comments: event.comments,
           date: event.date,
           activated: status === null ? event.activated : status,
@@ -84,31 +84,15 @@ const EventInfoEditor = () => {
 
   const getTitle = (key) => getRuTranslate(key)
 
-  switch (event.eventType) {
-    case EVENT_TYPE.HEAT: {
-      return (
-        <BaseInfoEditor
-          title={getTitle('heat')}
-          entityType={'heat'}
-          entity={{...event, status: getStatus(getDateDiff(event.date[0]), status)}}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-        />
-      )
-    }
-    case EVENT_TYPE.VACCINATION:
-    case EVENT_TYPE.ANTIPARASITIC_TREATMENT: {
-      return (
-        <BaseInfoEditor
-          title={getTitle(event.eventType === EVENT_TYPE.VACCINATION ? 'vaccination' : 'treatment')}
-          entityType={'treatment'}
-          entity={{...event, status: getStatus(getDateDiff(event.date[0]), status)}}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-        />
-      )
-    }
-  }
+  return (
+    <BaseInfoEditor
+      title={getTitle(event.eventType.toLowerCase())}
+      entityType={event.eventType}
+      entity={{...event, status: getStatus(getDateDiff(event.date[0]), status)}}
+      handleInputChange={handleInputChange}
+      handleSubmit={handleSubmit}
+    />
+  )
 }
 
 export default EventInfoEditor

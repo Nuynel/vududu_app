@@ -1,5 +1,3 @@
-type EventsDate = string[];
-
 export enum DATA_TYPES {
   PLANNED = 'PLANNED',
   HISTORY = 'HISTORY'
@@ -18,40 +16,43 @@ export enum EVENT_TYPE {
   // COMPETITION = 'COMPETITION',
 }
 
-type ConnectedEvents = {
-  heat: string | null;
-  mate: string | null;
-  pregnancy: string | null;
-  birth: string | null;
-  registration: string | null;
+export type IncomingEventData = {
+  _id: string,
+
+  profileId: string,
+  dogId: string,
+  eventType: EVENT_TYPE,
+  comments: string | null,
+
+  date: string[],
+
+  activated: boolean,
+  validity: number | null,
+  medication: string | null,
+
+  documentId: string | null,
 }
 
-export type Event = {
-  // profileId: string;
-  date: EventsDate;
-  comments: string | null;
-  eventType: EVENT_TYPE;
-  activated: boolean;
-  _id: string;
-}
+export type RawTreatmentFields =
+  | 'date'
+  | 'activated'
+  | 'comments'
+  | 'validity'
+  | 'medication'
+  | 'profileId'
+  | 'dogId'
 
-type DogsEvent = Event & { dogId: string }
-
-export type Treatment = DogsEvent & {
-  validity: number;
-  medication: string;
+export type OutgoingTreatmentData = Pick<IncomingEventData, RawTreatmentFields> & {
   eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT | EVENT_TYPE.VACCINATION
 }
 
-export type Heat = DogsEvent & {
-  eventType: EVENT_TYPE.HEAT;
-  connectedEvents: Pick<ConnectedEvents, 'mate'>
+export type RawHeatFields =
+  | 'date'
+  | 'activated'
+  | 'comments'
+  | 'profileId'
+  | 'dogId'
+
+export type OutgoingHeatData = Pick<IncomingEventData, RawHeatFields> & {
+  eventType: EVENT_TYPE.HEAT
 }
-
-export type NewEventFormField = 'eventType'
-
-export type NewHeatFormFields = 'dogId' | 'date' | 'comments'
-
-export type NewTreatmentFormFields = 'dogId' | 'date' | 'comments' | 'validity' | 'medication'
-
-export type EventData = Heat | Treatment

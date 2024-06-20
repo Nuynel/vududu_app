@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
-import {BlocksConfig, EventData, FieldData} from "../../../g_shared/types";
+import {BlocksConfig, IncomingEventData, FieldData} from "../../../g_shared/types";
 import {eventDataFieldsByType, fieldNamesMapping} from "./configurations";
 import * as React from "react";
 import {formatDateOrRange, getDateDiff} from "../../../g_shared/methods/helpers";
@@ -11,7 +11,7 @@ import {getRuTranslate} from "../../../g_shared/constants/translates";
 import {Paths} from "../../../g_shared/constants/routes";
 
 const EventInformation = () => {
-  const [event, setEvent] = useState<EventData | null>(null)
+  const [event, setEvent] = useState<IncomingEventData | null>(null)
   const [, setLocation] = useLocation();
 
   const params: {id: string} = useParams();

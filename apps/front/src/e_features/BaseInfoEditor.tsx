@@ -2,8 +2,8 @@ import * as React from 'react'
 import {
   Breed,
   IncomingDogData,
-  EventData,
-  IncomingLitterData,
+  IncomingEventData,
+  IncomingLitterData, OutgoingHeatData, OutgoingTreatmentData,
   RawDogFields,
   RawLitterFields
 } from "../g_shared/types";
@@ -12,20 +12,24 @@ import {baseInfoFieldsConfig} from '../g_shared/constants/baseInfoEditorFieldsCo
 import {
   Box,
   Button,
+  CheckBox,
+  DateInput,
   Form,
   FormField,
   Grid,
   Heading,
-  TextInput,
-  DateInput,
   RadioButtonGroup,
-  CheckBox,
   Select,
-  TextArea, SelectMultiple
+  SelectMultiple,
+  TextArea,
+  TextInput
 } from "grommet";
 import {CloseIcon} from '../g_shared/icons';
 import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
 import {getRuTranslate} from "../g_shared/constants/translates";
+import {EVENT_TYPE} from "../g_shared/types/event";
+import entityPage from "./EntityPage";
+import {PERIODS} from "../c_pages/events/constants";
 
 
 type Props = {
@@ -35,14 +39,23 @@ type Props = {
     | IncomingDogData
     | Pick<IncomingDogData, RawDogFields | 'litterData'>
     | Pick<IncomingLitterData, RawLitterFields>
-    | (EventData & {status: string})
-    | IncomingLitterData,
+    | (IncomingEventData & {status: string}) // todo че за статус??
+    | IncomingLitterData
+    | Omit<OutgoingTreatmentData, 'profileId' | 'eventType' | 'activated'>
+    | Omit<OutgoingHeatData, 'profileId' | 'eventType' | 'activated'>
   handleInputChange: (key, value) => void,
   handleSubmit: () => void,
   handleSearch?: (searchString: string) => void,
   handleSearchByGender?: (searchString: string, gender: GENDER) => void,
+  changeNewEventType?: (value: EVENT_TYPE) => void,
+  changeFrequency?: (value: number) => void,
+  switchRepeat?: () => void,
   litters?: {_id: string, litterTitle: string}[],
+  newEventType?: EVENT_TYPE,
+  repeat?: boolean,
+  frequencyInDays?: number,
   breeds?: Breed[],
+  dogsList?: IncomingDogData[],
   maleDogsList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
   femaleDogsList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
   puppiesList?: Pick<IncomingDogData, '_id' | 'fullName' | 'breedId'>[],
@@ -54,9 +67,12 @@ const BaseInfoFieldsByEntity = {
   dog: ['name', 'fullName', 'dateOfBirth', 'dateOfDeath', 'breedId', 'gender', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
   newLitter: ['fatherId', 'motherId', 'dateOfBirth', 'breedId', 'comments', 'puppyIds'],
-  heat: [...commonDogEventFields],
-  treatment: [...commonDogEventFields, 'medication', 'validity'],
-  vaccination: [...commonDogEventFields, 'medication', 'validity'],
+  newAntiparasiticTreatment: ['eventType', 'dogId', 'date', 'comments', 'validity', 'medication', 'repeat'],
+  newVaccination: ['eventType', 'dogId', 'date', 'comments', 'validity', 'medication', 'repeat'],
+  newHeat: ['eventType', 'dogId', 'date', 'comments', 'repeat'],
+  [EVENT_TYPE.HEAT]: [...commonDogEventFields],
+  [EVENT_TYPE.ANTIPARASITIC_TREATMENT]: [...commonDogEventFields, 'medication', 'validity'],
+  [EVENT_TYPE.VACCINATION]: [...commonDogEventFields, 'medication', 'validity'],
 }
 
 const isFutureEvent = (entity) => {
@@ -152,7 +168,7 @@ const BaseInfoEditor = (props: Props) => {
                   </FormField>
                 )
               }
-              case 'dogId': {
+              case 'disabledDogId': {
                 return (
                   <FormField
                     key={fieldConfig.id}
@@ -164,8 +180,31 @@ const BaseInfoEditor = (props: Props) => {
                       disabled
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={getDogById(props.entity[key]).name || getDogById(props.entity[key]).fullName}
+                      value={'dogId' in props.entity && (getDogById(props.entity.dogId).name || getDogById(props.entity.dogId).fullName)}
                       placeholder={fieldConfig.placeholder}
+                      onChange={(event) => fieldConfig.handler(event, 'dogId', props.handleInputChange)}
+                    />
+                  </FormField>
+                )
+              }
+              case 'dogId': {
+                const femaleDogsList = props.dogsList.filter(dog => dog.gender === GENDER.FEMALE)
+                const filteredDogsList = props.newEventType === EVENT_TYPE.HEAT ? femaleDogsList : props.dogsList
+                return (
+                  <FormField
+                    key={fieldConfig.id}
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <Select
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={fieldConfig.valueGetter(filteredDogsList, props.entity[key])}
+                      options={filteredDogsList}
+                      labelKey={fieldConfig.labelKey}
+                      placeholder={fieldConfig.placeholder}
+                      onSearch={(searchString) => props.handleSearch(searchString.trim().toLowerCase())}
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
@@ -233,7 +272,7 @@ const BaseInfoEditor = (props: Props) => {
                       id={fieldConfig.id}
                       name={fieldConfig.label}
                       value={props.entity[key]}
-                      format='дд.мм.гггг'
+                      format='dd.mm.yyyy'
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
@@ -262,7 +301,7 @@ const BaseInfoEditor = (props: Props) => {
                             id={fieldConfig.id}
                             name={fieldConfig.label}
                             value={props.entity[key]}
-                            format='дд.мм.гггг'
+                            format='dd.mm.yyyy'
                             onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                           />
                         </FormField>
@@ -272,6 +311,7 @@ const BaseInfoEditor = (props: Props) => {
                 )
               }
               case 'date': {
+                const date = props.entity[key]
                 return (
                   <FormField
                     key={fieldConfig.id}
@@ -283,8 +323,8 @@ const BaseInfoEditor = (props: Props) => {
                       disabled={!isFutureEvent(props.entity)}
                       id={fieldConfig.id}
                       name={fieldConfig.label}
-                      value={props.entity[key]}
-                      format={props.entityType === 'heat' ? 'дд.мм.гггг-дд.мм.гггг' : 'дд.мм.гггг'}
+                      value={date.length === 2 ? date : date[0]}
+                      format={props.entityType === EVENT_TYPE.HEAT ? 'dd.mm.yyyy-dd.mm.yyyy' : 'dd.mm.yyyy'}
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
@@ -419,6 +459,48 @@ const BaseInfoEditor = (props: Props) => {
                       onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
                     />
                   </FormField>
+                )
+              }
+              case 'eventType': {
+                return (
+                  <FormField
+                    key={fieldConfig.id}
+                    name={fieldConfig.label}
+                    htmlFor={fieldConfig.id}
+                    label={fieldConfig.label}
+                  >
+                    <RadioButtonGroup
+                      id={fieldConfig.id}
+                      name={fieldConfig.label}
+                      value={props.newEventType}
+                      options={fieldConfig.options}
+                      onChange={({target}) => props.changeNewEventType(target.value as EVENT_TYPE)}
+                    />
+                  </FormField>
+                )
+              }
+              case 'repeat': {
+                return (
+                  <Box pad='small' key={fieldConfig.id}>
+                    <CheckBox
+                      id={fieldConfig.id}
+                      label={fieldConfig.label}
+                      checked={props.repeat}
+                      onChange={props.switchRepeat}
+                    />
+                    {props.repeat && (
+                      <FormField htmlFor='frequency-input-id' label='Следующее событие будет запланировано через'>
+                        <Select
+                          id='frequency-input-id'
+                          name={fieldConfig.label}
+                          options={PERIODS}
+                          labelKey={'label'}
+                          value={PERIODS.find(per => per.value === props.frequencyInDays)}
+                          onChange={(event) => props.changeFrequency(event.value.value)}
+                        />
+                      </FormField>
+                    )}
+                  </Box>
                 )
               }
               default: {

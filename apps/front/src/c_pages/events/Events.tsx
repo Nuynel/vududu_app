@@ -8,11 +8,12 @@ import {DATA_TYPES} from "../../g_shared/types/event";
 import ActivateButton from "./uiComponents/ActivateButton";
 import EditingButtons from "../../d_widgets/EditingButtons";
 import Filter from "./uiComponents/Filter";
-import NewEventForm from "./uiComponents/NewEventForm";
 import DeletePopup from "../../e_features/DeletePopup";
 import {deleteEventsByIds} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {Paths} from "../../g_shared/constants/routes";
+import {useLocation} from "wouter";
 
 const deletePopupText = 'Вы уверены, что хотите удалить эти события?'
 
@@ -23,6 +24,7 @@ const CalendarScreen = () => {
 
   const {columns, rows, areas} = useResponsiveGrid(true);
   const {eventTypeFilter, activeDataType, setActiveDataType} = useUIStateStore()
+  const [, setLocation] = useLocation();
 
   const {getInitialData} = useGetInitialData()
   const switchIsIdSelected = (id) => {
@@ -74,14 +76,12 @@ const CalendarScreen = () => {
         isEditingModeActive={massEditing}
         switchEditingMode={() => switchEditingMode(!massEditing)}
         showPopup={() => setShow(true)}
-        openCreator={() => {}}
+        openCreator={() => setLocation(Paths.event_creator)}
       >
         {massEditing && <ActivateButton eventTypeFilter={eventTypeFilter} activate={() => {}}/>}
       </EditingButtons>
 
-      {show && !massEditing && <NewEventForm close={() => setShow(false)}/>}
-
-      {show && massEditing && (
+      {show && (
         <DeletePopup
           closePopup={() => setShow(false)}
           deleteEntities={deleteEntities}

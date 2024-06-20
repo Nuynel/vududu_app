@@ -1,8 +1,7 @@
 export enum Paths {
-  events = '/events/planned',
-  history = '/events/history',
   contacts = '/contacts',
   documents = '/documents',
+
   dogs = '/dogs/all',
   dog_creator = '/dogs/create-dog',
   dog = '/dogs/dog/:id',
@@ -12,15 +11,20 @@ export enum Paths {
   litter_creator = '/litters/create-litter',
   litter = '/litters/litter/:id',
   litter_editor = '/litters/litter/:id/editor',
+
+  events = '/events/planned',
+  history = '/events/history',
+  event_creator = '/events/create-event',
+  event = '/events/event/:id',
+  event_editor = '/events/event/:id/editor',
+
   profile = '/profile',
   settings = '/settings',
   sign_in = '/sign-in',
   sign_up = '/sign-up',
   confirmEmail = '/confirm-email',
   createProfile = '/create-profile',
-  event = '/events/:id',
   document = '/document/:id',
-  event_editor = '/events/:id/editor',
   pedigrees = '/pedigrees',
   passwordRecovery = '/password-recovery',
   passwordRecoveryFinish = '/password-recovery/:recoveryToken',
@@ -35,21 +39,26 @@ export const PublicRoutes = [
 ] as const;
 
 export const PrivateRoutes = [
-  Paths.events,
-  Paths.history,
   Paths.contacts,
   Paths.documents,
-  Paths.dogs,
   Paths.profile,
+
+  Paths.dogs,
   Paths.dog,
   Paths.dog_editor,
   Paths.dog_creator,
+
   Paths.litters,
   Paths.litter,
   Paths.litter_editor,
   Paths.litter_creator,
+
+  Paths.events,
+  Paths.history,
+  Paths.event_creator,
   Paths.event,
   Paths.event_editor,
+
   Paths.pedigrees,
   Paths.createProfile,
   // Paths.event,

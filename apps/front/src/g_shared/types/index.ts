@@ -4,13 +4,11 @@ import { ProfileData, ProfileStorage, ConnectedOrganisations, KennelConnectedOrg
 import { IncomingDogData, OutgoingDogData, DogsStorage, RawDogFields } from "./dog";
 import { IncomingLitterData, OutgoingLitterData, LittersStore, RawLitterFields } from "./litter";
 import {
-  Event,
-  Treatment,
-  Heat,
-  NewEventFormField,
-  NewHeatFormFields,
-  NewTreatmentFormFields,
-  EventData,
+  IncomingEventData,
+  RawHeatFields,
+  RawTreatmentFields,
+  OutgoingHeatData,
+  OutgoingTreatmentData,
 } from './event'
 import {FieldData, BlocksConfig} from './components'
 import {Pedigree} from './pedigrees'
@@ -46,13 +44,11 @@ export {
   LittersStore,
   RawLitterFields,
 
-  Event,
-  Treatment,
-  Heat,
-  NewEventFormField,
-  NewHeatFormFields,
-  NewTreatmentFormFields,
-  EventData,
+  IncomingEventData,
+  RawHeatFields,
+  RawTreatmentFields,
+  OutgoingHeatData,
+  OutgoingTreatmentData,
 
   FieldData,
   BlocksConfig,

@@ -19,7 +19,7 @@ export enum EVENT_STATUSES {
   ARCHIVED = 'ARCHIVED',
 }
 
-type EventsDate = string[] | null;
+type EventsDate = string[] | null; //todo нахуя тут null??
 
 export enum TREATMENT_TYPE {
   ANTIPARASITIC = 'ANTIPARASITIC',
@@ -64,7 +64,13 @@ export type ClientAntiparasiticTreatment = Pick<DatabaseDogEvent,
   | 'profileId'
   | 'dogId'
 > & {
-  eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT
+  eventType: EVENT_TYPE.ANTIPARASITIC_TREATMENT;
+
+  documentId: null;
+  diagnosticsType: null;
+  vet: null;
+  partnerId: null;
+  litterId: null;
 }
 
 // Вакцинация
@@ -80,7 +86,13 @@ export type ClientVaccination = Pick<DatabaseDogEvent,
   | 'profileId'
   | 'dogId'
 > & {
-  eventType: EVENT_TYPE.VACCINATION
+  eventType: EVENT_TYPE.VACCINATION;
+
+  documentId: null;
+  diagnosticsType: null;
+  vet: null;
+  partnerId: null;
+  litterId: null;
 }
 
 // Диагностика
@@ -125,6 +137,14 @@ export type ClientHeat = Pick<DatabaseDogEvent,
   | 'dogId'
 > & {
   eventType: EVENT_TYPE.HEAT,
+
+  validity: null;
+  medication: null;
+  documentId: null;
+  diagnosticsType: null;
+  vet: null;
+  partnerId: null;
+  litterId: null;
 }
 
 // // Вязка
