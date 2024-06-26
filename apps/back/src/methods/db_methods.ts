@@ -337,3 +337,21 @@ export const getAllDocuments = async<T extends Document>(
   client: MongoClient,
   collectionName: COLLECTIONS,
 ) => await client.db(DB_NAME).collection<T>(collectionName).find().toArray()
+
+
+export const searchDogByParams = async(
+  client: MongoClient,
+  dogParams: Pick<DatabaseDog, 'fullName' | 'breedId' | 'gender' | 'dateOfBirth'>
+): Promise<WithId<Pick<DatabaseDog, 'ownerProfileId' | 'creatorProfileId' | 'federationId'>> | null> =>
+  await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS)
+    .findOne(
+      dogParams,
+      {
+        projection: {
+          _id: 1,
+          creatorProfileId: 1,
+          ownerProfileId: 1,
+          federationId: 1,
+        }
+      }
+    )

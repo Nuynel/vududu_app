@@ -1,7 +1,9 @@
 export type IncomingLitterData = {
   _id: string;
 
-  profileId: string;
+  creatorProfileId: string;
+
+  federationId: string | null;
 
   fatherId: string;
   motherId: string;
@@ -11,12 +13,21 @@ export type IncomingLitterData = {
   comments: string | null;
   puppyIds: string[];
 
+  puppiesCount: {
+    male: number | null
+    female: number | null
+  }
+  verified: {
+    status: boolean
+  }
+
   fatherFullName: string,
   motherFullName: string,
   puppiesData: {
     id: string,
     name: string | null,
     fullName: string | null,
+    status: boolean,
   }[],
 }
 

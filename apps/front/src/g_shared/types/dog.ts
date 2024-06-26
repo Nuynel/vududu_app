@@ -30,6 +30,7 @@ export type IncomingDogData = {
   creatorProfileId: string;
   ownerProfileId: string | null;
   breederProfileId: string | null;
+  federationId: string | null;
 
   puppyCardId: string | null; // ссылка на документ (щенячку)
   puppyCardNumber: string | null;
@@ -40,12 +41,14 @@ export type IncomingDogData = {
   diagnostics: HistoryRecord[] | null;
   treatments: HistoryRecord[] | null;
   vaccinations: HistoryRecord[] | null;
+  healthCertificates: HistoryRecord[] | null;
   reproductiveHistory: {
     litters: HistoryRecord[] | null;
     heats: string[] | null;
     mates: string[] | null;
     births: string[] | null;
   }
+  permissions: Permissions;
 }
 
 export type RawDogFields =

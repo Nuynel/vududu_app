@@ -22,7 +22,7 @@ import {
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {COOKIE_TOKEN_NAMES, setCookie} from "./user_routes";
 
-type ProfileDataFields = 'name' | 'documentIds' | 'contactIds' | 'eventIds' | 'dogIds'
+type ProfileDataFields = 'name' | 'documentIds' | 'contactIds' | 'eventIds' | 'ownDogIds'
 type ProfilesWithDogs = KennelProfile | BreederProfile | MaleDogOwnerProfile
 type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 
@@ -31,8 +31,8 @@ export function isKennelOrBreedProfile(profile: DatabaseProfile): profile is Ken
 }
 
 const pickProfileData = (profile: KennelProfile | BreederProfile | MaleDogOwnerProfile): ProfileData => {
-  const { name, documentIds, contactIds, eventIds, dogIds} = profile
-  return { name, documentIds, contactIds, eventIds, dogIds }
+  const { name, documentIds, contactIds, eventIds, ownDogIds} = profile
+  return { name, documentIds, contactIds, eventIds, ownDogIds }
 }
 
 export const initProfileRoutes = (app: Application, client: MongoClient) => {
@@ -55,7 +55,8 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
         documentIds: [],
         contactIds: [],
         eventIds: [],
-        dogIds: [],
+        ownDogIds: [],
+        otherDogIds: [],
       }
 
       if (isKennelOrBreedProfile(profile)) {

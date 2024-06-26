@@ -13,6 +13,7 @@ import {
 import {FieldData, BlocksConfig} from './components'
 import {Pedigree} from './pedigrees'
 import {Breed} from "./breed";
+import {Permissions} from "./permissions";
 
 type HistoryRecord = {
   id: string,
@@ -56,4 +57,6 @@ export {
   Pedigree,
 
   Breed,
+
+  Permissions,
 }

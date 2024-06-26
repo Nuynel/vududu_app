@@ -5,6 +5,7 @@ import {
   deleteEntityById,
   deleteEventFromProfile,
   errorHandler,
+  findEntitiesByIds,
   findEntityById,
   findPuppiesByDateOfBirth,
   findStudsBySearchString,
@@ -13,12 +14,14 @@ import {
   insertEntity,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
+  searchDogByParams,
   updateBaseDogInfoById,
   verifyProfileType,
 } from "../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {
   ClientDog,
+  DATA_GROUPS,
   DatabaseDog,
   DatabaseDogEvent,
   DatabaseLitter,
@@ -28,8 +31,11 @@ import {
   FemaleReproductiveHistory,
   GENDER,
   MaleReproductiveHistory,
+  PERMISSION_GROUPS,
+  Permissions,
   PuppyReproductiveHistory,
   RawDogData,
+  RawOtherDogData,
 } from "../types";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
@@ -60,8 +66,36 @@ const getNewDogReproductiveHistory = (gender: GENDER):
   }
 }
 
+const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
+  // todo получать шаблон пермишенов из профиля, если шаблона нет, то возвращать дефолт
+
+  const permissions: Permissions = {
+    viewers: {
+      [DATA_GROUPS.PUBLIC]: {
+        group: PERMISSION_GROUPS.REGISTERED,
+        profileIds: null,
+      },
+      [DATA_GROUPS.PROTECTED]: {
+        group: PERMISSION_GROUPS.ORGANISATION,
+        profileIds: [],
+      },
+      [DATA_GROUPS.PRIVATE]: {
+        group: null,
+        profileIds: [],
+      }
+    },
+    editors: {
+      [DATA_GROUPS.PUBLIC]: creatorProfileId ? [creatorProfileId] : [],
+      [DATA_GROUPS.PROTECTED]: [],
+      [DATA_GROUPS.PRIVATE]: [],
+    }
+  }
+
+  return permissions
+}
+
 export const initDogRoutes = (app: Application, client: MongoClient) => {
-  app.post<{}, PostDogResBody, Omit<RawDogData, 'litterId'>, {}>('/api/dog', async (req, res) => {
+  app.post<{}, PostDogResBody, Omit<RawDogData | RawOtherDogData, 'litterId'>, {}>('/api/dog', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
@@ -72,9 +106,16 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
         breedId: req.body.breedId ? new ObjectId(req.body.breedId) : null,
 
+        federationId: null,
         creatorProfileId: new ObjectId(profileId),
-        ownerProfileId: null,
+        ownerProfileId: 'microchipNumber' in req.body ? new ObjectId(profileId) : null,
         breederProfileId: null,
+
+        name: 'name' in req.body ? req.body.name as string | null : null,
+        microchipNumber: 'microchipNumber' in req.body ? req.body.microchipNumber as string | null : null,
+        tattooNumber: 'tattooNumber' in req.body ? req.body.tattooNumber as string | null : null,
+        pedigreeNumber: 'pedigreeNumber' in req.body ? req.body.pedigreeNumber as string | null : null,
+
         litterId: null,
         puppyCardId: null,
         puppyCardNumber: null,
@@ -83,10 +124,12 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         pedigreeId: null,
         treatmentIds: null,
         diagnosticIds: null,
+        healthCertificatesIds: null,
+        permissions: getPermissionsSample('microchipNumber' in req.body ? new ObjectId(profileId) : null),
       }
 
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
-      await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, FIELDS_NAMES.DOGS_IDS);
+      await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, 'microchipNumber' in req.body ? FIELDS_NAMES.OWN_DOG_IDS : FIELDS_NAMES.OTHER_DOG_IDS);
       if (profile && newDog.breedId) {
         await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS, '$addToSet');
       }
@@ -96,6 +139,20 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       if (e instanceof Error) errorHandler(res, e)
     }
   });
+
+  app.get<{}, {dog: WithId<Pick<DatabaseDog, 'ownerProfileId' | 'creatorProfileId' | 'federationId'>> | null}, Pick<DatabaseDog, 'fullName' | 'dateOfBirth' | 'gender'> & {breedId: string}, {}>('/api/check-dog', async (req, res) => {
+    try {
+      const {profileId} = getCookiesPayload(req)
+      console.log(getTimestamp(), 'REQUEST TO /GET/CHECK-DOG, profileId >>> ', profileId)
+      await verifyProfileType(client, profileId)
+
+      const dog = await searchDogByParams(client, {...req.body, breedId: new ObjectId(req.body.breedId)})
+
+      res.send({dog})
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
 
   // // апи для добавления группы щенков через карту помета
   // app.post('/api/puppies', async (req, res) => {
@@ -144,6 +201,18 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const { searchString, gender } = req.query;
       const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
       res.send({studs})
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
+
+  app.get<{}, {otherDogs: WithId<DatabaseDog>[]}, {}, {}>('/api/other-dogs', async(req, res) => {
+    try {
+      const {profileId} = getCookiesPayload(req);
+      console.log(getTimestamp(), 'REQUEST TO /GET/OTHER-DOGS, profileId >>> ', profileId)
+      const profile = await verifyProfileType(client, profileId)
+      const otherDogs = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profile.otherDogIds);
+      res.send({otherDogs})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
@@ -257,7 +326,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         COLLECTIONS.PROFILES,
         new ObjectId(dog.creatorProfileId),
         FIELDS_NAMES.ID,
-        FIELDS_NAMES.DOGS_IDS,
+        FIELDS_NAMES.OWN_DOG_IDS,
         new ObjectId(id),
         '$pull'
       )

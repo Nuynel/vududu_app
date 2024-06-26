@@ -42,6 +42,8 @@ export enum FIELDS_NAMES {
   LIST = 'list',
   CONTACTS = 'contacts',
   DOGS_IDS = 'dogIds',
+  OWN_DOG_IDS = 'ownDogIds',
+  OTHER_DOG_IDS = 'otherDogIds',
   IS_ACTIVATED = 'isActivated',
   CONTACT_LIST_ID = 'contactListId',
   PROFILES_IDS = 'profileIds',

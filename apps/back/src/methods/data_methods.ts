@@ -39,7 +39,7 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
     litterTitle,
     puppiesData: puppiesData.map(puppyData => {
       if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
-      return { id: puppyData._id.toHexString(), name: puppyData.name, fullName: puppyData.fullName }
+      return { id: puppyData._id.toHexString(), name: puppyData.name, fullName: puppyData.fullName, status: false }
     })
   }
 }
@@ -94,6 +94,7 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
     ...rawDogData,
     litterData,
     diagnostics: null,
+    healthCertificates: null,
     treatments,
     vaccinations,
     reproductiveHistory: {

@@ -48,7 +48,7 @@ export enum COOKIE_TOKEN_NAMES {
 
 type SetCookiesParams = { res: Response, tokenName: COOKIE_TOKEN_NAMES, token: String }
 type UserData = { profileIds: ObjectId[], email: string }
-type ProfileDataFields = 'name' | 'type' | 'documentIds' | 'contactIds' | 'eventIds' | 'dogIds' | 'litterIds' | 'connectedOrganisations' | 'breedIds'
+type ProfileDataFields = 'name' | 'type' | 'documentIds' | 'contactIds' | 'eventIds' | 'ownDogIds' | 'litterIds' | 'connectedOrganisations' | 'breedIds'
 type ProfilesWithDogs = KennelProfile | BreederProfile
 type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 
@@ -77,12 +77,12 @@ const pickProfileData = (profile: KennelProfile | BreederProfile ): ProfileData 
     documentIds,
     contactIds,
     eventIds,
-    dogIds,
+    ownDogIds,
     litterIds,
     connectedOrganisations,
     breedIds,
   } = profile
-  return { name, type, documentIds, contactIds, eventIds, dogIds, litterIds, connectedOrganisations, breedIds }
+  return { name, type, documentIds, contactIds, eventIds, ownDogIds, litterIds, connectedOrganisations, breedIds }
 }
 
 export const isProfileHasDogs = (profile: DatabaseProfile): profile is ProfilesWithDogs => {
@@ -272,7 +272,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 200})
       if (!isProfileHasDogs(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'user_routes', line: 201})
       const profileData = pickProfileData(profile)
-      const rawDogsData: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profileData.dogIds)
+      const rawDogsData: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profileData.ownDogIds)
 
       const dogs: ClientDog[] = await Promise.all(
         rawDogsData.map((rawDogData) => constructDogForClient(client, rawDogData))

@@ -28,11 +28,19 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
       await verifyProfileType(client, profileId)
       const newLitter: DatabaseLitter = {
         ...req.body,
-        profileId: new ObjectId(profileId),
+        creatorProfileId: new ObjectId(profileId),
         fatherId: new ObjectId(req.body.fatherId),
         motherId: new ObjectId(req.body.motherId),
         puppyIds: req.body.puppyIds.map((puppyId: string) => new ObjectId(puppyId)),
         breedId: req.body.breedId ? new ObjectId(req.body.breedId) : null,
+        puppiesCount: { //todo puppies count
+          male: null,
+          female: null
+        },
+        verified: { // todo verified
+          status: false
+        },
+        federationId: null,
       }
       const { insertedId: litterId } = await insertEntity(client, COLLECTIONS.LITTERS, newLitter)
       await modifyNestedArrayFieldById<DatabaseDog>(client, COLLECTIONS.DOGS, newLitter.fatherId,
@@ -130,11 +138,11 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
         }))
       }
 
-      if (litter.profileId) {
+      if (litter.creatorProfileId) {
         const deleteResult = await modifyNestedArrayField<DatabaseDog>(
           client,
           COLLECTIONS.PROFILES,
-          new ObjectId(litter.profileId),
+          new ObjectId(litter.creatorProfileId),
           FIELDS_NAMES.ID,
           FIELDS_NAMES.LITTER_IDS,
           new ObjectId(id),

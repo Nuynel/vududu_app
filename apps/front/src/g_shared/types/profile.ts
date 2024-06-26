@@ -35,7 +35,8 @@ export type ProfileData = {
   documentIds: string[];
   contactIds: string[];
   eventIds: string[];
-  dogIds: string[];
+  ownDogIds: string[];
+  otherDogIds: string[];
   litterIds: string[];
   connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations>;
 }

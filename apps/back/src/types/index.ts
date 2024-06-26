@@ -49,10 +49,21 @@ import {
   FemaleReproductiveHistory,
   ClientDog,
   RawDogFields,
+
+  RawOtherDogFields,
+  RawOtherDogData
 } from "./dog";
 
 import {Breed, BreedIssue} from "./breed";
 import {ObjectId} from "mongodb";
+
+import {
+  DATA_GROUPS,
+  PERMISSION_GROUPS,
+  Permissions,
+  DogDataGroups,
+  LitterDataGroups,
+} from "./dataPermissions";
 
 // IMPORTANT:
 // Raw types - all types received from the client side (CLIENT >>> SERVER)
@@ -133,7 +144,15 @@ export {
   FemaleReproductiveHistory,
   ClientDog,
   RawDogFields,
+  RawOtherDogFields,
+  RawOtherDogData,
 
   Breed,
   BreedIssue,
+
+  DATA_GROUPS,
+  PERMISSION_GROUPS,
+  Permissions,
+  DogDataGroups,
+  LitterDataGroups,
 }

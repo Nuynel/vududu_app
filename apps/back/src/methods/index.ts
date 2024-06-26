@@ -40,6 +40,7 @@ import {
   updateBaseTreatmentInfoById,
   deleteEntityById,
   getAllDocuments,
+  searchDogByParams,
 } from "./db_methods";
 import {deleteEventFromDog, deleteEventFromProfile, deleteEvent, getFieldNameByEventType} from './delete_methods'
 
@@ -112,4 +113,5 @@ export {
   hashPass,
   getAllDocuments,
   shiftDatesWithTimezone,
+  searchDogByParams,
 }
