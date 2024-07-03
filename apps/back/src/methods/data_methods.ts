@@ -22,12 +22,10 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
 
   if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 63});
 
-  const parentNames = {
+  const parentNames = { // todo а это точно требуется? надо перепроверить
     fatherFullName: father.fullName,
     motherFullName: mother.fullName,
   }
-
-  const litterTitle = `${formatSingleDate(rawLitterData.dateOfBirth)}, ${father.fullName}/${mother.fullName}`
 
   const puppiesData: (WithId<DatabaseDog> | null)[] = (await Promise.all(rawLitterData.puppyIds.map(
     puppyId => findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(puppyId))
@@ -36,7 +34,6 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
   return {
     ...rawLitterData,
     ...parentNames,
-    litterTitle,
     puppiesData: puppiesData.map(puppyData => {
       if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
       return { id: puppyData._id.toHexString(), name: puppyData.name, fullName: puppyData.fullName, status: false }
@@ -44,7 +41,7 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
   }
 }
 
-const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<HistoryRecord> => {
+export const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<HistoryRecord> => {
   const litter = await findEntityById(client, COLLECTIONS.LITTERS, litterId)
 
   if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 94});

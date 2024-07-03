@@ -36,6 +36,7 @@ export type Permissions = {
 
 export const DogDataGroups = {
   [DATA_GROUPS.PUBLIC]: [
+    'name',
     'fullName',
     'breedId',
     'dateOfBirth',

@@ -1,4 +1,4 @@
-import {Application} from "express";
+import {Application, Request} from "express";
 import {MongoClient, ObjectId, WithId} from "mongodb";
 import {
   constructDogForClient,
@@ -8,7 +8,7 @@ import {
   findEntitiesByIds,
   findEntityById,
   findPuppiesByDateOfBirth,
-  findStudsBySearchString,
+  findStudsBySearchString, findUserById,
   getCookiesPayload,
   getTimestamp,
   insertEntity,
@@ -30,6 +30,7 @@ import {
   DogReproductiveHistory,
   FemaleReproductiveHistory,
   GENDER,
+  HistoryRecord,
   MaleReproductiveHistory,
   PERMISSION_GROUPS,
   Permissions,
@@ -38,6 +39,7 @@ import {
   RawOtherDogData,
 } from "../types";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
+import {getLitterData} from "../methods/data_methods";
 
 type PostDogResBody = {
   message: string,
@@ -94,8 +96,12 @@ const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
   return permissions
 }
 
+const checkDogIdentification = (req: Request<{}, PostDogResBody, Omit<RawDogData | RawOtherDogData, 'litterId'>, {}>): boolean => {
+  return ('microchipNumber' in req.body && !!req.body.microchipNumber) || ('tattooNumber' in req.body && !!req.body.tattooNumber)
+}
+
 export const initDogRoutes = (app: Application, client: MongoClient) => {
-  app.post<{}, PostDogResBody, Omit<RawDogData | RawOtherDogData, 'litterId'>, {}>('/api/dog', async (req, res) => {
+  app.post<{}, PostDogResBody, RawDogData | RawOtherDogData, {}>('/api/dog', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
@@ -108,15 +114,15 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
         federationId: null,
         creatorProfileId: new ObjectId(profileId),
-        ownerProfileId: 'microchipNumber' in req.body ? new ObjectId(profileId) : null,
+        ownerProfileId: checkDogIdentification(req) ? new ObjectId(profileId) : null,
         breederProfileId: null,
 
-        name: 'name' in req.body ? req.body.name as string | null : null,
-        microchipNumber: 'microchipNumber' in req.body ? req.body.microchipNumber as string | null : null,
-        tattooNumber: 'tattooNumber' in req.body ? req.body.tattooNumber as string | null : null,
-        pedigreeNumber: 'pedigreeNumber' in req.body ? req.body.pedigreeNumber as string | null : null,
+        name: ('name' in req.body && req.body.name) ? req.body.name as string : null,
+        microchipNumber: ('microchipNumber' in req.body && req.body.microchipNumber) ? req.body.microchipNumber as string : null,
+        tattooNumber: ('tattooNumber' in req.body && req.body.tattooNumber) ? req.body.tattooNumber as string : null,
+        pedigreeNumber: ('pedigreeNumber' in req.body && req.body.pedigreeNumber) ? req.body.pedigreeNumber as string : null,
 
-        litterId: null,
+        litterId: req.body.litterId ? new ObjectId(req.body.litterId) : null,
         puppyCardId: null,
         puppyCardNumber: null,
         type: getNewDogType(req.body.gender),
@@ -125,11 +131,13 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         treatmentIds: null,
         diagnosticIds: null,
         healthCertificatesIds: null,
-        permissions: getPermissionsSample('microchipNumber' in req.body ? new ObjectId(profileId) : null),
+        permissions: getPermissionsSample(checkDogIdentification(req)  ? new ObjectId(profileId) : null),
       }
 
       const { insertedId: dogId } = await insertEntity(client, COLLECTIONS.DOGS, newDog);
-      await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, 'microchipNumber' in req.body ? FIELDS_NAMES.OWN_DOG_IDS : FIELDS_NAMES.OTHER_DOG_IDS);
+
+      if (req.body.litterId) await modifyNestedArrayFieldById(client, COLLECTIONS.LITTERS, new ObjectId(req.body.litterId), dogId, FIELDS_NAMES.PUPPY_IDS)
+      await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), dogId, checkDogIdentification(req) ? FIELDS_NAMES.OWN_DOG_IDS : FIELDS_NAMES.OTHER_DOG_IDS);
       if (profile && newDog.breedId) {
         await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), newDog.breedId, FIELDS_NAMES.BREED_IDS, '$addToSet');
       }
@@ -140,15 +148,30 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   });
 
-  app.get<{}, {dog: WithId<Pick<DatabaseDog, 'ownerProfileId' | 'creatorProfileId' | 'federationId'>> | null}, Pick<DatabaseDog, 'fullName' | 'dateOfBirth' | 'gender'> & {breedId: string}, {}>('/api/check-dog', async (req, res) => {
+  app.get<
+    {},
+    { dogs: (WithId<Pick<DatabaseDog, 'fullName' | 'dateOfBirth' | 'gender' | 'ownerProfileId' | 'creatorProfileId' | 'federationId' | 'name' | 'dateOfDeath' | 'color' | 'isNeutered'>> & {breedId: string, litterData: HistoryRecord | null})[] },
+    {},
+    Pick<DatabaseDog, 'dateOfBirth' | 'gender'> & {breedId: string}
+  >('/api/validate-new-dog', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /GET/CHECK-DOG, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
 
-      const dog = await searchDogByParams(client, {...req.body, breedId: new ObjectId(req.body.breedId)})
+      const dogs = await searchDogByParams(client, {...req.query, breedId: new ObjectId(req.query.breedId)})
 
-      res.send({dog})
+      if (!dogs) return res.send({dogs: []})
+
+      const preparedDogData = await Promise.all(
+        dogs.map(async (dog) => {
+          const litterData = dog.litterId ? await getLitterData(client, dog.litterId) : null
+          return {...dog, ...req.query, litterData}
+        }))
+
+
+
+      res.send({dogs: preparedDogData})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

@@ -247,7 +247,7 @@ export const findLittersByDate = async(
   client: MongoClient,
   dateOfBirth: string,
   breedId: ObjectId | null,
-): Promise<Pick<WithId<DatabaseLitter>, '_id' | 'litterTitle'>[]> => {
+): Promise<Pick<WithId<DatabaseLitter>, '_id' | 'litterTitle' | 'dateOfBirth'>[]> => {
   return await client.db(DB_NAME).collection<DatabaseLitter>(COLLECTIONS.LITTERS).find({
     dateOfBirth,
     breedId,
@@ -255,6 +255,7 @@ export const findLittersByDate = async(
     projection: {
       _id: 1,
       litterTitle: 1,
+      dateOfBirth: 1,
     }
   }).toArray()
 }
@@ -341,17 +342,23 @@ export const getAllDocuments = async<T extends Document>(
 
 export const searchDogByParams = async(
   client: MongoClient,
-  dogParams: Pick<DatabaseDog, 'fullName' | 'breedId' | 'gender' | 'dateOfBirth'>
-): Promise<WithId<Pick<DatabaseDog, 'ownerProfileId' | 'creatorProfileId' | 'federationId'>> | null> =>
+  dogParams: Pick<DatabaseDog, 'breedId' | 'gender' | 'dateOfBirth'>
+): Promise<WithId<Pick<DatabaseDog, 'fullName' | 'ownerProfileId' | 'creatorProfileId' | 'federationId' | 'name' | 'dateOfDeath' | 'color' | 'isNeutered' | 'litterId'>>[] | null> =>
   await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS)
-    .findOne(
+    .find(
       dogParams,
       {
         projection: {
           _id: 1,
-          creatorProfileId: 1,
+          fullName: 1,
           ownerProfileId: 1,
+          creatorProfileId: 1,
           federationId: 1,
+          name: 1,
+          dateOfDeath: 1,
+          color: 1,
+          isNeutered: 1,
+          litterId: 1,
         }
       }
-    )
+    ).toArray()

@@ -59,7 +59,7 @@ export const initLitterRoutes = (app: Application, client: MongoClient) => {
   });
 
   // ToDo поиск пометов для миксов!!!
-  app.get<{}, { litters: Pick<ClientLitter, '_id' | 'litterTitle'>[] }, {}, { date: string, breedId: string }>('/api/litters', async (req, res) => {
+  app.get<{}, { litters: Pick<ClientLitter, '_id' | 'litterTitle' | 'dateOfBirth'>[] }, {}, { date: string, breedId: string }>('/api/litters', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/LITTERS, profileId >>> ', profileId)
