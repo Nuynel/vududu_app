@@ -275,6 +275,7 @@ export const updateBaseDogInfoById = async(
     | 'isNeutered'
     | 'litterId'
     | 'breedId'
+    | 'ownerProfileId'
   >
 )=> {
   await client.db(DB_NAME).collection<DatabaseDog>(COLLECTIONS.DOGS).updateOne(

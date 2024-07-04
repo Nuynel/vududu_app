@@ -255,13 +255,13 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
     }
   })
 
-  app.put<{}, {message: string}, {rawDogInfo: RawDogData}, {id: string}>('/api/dog', async(req, res) => {
+  app.put<{}, {message: string}, {rawDogInfo: RawDogData, isAssigment: boolean}, {id: string}>('/api/dog', async(req, res) => {
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /PUT/DOG, profileId >>> ', profileId)
       const profile = await verifyProfileType(client, profileId)
-      const {rawDogInfo} = req.body;
-      const { id } = req.query;
+      const {rawDogInfo, isAssigment} = req.body;
+      const { id} = req.query;
 
       const previousDogData: WithId<DatabaseDog> | null = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
       if (!previousDogData) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 191})
@@ -272,6 +272,7 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
           ...rawDogInfo,
           litterId:  rawDogInfo.litterId ? new ObjectId(rawDogInfo.litterId) : null,
           breedId: rawDogInfo.breedId ? new ObjectId(rawDogInfo.breedId) : null,
+          ownerProfileId: isAssigment ? new ObjectId(profileId) : null,
         }
       )
 
@@ -297,6 +298,10 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         new ObjectId(id),
         '$pull'
       )
+
+      if (isAssigment) {
+        await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(id), FIELDS_NAMES.OWN_DOG_IDS);
+      }
 
       if (profile && rawDogInfo.breedId) {
         await modifyNestedArrayFieldById(client, COLLECTIONS.PROFILES, new ObjectId(profileId), new ObjectId(rawDogInfo.breedId), FIELDS_NAMES.BREED_IDS, '$addToSet');
