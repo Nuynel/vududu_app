@@ -97,6 +97,7 @@ export const baseInfoFieldsConfig = {
       method(key, {
         id: event.option._id,
         title: event.option.litterTitle,
+        dateOfBirth: event.option.dateOfBirth
       })
     },
   },

@@ -1,4 +1,4 @@
-import {Box, Card, CardHeader, CheckBox, InfiniteScroll, Text} from "grommet";
+import {Box, Button, Card, CardHeader, CheckBox, InfiniteScroll, Text} from "grommet";
 import {formatDateOrRange, getDateDiff} from "../g_shared/methods/helpers";
 import * as React from "react";
 import {EVENT_TYPE} from "../g_shared/types/event";
@@ -30,7 +30,8 @@ export type Entity = {
   _id: string,
   icon: keyof typeof iconsMapping | null,
   title: string,
-  date: string[],
+  date?: string[],
+  hasOwner?: boolean,
 }
 
 type Props = {
@@ -39,6 +40,7 @@ type Props = {
   hasIcons: boolean,
   selectedIds?: string[],
   selectMode?: boolean,
+  isDogChooser?: boolean,
   setActiveId: (_id: string) => void,
   switchIsIdSelected?: (_id: string) => void,
 }
@@ -90,7 +92,7 @@ const getBorder = (hasColorIndicator: boolean, date: string[]): BorderType => {
   return hasColorIndicator ? {...borderSideAndSize, color: getBorderColor(dateDiff), style: 'solid'} : false
 }
 
-const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds, switchIsIdSelected, selectMode}: Props) => {
+const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds, isDogChooser, switchIsIdSelected, selectMode}: Props) => {
   const {isSmall} = useResponsiveGrid()
 
   const cardClickEventHandler = (id: string) => {
@@ -98,14 +100,40 @@ const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds
   }
 
   const getMargin = (index, list) => {
-    if (index === (list.length - 1)) return {bottom: '72px', top: isSmall ? 'medium' : 'small', left: 'small', right: 'small'}
+    if (index === (list.length - 1) && !isDogChooser) return {bottom: '72px', top: isSmall ? 'medium' : 'small', left: 'small', right: 'small'}
     return {bottom: 'none', top: isSmall ? 'medium' : 'small', left: 'small', right: 'small'}
   }
 
   return (
     <InfiniteScroll items={list}>
       {(entity: Entity, index: number) => {
-        return (
+        return isDogChooser ? (
+          <Card
+            background={'white'}
+            focusIndicator={false}
+            pad={isSmall ? 'medium' : 'small'}
+            margin={getMargin(index, list)}
+            flex={false}
+            key={index}
+            border={false}
+          >
+            <CardHeader justify='between' align={isSmall ? 'start' : "center"} direction={isSmall ? 'column' : "row"}>
+              <Box direction='row' gap={'medium'}>
+                <Text truncate={!isSmall} margin={{left: 'small'}}>
+                  {entity.title}
+                  {entity.hasOwner && ', собака уже закреплена за владельцем'}
+                </Text>
+              </Box>
+              <Button
+                size={isSmall ? 'small' : 'medium'}
+                primary={!entity.hasOwner}
+                alignSelf={"center"}
+                onClick={() => cardClickEventHandler(entity._id)}
+                label={entity.hasOwner ? 'Оспорить владение' : 'Это моя собака'}
+              />
+            </CardHeader>
+          </Card>
+          ) : (
           <Card
             background={'white'}
             focusIndicator={false}

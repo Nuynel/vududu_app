@@ -4,6 +4,8 @@ import {IncomingLitterData, OutgoingLitterData} from "../../../g_shared/types";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import {updateBaseLitterInfo} from "../../../g_shared/methods/api";
+import FormPageWrapper from "../../../e_features/FormPageWrapper";
+import {formatSingleDate} from "../../../g_shared/methods/helpers";
 
 const LitterInformationEditor = () => {
   const [litter, changeLitter] = useState<IncomingLitterData | null>(null);
@@ -42,13 +44,15 @@ const LitterInformationEditor = () => {
   if (!litter) return null;
 
   return (
-    <BaseInfoEditor
-      title={litter.litterTitle}
-      entityType={'litter'}
-      entity={litter}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-    />
+    <FormPageWrapper title={`${formatSingleDate(litter.dateOfBirth)}, ${litter.litterTitle}`}>
+      <BaseInfoEditor
+        entityType={'litter'}
+        entity={litter}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        saveButtonLabel={'Сохранить'}
+      />
+    </FormPageWrapper>
   )
 }
 

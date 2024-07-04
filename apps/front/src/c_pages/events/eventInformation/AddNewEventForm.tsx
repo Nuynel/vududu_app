@@ -10,6 +10,7 @@ import {fixTimezone} from "../../../g_shared/methods/helpers";
 import {createEvent} from "../../../g_shared/methods/api";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
+import FormPageWrapper from "../../../e_features/FormPageWrapper";
 
 const initNewHeatData: Omit<OutgoingHeatData, 'profileId' | 'activated' | 'eventType'> = {
   dogId: '',
@@ -183,21 +184,23 @@ const AddNewEventForm = () => {
   }
 
   return (
-    <BaseInfoEditor
-      title={'Добавление события'}
-      entityType={getEntityType()}
-      entity={getValue()}
-      newEventType={newEventType}
-      repeat={repeat}
-      frequencyInDays={frequencyInDays}
-      dogsList={dogsList}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-      changeNewEventType={changeNewEventType}
-      changeFrequency={changeFrequency}
-      handleSearch={handleSearch}
-      switchRepeat={() => switchRepeat(!repeat)}
-    />
+    <FormPageWrapper title={'Добавление события'}>
+      <BaseInfoEditor
+        entityType={getEntityType()}
+        entity={getValue()}
+        newEventType={newEventType}
+        repeat={repeat}
+        frequencyInDays={frequencyInDays}
+        dogsList={dogsList}
+        saveButtonLabel={'Сохранить'}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        changeNewEventType={changeNewEventType}
+        changeFrequency={changeFrequency}
+        handleSearch={handleSearch}
+        switchRepeat={() => switchRepeat(!repeat)}
+      />
+    </FormPageWrapper>
   )
 }
 

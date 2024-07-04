@@ -7,6 +7,7 @@ import {EVENT_TYPE} from "../../../g_shared/types/event";
 import {getDateDiff} from "../../../g_shared/methods/helpers";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import {getRuTranslate} from "../../../g_shared/constants/translates";
+import FormPageWrapper from "../../../e_features/FormPageWrapper";
 
 
 const getStatus = (dateDiff: number, isActivated: boolean) => {
@@ -85,13 +86,15 @@ const EventInfoEditor = () => {
   const getTitle = (key) => getRuTranslate(key)
 
   return (
-    <BaseInfoEditor
-      title={getTitle(event.eventType.toLowerCase())}
-      entityType={event.eventType}
-      entity={{...event, status: getStatus(getDateDiff(event.date[0]), status)}}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-    />
+    <FormPageWrapper title={getTitle(event.eventType.toLowerCase())}>
+      <BaseInfoEditor
+        entityType={event.eventType}
+        saveButtonLabel={'Сохранить'}
+        entity={{...event, status: getStatus(getDateDiff(event.date[0]), status)}}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+      />
+    </FormPageWrapper>
   )
 }
 

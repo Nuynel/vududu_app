@@ -7,16 +7,17 @@ import {getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
 import {useBreeds} from "../../../f_entities/hooks/useBreeds";
+import FormPageWrapper from "../../../e_features/FormPageWrapper";
 
 
 const DogInformationEditor = () => {
   const [dog, changeDog] = useState<IncomingDogData | null>(null);
-  const [litters, changeLitters] = useState<Pick<IncomingLitterData, '_id' | 'litterTitle'>[]>([]);
+  const [litters, changeLitters] = useState<Pick<IncomingLitterData, '_id' | 'litterTitle' | 'dateOfBirth'>[]>([]);
 
   const params: {id: string} = useParams();
 
   const {getDogById, setDogsData, dogsData, getLitterById} = useProfileDataStore();
-  const {breeds, getAllBreeds, searchBreeds} = useBreeds();
+  const {breeds, getAllBreeds, setBreedSearchString} = useBreeds();
   const {getInitialData} = useGetInitialData()
 
   const handleInputChange = (key, value) => {
@@ -56,9 +57,7 @@ const DogInformationEditor = () => {
   useEffect(() => {
     if (dog) {
       getLittersByDate(dog.dateOfBirth, dog.breedId).then(({litters}) => {
-        changeLitters(litters.map(
-          ({_id}) => ({_id, litterTitle: getLitterById(_id).litterTitle})
-        ))
+        changeLitters(litters)
       })
       getAllBreeds()
     }
@@ -92,16 +91,18 @@ const DogInformationEditor = () => {
   if (!dog) return null;
 
   return (
-    <BaseInfoEditor
-      title={dog.name || dog.fullName}
-      entityType={'dog'}
-      entity={dog}
-      handleInputChange={handleInputChange}
-      handleSearch={searchBreeds}
-      handleSubmit={handleSubmit}
-      litters={litters}
-      breeds={breeds}
-    />
+    <FormPageWrapper title={dog.name || dog.fullName}>
+      <BaseInfoEditor
+        entityType={'dog'}
+        entity={dog}
+        handleInputChange={handleInputChange}
+        handleSearch={setBreedSearchString}
+        handleSubmit={handleSubmit}
+        litters={litters}
+        breeds={breeds}
+        saveButtonLabel={'Сохранить'}
+      />
+    </FormPageWrapper>
   )
 }
 

@@ -5,7 +5,7 @@ import LittersList from "./LittersList";
 import SectionHeader from "../../e_features/SectionHeader";
 import * as React from "react";
 import EditingButtons from "../../d_widgets/EditingButtons";
-import DeletePopup from "../../e_features/DeletePopup";
+import SubmitActionPopup from "../../e_features/SubmitActionPopup";
 import {deleteDog, deleteLitter} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 import {useLocation, useRoute} from "wouter";
@@ -94,10 +94,11 @@ const DogsScreen = () => {
       />
 
       {show && (
-        <DeletePopup
+        <SubmitActionPopup
           text={getDeletePopupText()}
+          submitButtonText={'Удалить'}
           closePopup={() => setShow(false)}
-          deleteEntities={deleteEntities}
+          submitAction={deleteEntities}
         />
       )}
     </Grid>

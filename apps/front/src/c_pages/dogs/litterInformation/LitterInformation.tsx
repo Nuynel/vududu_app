@@ -57,7 +57,7 @@ const LitterInformation = () => {
     })
 
     return {
-      title: litter.litterTitle,
+      title: `${formatSingleDate(litter.dateOfBirth)}, ${litter.litterTitle}`,
       commonData: {
         blockName: 'commonData',
         blockType: BLOCK_TYPES.COMMON,

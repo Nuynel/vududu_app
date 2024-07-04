@@ -8,7 +8,7 @@ import {DATA_TYPES} from "../../g_shared/types/event";
 import ActivateButton from "./uiComponents/ActivateButton";
 import EditingButtons from "../../d_widgets/EditingButtons";
 import Filter from "./uiComponents/Filter";
-import DeletePopup from "../../e_features/DeletePopup";
+import SubmitActionPopup from "../../e_features/SubmitActionPopup";
 import {deleteEventsByIds} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
@@ -82,9 +82,10 @@ const CalendarScreen = () => {
       </EditingButtons>
 
       {show && (
-        <DeletePopup
+        <SubmitActionPopup
           closePopup={() => setShow(false)}
-          deleteEntities={deleteEntities}
+          submitButtonText={'Удалить'}
+          submitAction={deleteEntities}
           text={deletePopupText}
         />
       )}

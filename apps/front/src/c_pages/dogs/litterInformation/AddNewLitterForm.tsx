@@ -8,6 +8,7 @@ import * as React from "react";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import {useBreeds} from "../../../f_entities/hooks/useBreeds";
+import FormPageWrapper from "../../../e_features/FormPageWrapper";
 
 const initNewLitterData: Pick<IncomingLitterData, RawLitterFields> = {
   fatherId: '',
@@ -69,7 +70,7 @@ const LitterInformationCreator = () => {
 
     return {
       ...newLitterData,
-      litterTitle: `${newLitterData.dateOfBirth}, ${fatherFullName}/${motherFullName}`,
+      litterTitle: `${fatherFullName}/${motherFullName}`,
     }
   }
 
@@ -112,18 +113,20 @@ const LitterInformationCreator = () => {
   useEffect(() => getAllBreeds(), [])
 
   return (
-    <BaseInfoEditor
-      title={'Добавление помета'}
-      entityType={'newLitter'}
-      entity={newLitterData}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-      handleSearchByGender={handleSearch}
-      maleDogsList={maleDogsList}
-      femaleDogsList={femaleDogsList}
-      puppiesList={puppiesList}
-      breeds={breeds}
-    />
+    <FormPageWrapper title={'Добавление помета'}>
+      <BaseInfoEditor
+        entityType={'newLitter'}
+        entity={newLitterData}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        handleSearchByGender={handleSearch}
+        maleDogsList={maleDogsList}
+        femaleDogsList={femaleDogsList}
+        puppiesList={puppiesList}
+        breeds={breeds}
+        saveButtonLabel={'Сохранить'}
+      />
+    </FormPageWrapper>
   )
 }
 

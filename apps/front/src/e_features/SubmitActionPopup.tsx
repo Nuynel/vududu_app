@@ -1,9 +1,9 @@
 import * as React from 'react'
 import {Card, Button, CardBody, CardFooter, Layer} from "grommet";
 
-type Props = {text: string, closePopup: () => void; deleteEntities: () => void}
+type Props = {text: string, submitButtonText?: string, closePopup: () => void; submitAction?: () => void}
 
-const DeletePopup = ({closePopup, deleteEntities, text}: Props) => {
+const SubmitActionPopup = ({closePopup, submitAction, text, submitButtonText}: Props) => {
   return (
     <Layer
       full={true}
@@ -24,24 +24,26 @@ const DeletePopup = ({closePopup, deleteEntities, text}: Props) => {
         <CardFooter justify={"around"}>
           <Button
             focusIndicator={false}
-            label='Отмена'
+            label='Закрыть'
             fill={false}
             style={{borderRadius: '24px'}}
             primary
             onClick={closePopup}
           />
-          <Button
-            focusIndicator={false}
-            label='Удалить'
-            fill={false}
-            style={{borderRadius: '24px'}}
-            primary
-            onClick={deleteEntities}
-          />
+          {submitButtonText && (
+            <Button
+              focusIndicator={false}
+              label={submitButtonText}
+              fill={false}
+              style={{borderRadius: '24px'}}
+              primary
+              onClick={submitAction}
+            />
+          )}
         </CardFooter>
       </Card>
     </Layer>
   )
 }
 
-export default DeletePopup
+export default SubmitActionPopup

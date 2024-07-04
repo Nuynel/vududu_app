@@ -8,7 +8,7 @@ import {
 } from "../../types";
 import {signIn, signOut, signUp, getUser, recoveryPassword, saveNewPassword} from './user';
 import {createProfile, getProfile} from "./profile";
-import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog} from "./dogs";
+import {createDog, getStuds, getPuppies, updateBaseDogInfo, deleteDog, validateNewDog} from "./dogs";
 import {createLitter, getLittersByDate, updateBaseLitterInfo, deleteLitter} from "./litters";
 import {createEvent, updateHeatInfo, updateTreatmentInfo, deleteEventsByIds} from './events'
 import {getPedigreeByDogId} from "./pedigrees";
@@ -73,6 +73,7 @@ export {
   getProfile,
   createDog,
   deleteDog,
+  validateNewDog,
   getStuds,
   getPuppies,
   createLitter,
