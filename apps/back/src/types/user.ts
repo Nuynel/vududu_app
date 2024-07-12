@@ -93,6 +93,7 @@ export type KennelProfile = Profile & { // питомники
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
   litterIds: ObjectId[];
+  otherLitterIds: ObjectId[];
   breedIds: ObjectId[];
   type: PROFILE_TYPES.KENNEL
 }
@@ -102,14 +103,16 @@ export type BreederProfile = Profile & { // заводчики
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
   litterIds: ObjectId[];
+  otherLitterIds: ObjectId[];
   breedIds: ObjectId[];
   type: PROFILE_TYPES.BREEDER
 }
 
-export type MaleDogOwnerProfile = Profile & { // хозяева кобелей
+export type DogOwnerProfile = Profile & { // хозяева кобелей
   connectedOrganisations: Pick<ConnectedOrganisations, MaleDogOwnerConnectedOrganizations>;
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
+  otherLitterIds: ObjectId[];
   breedIds: ObjectId[];
   type: PROFILE_TYPES.MALE_DOG_OWNER
 }
@@ -123,4 +126,4 @@ export type ConnectedOrganisationsTypes =
   Pick<ConnectedOrganisations, MaleDogOwnerConnectedOrganizations>
 
 export type DatabaseProfile = CanineFederationProfile | NationalBreedClubProfile |
-  CanineClubProfile | KennelProfile | BreederProfile | MaleDogOwnerProfile
+  CanineClubProfile | KennelProfile | BreederProfile | DogOwnerProfile

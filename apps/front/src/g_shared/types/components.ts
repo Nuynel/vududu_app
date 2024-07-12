@@ -12,7 +12,6 @@ export type FieldData = {
 }
 
 export type BlocksConfig = {
-  title: string,
   commonData: {
     blockName: string,
     blockType: BLOCK_TYPES,

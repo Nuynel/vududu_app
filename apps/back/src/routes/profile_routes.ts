@@ -16,21 +16,21 @@ import {
   BreederProfile,
   DatabaseProfile,
   KennelProfile,
-  MaleDogOwnerProfile,
+  DogOwnerProfile,
   PROFILE_TYPES
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {COOKIE_TOKEN_NAMES, setCookie} from "./user_routes";
 
 type ProfileDataFields = 'name' | 'documentIds' | 'contactIds' | 'eventIds' | 'ownDogIds'
-type ProfilesWithDogs = KennelProfile | BreederProfile | MaleDogOwnerProfile
+type ProfilesWithDogs = KennelProfile | BreederProfile | DogOwnerProfile
 type ProfileData = Pick<ProfilesWithDogs, ProfileDataFields>
 
 export function isKennelOrBreedProfile(profile: DatabaseProfile): profile is KennelProfile | BreederProfile {
   return profile.type === PROFILE_TYPES.KENNEL || profile.type === PROFILE_TYPES.BREEDER;
 }
 
-const pickProfileData = (profile: KennelProfile | BreederProfile | MaleDogOwnerProfile): ProfileData => {
+const pickProfileData = (profile: ProfilesWithDogs): ProfileData => {
   const { name, documentIds, contactIds, eventIds, ownDogIds} = profile
   return { name, documentIds, contactIds, eventIds, ownDogIds }
 }

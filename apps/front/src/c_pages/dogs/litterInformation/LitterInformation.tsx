@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useLocation, useParams} from "wouter";
 import EntityPage from "../../../e_features/EntityPage";
+import EntityPageWrapper from "../../../e_features/EntityPageWrapper";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {BlocksConfig, FieldData, IncomingLitterData} from "../../../g_shared/types";
 import {formatSingleDate} from "../../../g_shared/methods/helpers";
@@ -57,7 +58,6 @@ const LitterInformation = () => {
     })
 
     return {
-      title: `${formatSingleDate(litter.dateOfBirth)}, ${litter.litterTitle}`,
       commonData: {
         blockName: 'commonData',
         blockType: BLOCK_TYPES.COMMON,
@@ -74,11 +74,15 @@ const LitterInformation = () => {
   }
 
   return (
-    <EntityPage
-      config={getCardsConfig()}
-      openBaseInfoEditor={openLitterEditor}
+    <EntityPageWrapper
+      title={`${formatSingleDate(litter.dateOfBirth)}, ${litter.litterTitle}`}
       closeEntityPage={() => setLocation(Paths.dogs)}
-    />
+    >
+      <EntityPage
+        config={getCardsConfig()}
+        openBaseInfoEditor={openLitterEditor}
+      />
+    </EntityPageWrapper>
   )
 }
 

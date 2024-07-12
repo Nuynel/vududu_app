@@ -8,6 +8,7 @@ import {getFieldsConfigFromHistoryRecords} from "../helpers";
 import {dogBaseDataFields} from './configurations'
 import {getCommonFieldsConfig} from "../../../g_shared/methods/helpers/getCommonFieldsConfig";
 import {Paths} from "../../../g_shared/constants/routes";
+import EntityPageWrapper from "../../../e_features/EntityPageWrapper";
 
 const DogInformation = () => {
   const [dog, setDog] = useState<IncomingDogData | null>(null);
@@ -40,7 +41,6 @@ const DogInformation = () => {
     const commonFields: FieldData[] = dogBaseDataFields.map(fieldName => getCommonFieldsConfig(fieldName, dog, breed))
 
     return {
-      title: dog.name,
       commonData: {
         blockName: 'commonData',
         blockType: BLOCK_TYPES.COMMON,
@@ -67,11 +67,15 @@ const DogInformation = () => {
   }
 
   return (
-    <EntityPage
-      config={getCardsConfig()}
-      openBaseInfoEditor={openDogEditor}
+    <EntityPageWrapper
+      title={dog.name}
       closeEntityPage={closeDogPage}
-    />
+    >
+      <EntityPage
+        config={getCardsConfig()}
+        openBaseInfoEditor={openDogEditor}
+      />
+    </EntityPageWrapper>
   )
 }
 

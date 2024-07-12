@@ -9,6 +9,7 @@ import {useLocation, useParams} from "wouter";
 import EntityPage from "../../../e_features/EntityPage";
 import {getRuTranslate} from "../../../g_shared/constants/translates";
 import {Paths} from "../../../g_shared/constants/routes";
+import EntityPageWrapper from "../../../e_features/EntityPageWrapper";
 
 const EventInformation = () => {
   const [event, setEvent] = useState<IncomingEventData | null>(null)
@@ -66,7 +67,6 @@ const EventInformation = () => {
     })
 
     return {
-      title: fieldNamesMapping[event.eventType],
       commonData: {
         blockName: 'commonData',
         blockType: BLOCK_TYPES.COMMON,
@@ -77,11 +77,15 @@ const EventInformation = () => {
   }
 
   return (
-    <EntityPage
-      config={getCardsConfig()}
-      openBaseInfoEditor={() => setLocation(`/events/${event._id}/editor`)}
+    <EntityPageWrapper
+      title={fieldNamesMapping[event.eventType]}
       closeEntityPage={closeEventPage}
-    />
+    >
+      <EntityPage
+        config={getCardsConfig()}
+        openBaseInfoEditor={() => setLocation(`/events/${event._id}/editor`)}
+      />
+    </EntityPageWrapper>
   )
 }
 
