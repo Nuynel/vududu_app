@@ -11,11 +11,35 @@ import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
 import {useLocation, useRoute} from "wouter";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {Paths} from "../../g_shared/constants/routes";
+import Filter from "../../g_shared/ui_components/Filter";
+import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
 
 enum DATA_TYPES {
   DOGS = 'DOGS',
   LITTERS = 'LITTERS'
 }
+
+const dogTypeOptions = [ // todo move values to const
+  {
+    label: 'Только мои собаки',
+    value: 'ownDogs'
+  },
+  {
+    label: 'Другие добавленные мной собаки',
+    value: 'allAddedDogs'
+  }
+]
+
+const litterTypeOptions = [
+  {
+    label: 'Только мои пометы',
+    value: 'ownLitters'
+  },
+  {
+    label: 'Другие добавленные мной пометы',
+    value: 'allAddedLitters'
+  }
+]
 
 const DogsScreen = () => {
   const [show, setShow] = useState(false);
@@ -25,8 +49,9 @@ const DogsScreen = () => {
   const [editingMode, switchEditingMode] = useState<boolean>(false)
   const [selectedId, changeSelectedId] = useState<string | null>(null)
   const {getInitialData} = useGetInitialData()
+  const {dogTypeFilter, setDogTypeFilter, litterTypeFilter, setLitterTypeFilter} = useUIStateStore()
 
-  const {isSmall, columns, rows, areas} = useResponsiveGrid();
+  const {isSmall, columns, rows, areas} = useResponsiveGrid(true);
 
   const switchIsIdSelected = (id) => {
     if (!selectedId || selectedId !== id) return changeSelectedId(id)
@@ -67,6 +92,12 @@ const DogsScreen = () => {
           setActiveDataType={setActiveDataType}
         />
       )}
+
+      <Filter
+        options={matchDogsRoutes ? dogTypeOptions : litterTypeOptions}
+        value={matchDogsRoutes ? dogTypeFilter : litterTypeFilter}
+        setValue={matchDogsRoutes ? setDogTypeFilter : setLitterTypeFilter}
+      />
 
       <Box gridArea={'content'} pad={{left: 'small', right: 'small'}} background={'lightBackground'}>
         <Box overflow='auto'>

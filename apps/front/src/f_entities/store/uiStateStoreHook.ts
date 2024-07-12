@@ -12,6 +12,12 @@ type UIStorage = {
   eventTypeFilter: EVENT_TYPE | null,
   setEventTypeFilter: (newEventType: EVENT_TYPE | null) => void,
 
+  dogTypeFilter: 'ownDogs' | 'allAddedDogs',
+  setDogTypeFilter: (newDogType: 'ownDogs' | 'allAddedDogs') => void,
+
+  litterTypeFilter: 'ownLitters' | 'allAddedLitters',
+  setLitterTypeFilter: (newLitterType: 'ownLitters' | 'allAddedLitters') => void,
+
   activeDataType: DATA_TYPES,
   setActiveDataType: (newDataType: DATA_TYPES) => void,
 
@@ -41,4 +47,9 @@ export const useUIStateStore = create<UIStorage>(set => ({
   activePedigreeDogId: null,
   setActivePedigreeDogId: (newActivePedigreeDogId) => set(state => ({...state, activePedigreeDogId: newActivePedigreeDogId})),
 
+  dogTypeFilter: "ownDogs",
+  setDogTypeFilter: (newDogType) => set(state => ({...state, dogTypeFilter: newDogType })),
+
+  litterTypeFilter: "ownLitters",
+  setLitterTypeFilter: (newLitterType) => set(state => ({...state, litterTypeFilter: newLitterType })),
 }))

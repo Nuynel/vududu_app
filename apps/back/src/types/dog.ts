@@ -1,5 +1,5 @@
 import {ObjectId, WithId} from "mongodb";
-import {HistoryRecord, Permissions} from "./index";
+import {HistoryRecord, Permissions, ProfilePermissionsByDog} from "./index";
 
 export enum GENDER {
   MALE = 'MALE',
@@ -54,7 +54,7 @@ type ReproductiveHistory = {
   litterIds: null | ObjectId[];
 }
 
-export type DatabaseDog = { // new: federationId, healthCertificatesIds, permissions
+export type DatabaseDog = { // new: federationId, healthCertificateIds, permissions
   name: string | null; // домашняя кличка (может быть даже цвет ошейника)
   fullName: string; // todo добавить null на случай когда добавляют щенков вместе с пометом
   dateOfBirth: string;
@@ -76,28 +76,29 @@ export type DatabaseDog = { // new: federationId, healthCertificatesIds, permiss
   reproductiveHistory: ReproductiveHistory;
   treatmentIds: ObjectId[] | null;
   diagnosticIds: ObjectId[] | null;
-  healthCertificatesIds: ObjectId[] | null;
+  healthCertificateIds: ObjectId[] | null;
 
   puppyCardId: ObjectId | null; // ссылка на документ (щенячку)
   puppyCardNumber: string | null;
-  type: DOG_TYPES;
   pedigreeId: ObjectId | null;
 
   permissions: Permissions;
 }
 
-export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHistory' | 'diagnosticIds' | 'treatmentIds' | 'healthCertificatesIds'> & {
+export type ClientReproductiveHistory = {
+  litters: HistoryRecord[] | null;
+  heats: ObjectId[] | null;
+  mates: ObjectId[] | null;
+  births: ObjectId[] | null;
+}
+
+export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHistory' | 'diagnosticIds' | 'treatmentIds' | 'healthCertificateIds'> & {
   litterData: HistoryRecord | null;
   diagnostics: HistoryRecord[] | null;
   treatments: HistoryRecord[] | null;
   vaccinations: HistoryRecord[] | null;
   healthCertificates: HistoryRecord[] | null;
-  reproductiveHistory: {
-    litters: HistoryRecord[] | null;
-    heats: ObjectId[] | null;
-    mates: ObjectId[] | null;
-    births: ObjectId[] | null;
-  }
+  reproductiveHistory: ClientReproductiveHistory
 }
 
 export type RawDogFields =
@@ -128,4 +129,11 @@ export type RawOtherDogFields =
 export type RawOtherDogData = Pick <DatabaseDog, RawOtherDogFields> & {
   litterId: string,
   breedId: string,
+}
+
+export type ProtectedClientDogData = Omit<ClientDog, 'permissions' | 'reproductiveHistory' | 'creatorProfileId'>
+  & {
+  permissions: ProfilePermissionsByDog | null,
+  reproductiveHistory: {litters: HistoryRecord[] | null},
+  creatorProfileId: null | ObjectId,
 }

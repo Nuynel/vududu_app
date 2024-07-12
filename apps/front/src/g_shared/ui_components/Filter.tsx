@@ -1,30 +1,18 @@
-import * as React from 'react'
+import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {Box, FormField, Select, Text} from "grommet";
-import {EVENT_TYPE} from "../../../g_shared/types/event";
-import {useUIStateStore} from "../../../f_entities/store/uiStateStoreHook";
-import useResponsiveGrid from "../../../f_entities/hooks/useResponsiveGrid";
+import * as React from "react";
+import {EVENT_TYPE} from "../types/event";
 
-const eventTypeOptions = [
-  {
-    label: 'Все',
-    value: null
-  },
-  {
-    label: 'Вакцинации',
-    value: EVENT_TYPE.VACCINATION
-  },
-  {
-    label: 'Обработки',
-    value: EVENT_TYPE.ANTIPARASITIC_TREATMENT
-  },
-  {
-    label: 'Течки',
-    value: EVENT_TYPE.HEAT
-  },
-]
+type Props = {
+  options: {
+    label: string,
+    value: null | EVENT_TYPE | string
+  }[],
+  value: null | EVENT_TYPE | string,
+  setValue: (newValue: null | EVENT_TYPE | string) => void
+}
 
-const Filter = () => {
-  const {eventTypeFilter, setEventTypeFilter} = useUIStateStore()
+const Filter = ({options, value, setValue}: Props) => {
   const {isSmall} = useResponsiveGrid()
   return (
     <Box
@@ -44,11 +32,11 @@ const Filter = () => {
         <Select
           id='filter-input-id'
           name='Фильтр'
-          value={eventTypeOptions.find((option) => option.value === eventTypeFilter)}
-          options={eventTypeOptions}
+          value={options.find((option) => option.value === value)}
+          options={options}
           labelKey='label'
           placeholder='Фильтр'
-          onChange={(event) => setEventTypeFilter(event.value.value)}
+          onChange={(event) => setValue(event.value.value)}
         />
       </FormField>
     </Box>

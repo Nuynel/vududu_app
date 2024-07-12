@@ -7,7 +7,7 @@ import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
 import {DATA_TYPES} from "../../g_shared/types/event";
 import ActivateButton from "./uiComponents/ActivateButton";
 import EditingButtons from "../../d_widgets/EditingButtons";
-import Filter from "./uiComponents/Filter";
+import EventFilter from "./uiComponents/EventFilter";
 import SubmitActionPopup from "../../e_features/SubmitActionPopup";
 import {deleteEventsByIds} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
@@ -58,7 +58,7 @@ const CalendarScreen = () => {
         setActiveDataType={setActiveDataType}
       />
 
-      <Filter/>
+      <EventFilter/>
 
       <Box gridArea={'content'} pad={{left: 'small', right: 'small'}} background={'lightBackground'}>
         <Box overflow='auto'>

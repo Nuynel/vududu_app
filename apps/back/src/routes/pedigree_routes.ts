@@ -1,7 +1,13 @@
 import {Application} from "express";
-import {MongoClient, ObjectId} from "mongodb";
-import {DatabaseDog, DatabaseLitter} from "../types";
-import {errorHandler, findEntityById, getCookiesPayload, getTimestamp} from "../methods";
+import {MongoClient, ObjectId, WithId} from "mongodb";
+import {DatabaseDog, DatabaseLitter, DatabaseProfile, ProtectedClientDogData} from "../types";
+import {
+  errorHandler,
+  findEntityById,
+  getCookiesPayload,
+  getTimestamp,
+  constructProtectedDogForClient
+} from "../methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
@@ -25,34 +31,36 @@ const PEDIGREE_TYPES_CONFIG = {
   }
 }
 
-type Pedigree = (DatabaseDog & {
+type Pedigree = (ProtectedClientDogData & {
   father: Pedigree | null,
   mother: Pedigree | null,
   position: string,
 }) | null
 
-const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | string, position: string = ''): Promise<Pedigree> => {
+const getPedigree = async (depth: number, client: MongoClient, id: ObjectId | string, profile: WithId<DatabaseProfile>, position: string = ''): Promise<Pedigree> => {
   if (depth <= 0) return null
 
   const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
   if (!dog) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 38})
 
-  if (!dog.litterId || depth <= 0) {
+  const protectedDogData = await constructProtectedDogForClient(client, dog, profile)
+
+  if (!protectedDogData.litterData?.id || depth <= 0) {
     return {
-      ...dog,
+      ...protectedDogData,
       father: null,
       mother: null,
       position: position,
     }
   }
 
-  const litter = await findEntityById<DatabaseLitter>(client, COLLECTIONS.LITTERS, new ObjectId(dog.litterId))
+  const litter = await findEntityById<DatabaseLitter>(client, COLLECTIONS.LITTERS, new ObjectId(protectedDogData.litterData?.id))
   if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 50})
 
   return {
-    ...dog,
-    father: await getPedigree(depth - 1, client, litter.fatherId, position + 'f'),
-    mother: await getPedigree(depth - 1, client, litter.motherId, position + 'm'),
+    ...protectedDogData,
+    father: await getPedigree(depth - 1, client, litter.fatherId, profile, position + 'f'),
+    mother: await getPedigree(depth - 1, client, litter.motherId, profile, position + 'm'),
     position: position,
   }
 }
@@ -63,15 +71,12 @@ export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
       const {profileId} = getCookiesPayload(req)
       const { id, type } = req.query;
       console.log(getTimestamp(), 'REQUEST TO /GET/PEDIGREE, profileId >>> ', profileId, ' >>> dogId >>> ', id)
+      const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
+      if (!profile) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 210})
 
       const depth = PEDIGREE_TYPES_CONFIG[type].DEPTH
 
-      const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
-      if (!dog) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'pedigree_routes', line: 70})
-
-      // если собака не принадлежит владельцу - ограничить доступ к родословной
-
-      const pedigree: Pedigree = await getPedigree(depth, client, id)
+      const pedigree: Pedigree = await getPedigree(depth, client, id, profile)
 
       res.send({ pedigree })
     } catch (e) {

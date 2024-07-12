@@ -116,3 +116,20 @@ export async function validateNewDog (
     console.error(error)
   }
 }
+
+export async function getOtherDogs(): Promise<{ otherDogs: IncomingDogData[] }> {
+  try {
+    return await fetch(`${URL}/api/other-dogs`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }).then(r => {
+      checkResponse(r)
+      return r.json()
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}

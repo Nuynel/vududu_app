@@ -51,7 +51,9 @@ import {
   RawDogFields,
 
   RawOtherDogFields,
-  RawOtherDogData
+  RawOtherDogData,
+
+  ProtectedClientDogData
 } from "./dog";
 
 import {Breed, BreedIssue} from "./breed";
@@ -63,6 +65,8 @@ import {
   Permissions,
   DogDataGroups,
   LitterDataGroups,
+  ProfilePermissionsByDog,
+  DogDataGroupsByFieldName
 } from "./dataPermissions";
 
 // IMPORTANT:
@@ -146,6 +150,7 @@ export {
   RawDogFields,
   RawOtherDogFields,
   RawOtherDogData,
+  ProtectedClientDogData,
 
   Breed,
   BreedIssue,
@@ -155,4 +160,6 @@ export {
   Permissions,
   DogDataGroups,
   LitterDataGroups,
+  ProfilePermissionsByDog,
+  DogDataGroupsByFieldName,
 }

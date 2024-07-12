@@ -3,6 +3,9 @@ import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import {IncomingDogData} from "../../g_shared/types";
 import EntityList, {Entity} from "../../e_features/EntityList";
 import {useLocation} from "wouter";
+import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
+import {useEffect} from "react";
+import {getOtherDogs} from "../../g_shared/methods/api";
 
 type Props = {
   selectMode: boolean,
@@ -11,7 +14,8 @@ type Props = {
 }
 
 const DogsList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
-  const { dogsData } = useProfileDataStore();
+  const { dogsData, otherDogsData, setOtherDogsData } = useProfileDataStore();
+  const { dogTypeFilter } = useUIStateStore();
   const [, setLocation] = useLocation();
 
   const getEntityList = (list: IncomingDogData[]): Entity[] => {
@@ -23,9 +27,15 @@ const DogsList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
     }))
   }
 
+  useEffect(() => {
+    if (!otherDogsData.length) {
+      getOtherDogs().then(({otherDogs}) => setOtherDogsData(otherDogs))
+    }
+  }, [])
+
   return (
     <EntityList
-      list={getEntityList(dogsData)}
+      list={getEntityList(dogTypeFilter === 'ownDogs' ? dogsData : otherDogsData)}
       setActiveId={(id) => setLocation(`/dogs/dog/${id}`)}
       hasColorIndicator={false}
       hasIcons

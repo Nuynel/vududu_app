@@ -8,7 +8,7 @@ import {
   findEntitiesByIds,
   findEntityById,
   findPuppiesByDateOfBirth,
-  findStudsBySearchString, findUserById,
+  findStudsBySearchString,
   getCookiesPayload,
   getTimestamp,
   insertEntity,
@@ -17,6 +17,7 @@ import {
   searchDogByParams,
   updateBaseDogInfoById,
   verifyProfileType,
+  constructProtectedDogForClient,
 } from "../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {
@@ -26,7 +27,7 @@ import {
   DatabaseDogEvent,
   DatabaseLitter,
   DatabaseProfile,
-  DOG_TYPES,
+  ProtectedClientDogData,
   DogReproductiveHistory,
   FemaleReproductiveHistory,
   GENDER,
@@ -44,11 +45,6 @@ import {getLitterData} from "../methods/data_methods";
 type PostDogResBody = {
   message: string,
   dog: ClientDog,
-}
-
-const getNewDogType = (gender: GENDER): DOG_TYPES => {
-  // todo потом расширить для ипов PUPPY и STUD
-  return gender === GENDER.MALE ? DOG_TYPES.MALE_DOG : DOG_TYPES.FEMALE_DOG
 }
 
 const getNewDogReproductiveHistory = (gender: GENDER):
@@ -75,7 +71,7 @@ const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
     viewers: {
       [DATA_GROUPS.PUBLIC]: {
         group: PERMISSION_GROUPS.REGISTERED,
-        profileIds: null,
+        profileIds: [],
       },
       [DATA_GROUPS.PROTECTED]: {
         group: PERMISSION_GROUPS.ORGANISATION,
@@ -87,9 +83,18 @@ const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
       }
     },
     editors: {
-      [DATA_GROUPS.PUBLIC]: creatorProfileId ? [creatorProfileId] : [],
-      [DATA_GROUPS.PROTECTED]: [],
-      [DATA_GROUPS.PRIVATE]: [],
+      [DATA_GROUPS.PUBLIC]: {
+        group: null,
+        profileIds: creatorProfileId ? [creatorProfileId] : []
+      },
+      [DATA_GROUPS.PROTECTED]: {
+        group: null,
+        profileIds: []
+      },
+      [DATA_GROUPS.PRIVATE]: {
+        group: null,
+        profileIds: []
+      },
     }
   }
 
@@ -125,12 +130,11 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
         litterId: req.body.litterId ? new ObjectId(req.body.litterId) : null,
         puppyCardId: null,
         puppyCardNumber: null,
-        type: getNewDogType(req.body.gender),
         reproductiveHistory: getNewDogReproductiveHistory(req.body.gender),
         pedigreeId: null,
         treatmentIds: null,
         diagnosticIds: null,
-        healthCertificatesIds: null,
+        healthCertificateIds: null,
         permissions: getPermissionsSample(checkDogIdentification(req)  ? new ObjectId(profileId) : null),
       }
 
@@ -163,15 +167,13 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       if (!dogs) return res.send({dogs: []})
 
-      const preparedDogData = await Promise.all(
+      const preparedDogsData = await Promise.all(
         dogs.map(async (dog) => {
           const litterData = dog.litterId ? await getLitterData(client, dog.litterId) : null
           return {...dog, ...req.query, litterData}
         }))
 
-
-
-      res.send({dogs: preparedDogData})
+      res.send({dogs: preparedDogsData})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
@@ -182,40 +184,20 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
   //
   // })
 
-  // app.post('/api/stud', async (req, res) => {
-  //   try {
-  //     const {profileId} = getCookiesPayload(req);
-  //     console.log(getTimestamp(), 'REQUEST TO /POST/STUD, profileId >>> ', profileId)
-  //     const newStudDog: Dog = { ...req.body, isLinkedToOwner: false, reproductiveHistory: {
-  //         heatIds: null,
-  //         mateIds: null,
-  //         pregnancyIds: null,
-  //         birthIds: null,
-  //         litterIds: [],
-  //         type: DOG_TYPES.DOG,
-  //       } }
-  //     const { insertedId: studDogId } = await insertEntity(client, COLLECTIONS.STUD_DOGS, newStudDog);
-  //     res.send({ message: 'Предок добавлен!' })
-  //   } catch (e) {
-  //     if (e instanceof Error) errorHandler(res, e)
-  //   }
-  // })
-
-  // app.get('/api/dogs', async (req, res) => {
-  //   try {
-  //     const {profileId} = getCookiesPayload(req);
-  //     console.log(getTimestamp(), 'REQUEST TO /GET/DOGS, profileId >>> ', profileId)
-  //     const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
-  //     if (!profile) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 126})
-  //     if (!isKennelOrBreedProfile(profile)) throw new CustomError(ERROR_NAME.INVALID_PROFILE_TYPE, {file: 'dog_routes', line: 127})
-  //     const { dogIds } = profile;
-  //     if (!dogIds) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 129})
-  //     const dogs: WithId<DatabaseDog>[] = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, dogIds.map(str => new ObjectId(str)))
-  //     res.send({dogs})
-  //   } catch (e) {
-  //     if (e instanceof Error) errorHandler(res, e)
-  //   }
-  // })
+  app.get<{}, ProtectedClientDogData, {}, {id: string}>('/api/dog', async (req, res) => {
+    try {
+      const { profileId } = getCookiesPayload(req);
+      const { id } = req.query;
+      console.log(getTimestamp(), 'REQUEST TO /GET/DOG, profileId >>> ', profileId, ' dogId >>> ', id)
+      const dog = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
+      const profile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, new ObjectId(profileId))
+      if (!dog || !profile) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 210})
+      const protectedDogForClient: ProtectedClientDogData = await constructProtectedDogForClient(client, dog, profile)
+      res.send(protectedDogForClient)
+    } catch (e) {
+      if (e instanceof Error) errorHandler(res, e)
+    }
+  })
 
   app.get<{}, { studs: Pick<WithId<DatabaseDog>, '_id' | 'fullName' | 'breedId'>[] }, {}, { searchString: string, gender: GENDER}>('/api/stud', async(req, res) => {
     try {

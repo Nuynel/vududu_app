@@ -55,6 +55,12 @@ type ProfileDataStore = {
   pushNewBreed: (breedData: Breed) => void,
   getBreedsByIds: () => Record<string, Breed>,
   getBreedById: (id: string | null) => Breed,
+
+  otherDogsData: IncomingDogData[],
+  setOtherDogsData: (dogsData: IncomingDogData[]) => void,
+  pushOtherNewDog: (dogData: IncomingDogData) => void,
+  getOtherDogsByIds: () => Record<string, IncomingDogData>
+  getOtherDogById: (id: string) => IncomingDogData,
 }
 
 export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({
@@ -126,4 +132,15 @@ export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({
     }
   }, {}),
   getBreedById: (id) => get().getBreedsByIds()[id],
+
+  otherDogsData: [],
+  setOtherDogsData: (newDogsData) => set((state: ProfileDataStore): ProfileDataStore => ({...state, otherDogsData: newDogsData})),
+  pushOtherNewDog: (newDogData) => set((state: ProfileDataStore): ProfileDataStore => ({...state, otherDogsData: [...state.otherDogsData, newDogData]})),
+  getOtherDogsByIds: () => get().otherDogsData.reduce((acc, dogData) => {
+    return {
+      ...acc,
+      [dogData._id]: dogData
+    }
+  }, {}),
+  getOtherDogById: (id) => get().getDogsByIds()[id],
 }))
