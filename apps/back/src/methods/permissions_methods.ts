@@ -16,7 +16,7 @@ const getEmptyClientDogData = (id: ObjectId): ProtectedClientDogData => ({
   dateOfBirth: '',
   dateOfDeath: null,
   breedId: null,
-  gender: GENDER.MALE,
+  gender: null,
   microchipNumber: null,
   tattooNumber: null,
   pedigreeNumber: null,

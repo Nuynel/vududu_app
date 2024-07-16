@@ -3,6 +3,7 @@ import {useLocation, useParams} from "wouter";
 import EntityPage from "../../../e_features/EntityPage";
 import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore";
 import {BlocksConfig, Breed, IncomingDogData, FieldData} from "../../../g_shared/types";
+import {getDog} from "../../../g_shared/methods/api";
 import {BLOCK_TYPES} from "../../../g_shared/types/components";
 import {getFieldsConfigFromHistoryRecords} from "../helpers";
 import {dogBaseDataFields} from './configurations'
@@ -24,6 +25,11 @@ const DogInformation = () => {
     if (currDog) {
       setDog(currDog)
       setBreed(getBreedById(currDog.breedId))
+    } else {
+      getDog(params.id).then((dogData) => {
+        setDog(dogData)
+        setBreed(getBreedById(dogData.breedId))
+      })
     }
   }, [params])
 

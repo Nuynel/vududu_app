@@ -131,9 +131,10 @@ export type RawOtherDogData = Pick <DatabaseDog, RawOtherDogFields> & {
   breedId: string,
 }
 
-export type ProtectedClientDogData = Omit<ClientDog, 'permissions' | 'reproductiveHistory' | 'creatorProfileId'>
+export type ProtectedClientDogData = Omit<ClientDog, 'permissions' | 'reproductiveHistory' | 'creatorProfileId' | 'gender'>
   & {
   permissions: ProfilePermissionsByDog | null,
   reproductiveHistory: {litters: HistoryRecord[] | null},
   creatorProfileId: null | ObjectId,
+  gender: GENDER | null,
 }

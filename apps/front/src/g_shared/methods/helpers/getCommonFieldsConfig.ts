@@ -6,7 +6,7 @@ export const getCommonFieldsConfig = (fieldName: string, dog: IncomingDogData, b
   switch (fieldName) {
     case 'dateOfBirth': return {
       key: fieldName,
-      value: formatSingleDate(dog.dateOfBirth),
+      value: dog.dateOfBirth ? formatSingleDate(dog.dateOfBirth) : '-',
       link: false,
       linkValue: null,
     }
@@ -30,13 +30,13 @@ export const getCommonFieldsConfig = (fieldName: string, dog: IncomingDogData, b
     }
     case 'gender': return {
       key: fieldName,
-      value: dog.gender === GENDER.MALE ? 'Кобель' : 'Сука',
+      value: dog.gender ? dog.gender === GENDER.MALE ? 'Кобель' : 'Сука' : '-',
       link: false,
       linkValue: null,
     }
     case 'breedId': return {
       key: fieldName,
-      value: breed?.name?.rus,
+      value: dog.gender ? breed?.name?.rus : '-',
       link: false,
       linkValue: null,
     }

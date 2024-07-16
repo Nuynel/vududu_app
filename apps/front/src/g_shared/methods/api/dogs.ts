@@ -133,3 +133,22 @@ export async function getOtherDogs(): Promise<{ otherDogs: IncomingDogData[] }> 
     console.error(e)
   }
 }
+
+export async function getDog(id: string): Promise<IncomingDogData> {
+  try {
+    const queryParams = new URLSearchParams({id}).toString();
+    return await fetch(`${URL}/api/dog?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }).then(r => {
+      checkResponse(r)
+      return r.json()
+    })
+  } catch (e) {
+    console.error(e)
+  }
+
+}

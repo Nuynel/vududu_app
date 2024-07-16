@@ -20,14 +20,14 @@ export type IncomingDogData = {
   dateOfBirth: string;
   dateOfDeath: string | null;
   breedId: string | null;
-  gender: GENDER;
+  gender: GENDER | null;
   microchipNumber: string | null;
   tattooNumber: string | null;
   pedigreeNumber: string | null;
   color: string | null;
   isNeutered: boolean | null;
 
-  creatorProfileId: string;
+  creatorProfileId: string | null;
   ownerProfileId: string | null;
   breederProfileId: string | null;
   federationId: string | null;
@@ -47,8 +47,8 @@ export type IncomingDogData = {
     heats: string[] | null;
     mates: string[] | null;
     births: string[] | null;
-  }
-  permissions: Permissions;
+  } | null
+  permissions: Permissions | null;
 }
 
 export type RawDogFields =

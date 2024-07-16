@@ -1,7 +1,8 @@
 import {HistoryRecord} from "../../g_shared/types";
 import {formatDateOrRange, sortDates} from "../../g_shared/methods/helpers";
 
-export const getFieldsConfigFromHistoryRecords = (events: HistoryRecord[], route = '/events') => {
+export const getFieldsConfigFromHistoryRecords = (events: HistoryRecord[] | null, route = '/events') => {
+  if (!events) return []
   events.sort(sortDates)
   return events.map(event => ({
     date: formatDateOrRange(event.date),
