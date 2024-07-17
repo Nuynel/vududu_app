@@ -2,11 +2,15 @@ import {MongoClient, ObjectId, WithId} from "mongodb";
 import {
   DATA_GROUPS,
   DatabaseDog,
-  DatabaseProfile, DogDataGroupsByFieldName, GENDER,
+  DatabaseProfile,
+  DogDataGroupsByFieldName,
   PERMISSION_GROUPS,
-  ProfilePermissionsByDog, ProtectedClientDogData
+  ProfilePermissionsByDog,
+  ProtectedClientDogData
 } from "../types";
 import {constructDogForClient} from "./data_methods";
+import {COLLECTIONS, FIELDS_NAMES} from "../constants";
+import {findEntityById} from "./db_methods";
 
 const getEmptyClientDogData = (id: ObjectId): ProtectedClientDogData => ({
   _id: id,
@@ -25,6 +29,8 @@ const getEmptyClientDogData = (id: ObjectId): ProtectedClientDogData => ({
 
   creatorProfileId: null,
   ownerProfileId: null,
+  creatorProfileName: null,
+  ownerProfileName: null,
   breederProfileId: null,
   federationId: null,
 
@@ -48,7 +54,7 @@ const checkDogDataPermissions = (
   profile: WithId<DatabaseProfile> | null,
   {group, profileIds}: { group: PERMISSION_GROUPS | null, profileIds: ObjectId[] | null },
   dog: DatabaseDog
-): boolean => (profile && dog.ownerProfileId === profile._id)
+): boolean => (profile && dog.ownerProfileId?.equals(profile._id))
   || (group === PERMISSION_GROUPS.ALL)
   || !!(group === PERMISSION_GROUPS.REGISTERED && profile)
   || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations.canineFederation === dog.federationId)
@@ -72,11 +78,44 @@ export const constructProtectedDogForClient = async (client: MongoClient, dog: W
 
   const preparedDogForClient = await constructDogForClient(client, dog)
 
+  const ownerProfile = dog.ownerProfileId ? await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, dog.ownerProfileId) : null
+  const creatorProfile = dog.creatorProfileId ? await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, dog.creatorProfileId): null
+
   return Object.entries(preparedDogForClient).reduce(
     (acc: ProtectedClientDogData, [key, value]): ProtectedClientDogData => {
-      return profilePermissionsByDog
-        .view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
-        ? { ...acc, [key]: value }
-        : { ...acc }
+      switch (key) {
+        case FIELDS_NAMES.FULL_NAME:
+        case FIELDS_NAMES.DATE_OF_BIRTH:
+        case FIELDS_NAMES.BREED_ID:
+        case FIELDS_NAMES.GENDER: {
+          const isCreator = dog.creatorProfileId.equals(profile._id)
+          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+            || isCreator)
+            ? { ...acc, [key]: value }
+            : { ...acc }
+        }
+        case FIELDS_NAMES.CREATOR_PROFILE_ID: {
+          if (!value) return { ...acc }
+          const isCreator = dog.creatorProfileId.equals(profile._id)
+          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+            || isCreator)
+            ? { ...acc, [key]: value as ObjectId | null, [FIELDS_NAMES.CREATOR_PROFILE_NAME]: creatorProfile ? creatorProfile.name : null}
+            : { ...acc, [FIELDS_NAMES.CREATOR_PROFILE_NAME]: null }
+        }
+        case FIELDS_NAMES.OWNER_PROFILE_ID: {
+          if (!value) return { ...acc }
+          const isCreator = dog.creatorProfileId.equals(profile._id)
+          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+            || isCreator)
+            ? { ...acc, [key]: value as ObjectId | null, [FIELDS_NAMES.OWNER_PROFILE_NAME]: ownerProfile ? ownerProfile.name : null}
+            : { ...acc, [FIELDS_NAMES.OWNER_PROFILE_NAME]: null }
+        }
+        default: {
+          return profilePermissionsByDog
+            .view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+            ? { ...acc, [key]: value }
+            : { ...acc }
+        }
+      }
     }, {...getEmptyClientDogData(dog._id)})
 }

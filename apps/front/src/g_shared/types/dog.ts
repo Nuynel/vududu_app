@@ -49,6 +49,8 @@ export type IncomingDogData = {
     births: string[] | null;
   } | null
   permissions: Permissions | null;
+  ownerProfileName: string | null,
+  creatorProfileName: string | null,
 }
 
 export type RawDogFields =

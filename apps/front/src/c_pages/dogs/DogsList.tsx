@@ -22,14 +22,14 @@ const DogsList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
     return list.map(entity => ({
       _id: entity._id,
       icon: entity.gender,
-      title: entity.name || entity.fullName,
+      title: entity.fullName || entity.name,
       date: [entity.dateOfBirth],
     }))
   }
 
   useEffect(() => {
     if (!otherDogsData.length) {
-      getOtherDogs().then(({otherDogs}) => setOtherDogsData(otherDogs))
+      getOtherDogs().then(({protectedOtherDogs}) => setOtherDogsData(protectedOtherDogs))
     }
   }, [])
 

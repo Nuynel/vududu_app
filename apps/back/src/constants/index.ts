@@ -97,4 +97,6 @@ export enum FIELDS_NAMES {
   TREATMENTS = 'treatments',
   DIAGNOSTICS = 'diagnostics',
   HEALTH_CERTIFICATE_IDS = 'healthCertificateIds',
+  OWNER_PROFILE_NAME = 'ownerProfileName',
+  CREATOR_PROFILE_NAME = 'creatorProfileName',
 }

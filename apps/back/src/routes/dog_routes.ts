@@ -112,6 +112,8 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       console.log(getTimestamp(), 'REQUEST TO /POST/DOG, profileId >>> ', profileId)
       const profile = await verifyProfileType(client, profileId)
 
+      // todo нельзя добавить собаку с таким же (клеймом и породой) или микрочипом
+
       const newDog: DatabaseDog = {
         ...req.body,
 
@@ -167,6 +169,9 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
 
       if (!dogs) return res.send({dogs: []})
 
+      // todo dateOfDeath, color, isNeutered - это может быть чувствительная информация,
+      //  может её стоит перенести из публичной или просто не возвращать?
+
       const preparedDogsData = await Promise.all(
         dogs.map(async (dog) => {
           const litterData = dog.litterId ? await getLitterData(client, dog.litterId) : null
@@ -205,19 +210,30 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       console.log(getTimestamp(), 'REQUEST TO /GET/STUD, profileId >>> ', profileId)
       const { searchString, gender } = req.query;
       const studs = await findStudsBySearchString(client, FIELDS_NAMES.FULL_NAME, gender, searchString);
+      // todo добавить защиту для данных от пользователей, у которых нет к ним доступа
+
       res.send({studs})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   })
 
-  app.get<{}, {otherDogs: WithId<DatabaseDog>[]}, {}, {}>('/api/other-dogs', async(req, res) => {
+  app.get<{}, {protectedOtherDogs: WithId<ProtectedClientDogData>[]}, {}, {}>('/api/other-dogs', async(req, res) => {
+    // todo когда пользователь просматривает уже добавленных им собак, то он имеет право просматривать их клички и дату рождения?
+    //  и данные владельца, если он добавлен. Если владельца нет, то пермишены базовые, если появился владелец и скрыл вообще все, то добавивший имеет право смотреть
+    //  кличку, день рождени, породу, пол
+
     try {
       const {profileId} = getCookiesPayload(req);
       console.log(getTimestamp(), 'REQUEST TO /GET/OTHER-DOGS, profileId >>> ', profileId)
       const profile = await verifyProfileType(client, profileId)
       const otherDogs = await findEntitiesByIds<DatabaseDog>(client, COLLECTIONS.DOGS, profile.otherDogIds);
-      res.send({otherDogs})
+      if (!profile) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 226})
+
+      const protectedOtherDogs = await Promise.all(
+        otherDogs.map(async (dog): Promise<ProtectedClientDogData> => await constructProtectedDogForClient(client, dog, profile)))
+
+      res.send({protectedOtherDogs})
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
@@ -244,6 +260,8 @@ export const initDogRoutes = (app: Application, client: MongoClient) => {
       const profile = await verifyProfileType(client, profileId)
       const {rawDogInfo, isAssigment} = req.body;
       const { id} = req.query;
+
+      // todo собаку могут редактировать только владелец или создатель (последний только в определенных случаях)
 
       const previousDogData: WithId<DatabaseDog> | null = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(id))
       if (!previousDogData) return new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'dog_routes', line: 191})

@@ -11,17 +11,6 @@ import {
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
-// получить собаку по айдишнику
-
-// достать её информацию о помете
-
-// достать из информации о помете информацию о родителях
-
-// глубина родословной
-
-// {id: string, father: string | null, mother: string | null}[]
-// {fullName, dateOfBirth, microchipNumber, pedigreeNumber, color, }
-
 const PEDIGREE_TYPES_CONFIG = {
   COMMON: {
     DEPTH: 5
@@ -84,3 +73,6 @@ export const initPedigreeRoutes = (app: Application, client: MongoClient) => {
     }
   })
 }
+
+// todo надо еще какой-то простой ui для настройки доступов,
+//  в частности поиск конкретного профиля и добавление его id в поле пермишенов

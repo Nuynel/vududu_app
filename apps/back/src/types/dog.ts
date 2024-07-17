@@ -137,4 +137,6 @@ export type ProtectedClientDogData = Omit<ClientDog, 'permissions' | 'reproducti
   reproductiveHistory: {litters: HistoryRecord[] | null},
   creatorProfileId: null | ObjectId,
   gender: GENDER | null,
+  ownerProfileName: string | null,
+  creatorProfileName: string | null,
 }

@@ -117,7 +117,7 @@ export async function validateNewDog (
   }
 }
 
-export async function getOtherDogs(): Promise<{ otherDogs: IncomingDogData[] }> {
+export async function getOtherDogs(): Promise<{ protectedOtherDogs: IncomingDogData[] }> {
   try {
     return await fetch(`${URL}/api/other-dogs`, {
       method: 'GET',

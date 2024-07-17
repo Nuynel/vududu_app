@@ -74,7 +74,7 @@ const DogInformation = () => {
 
   return (
     <EntityPageWrapper
-      title={dog.name}
+      title={dog.fullName || dog.name}
       closeEntityPage={closeDogPage}
     >
       <EntityPage
