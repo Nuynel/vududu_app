@@ -25,7 +25,13 @@ const EntityPageWrapper = ({children, title, closeEntityPage}: Props) => {
       ]}
       height={'100%'}
     >
-      <Box gridArea='back' height={'100%'} justify={"center"} align={'center'}>
+      <Box
+        gridArea='back'
+        height={'100%'}
+        justify={"center"}
+        align={'center'}
+        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
+      >
         <Button
           focusIndicator={false}
           icon={<BackIcon color='black'/>}
@@ -41,13 +47,20 @@ const EntityPageWrapper = ({children, title, closeEntityPage}: Props) => {
         alignSelf='center'
         justify='around'
         background={'white'}
+        height={'100%'}
         border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
       >
         <Heading level={3}>
           {title}
         </Heading>
       </Box>
-      <Box gridArea='exit' height={'100%'} justify={"center"} align={'center'}>
+      <Box
+        gridArea='exit'
+        height={'100%'}
+        justify={"center"}
+        align={'center'}
+        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
+      >
         <Button
           focusIndicator={false}
           icon={<CloseIcon color='black'/>}
