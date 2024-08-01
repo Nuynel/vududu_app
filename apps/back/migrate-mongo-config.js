@@ -4,6 +4,8 @@ const config = {
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
     url: process.env.MONGODB_URI,
+    // url: 'mongodb://test:testpass@mongo:27017',
+
 
     // TODO Change this to your database name:
     databaseName: "breeder_crm",
@@ -32,5 +34,7 @@ const config = {
   // Don't change this, unless you know what you're doing
   moduleSystem: 'commonjs',
 };
+
+console.log('migrate-mongo test => => => ', config)
 
 module.exports = config;

@@ -34,7 +34,8 @@ const permissions = {
 
 module.exports = {
   async up(db, client) {
-    await db.collection(COLLECTIONS.DOGS).updateMany(
+    console.log('!!! start migration -big_permissions_update- !!!')
+    const dogs_migration_result = await db.collection(COLLECTIONS.DOGS).updateMany(
       {},
       {
         $set: {
@@ -47,7 +48,8 @@ module.exports = {
         }
       }
     );
-    await db.collection(COLLECTIONS.LITTERS).updateMany(
+    console.log('dogs_migration_result => ', dogs_migration_result)
+    const litters_migration_result = await db.collection(COLLECTIONS.LITTERS).updateMany(
       {},
       {
         $rename: { 'profileId': 'creatorProfileId' },
@@ -63,7 +65,8 @@ module.exports = {
         }
       }
     );
-    await db.collection(COLLECTIONS.PROFILES).updateMany(
+    console.log('litters_migration_result => ', litters_migration_result)
+    const profiles_migration_result = await db.collection(COLLECTIONS.PROFILES).updateMany(
       {},
       {
         $rename: { 'dogIds': 'ownDogIds' },
@@ -73,6 +76,7 @@ module.exports = {
         }
       }
     );
+    console.log('profiles_migration_result => ', profiles_migration_result)
   },
 
   async down(db, client) {
