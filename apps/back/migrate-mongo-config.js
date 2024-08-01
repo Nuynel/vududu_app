@@ -3,7 +3,7 @@
 const config = {
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
-    url: "mongodb://test:testpass@mongo:27017",
+    url: process.env.MONGODB_URI,
 
     // TODO Change this to your database name:
     databaseName: "breeder_crm",
