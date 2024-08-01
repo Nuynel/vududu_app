@@ -20,4 +20,5 @@ RUN yarn build
 EXPOSE 8000
 
 # Команда для запуска приложения
+CMD ["yarn", "migrate:up"]
 CMD ["yarn", "start:prod"]

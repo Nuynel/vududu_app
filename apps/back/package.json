@@ -7,7 +7,9 @@
   "scripts": {
     "start": "ts-node ./app.ts",
     "build": "tsc",
-    "start:prod": "node ./dist/app.js"
+    "start:prod": "node ./dist/app.js",
+    "migrate:up": "migrate-mongo up",
+    "migrate:down": "migrate-mongo down"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
