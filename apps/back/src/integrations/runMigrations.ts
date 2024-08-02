@@ -19,7 +19,9 @@ const getMigrationFiles = (folderPath: string) => {
 // Выполнить миграцию
 const executeMigration = async (filePath: string): Promise<{success: boolean, error: null | string}> => {
   try {
+    console.log(filePath)
     const { up } = await import(filePath);
+    if (up) console.log('migration detected!')
     await up();
     return { success: true, error: null };
   } catch (error) {
@@ -40,6 +42,8 @@ export const processMigrations = async (client: MongoClient) => {
   for (const file of pendingMigrations) {
     const filePath = `file://${path.join(folderPath, file)}`;
     const { success, error } = await executeMigration(filePath);
+
+    console.log('test', success, error)
 
     const migrationDocument = {
       file_name: file,
