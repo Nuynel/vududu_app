@@ -36,6 +36,7 @@ export const processMigrations = async (client: MongoClient) => {
 
   const pendingMigrations = allMigrationFiles.filter(file => !fulfilledMigrations.includes(file));
 
+  console.log('CHECK !!! ', pendingMigrations, allMigrationFiles, fulfilledMigrations)
   for (const file of pendingMigrations) {
     const filePath = `file://${path.join(folderPath, file)}`;
     const { success, error } = await executeMigration(filePath);
