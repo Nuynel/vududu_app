@@ -13,8 +13,7 @@ const getFulfilledMigrations = async (client: MongoClient) => {
 // Получить список файлов с миграциями из папки
 const getMigrationFiles = (folderPath: string) => {
   const t = fs.readdirSync(folderPath)
-  console.log(111222333, t)
-  return t.filter(file => file.endsWith('.ts'));
+  return t.filter(file => file.endsWith('.js'));
 };
 
 // Выполнить миграцию
@@ -38,7 +37,6 @@ export const processMigrations = async (client: MongoClient) => {
 
   const pendingMigrations = allMigrationFiles.filter(file => !fulfilledMigrations.includes(file));
 
-  console.log('CHECK !!! ', pendingMigrations, allMigrationFiles, fulfilledMigrations)
   for (const file of pendingMigrations) {
     const filePath = `file://${path.join(folderPath, file)}`;
     const { success, error } = await executeMigration(filePath);
