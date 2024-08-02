@@ -28,7 +28,9 @@ const executeMigration = async (filePath: string): Promise<{success: boolean, er
 };
 
 // Обработать миграции
-export const processMigrations = async (client: MongoClient, folderPath: string) => {
+export const processMigrations = async (client: MongoClient) => {
+  const folderPath = path.join(__dirname, 'migrations');
+
   const fulfilledMigrations = await getFulfilledMigrations(client);
   const allMigrationFiles = getMigrationFiles(folderPath);
 

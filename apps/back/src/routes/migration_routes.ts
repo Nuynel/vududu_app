@@ -29,9 +29,8 @@ const basicAuth = (req: Request, res: Response, next: NextFunction) => {
 
 export const initMigrationRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, {}, {}, {}>('/api/migration/up', basicAuth, async (req, res) => {
-    const migrationsFolderPath = path.join(__dirname, '../migrations');
     try {
-      const result = await processMigrations(client, migrationsFolderPath);
+      const result = await processMigrations(client);
       res.send(result);
     } catch (error) {
       if (error instanceof Error) res.status(500).send('Ошибка: ' + error.message);
