@@ -11,14 +11,13 @@ const findBreedByName = async<T extends Document>(
   client: MongoClient,
   name: string,
 ) => {
-  console.log(name)
   return await client
     .db(DB_NAME)
     .collection<Breed>(COLLECTIONS.BREEDS)
     .findOne({ [FIELDS_NAMES.BREED_NAME_ENG]: name })
 }
 
-export const createBaseBreedCollection = async (client: MongoClient) => {
+export const checkAndInsertBreeds = async (client: MongoClient) => {
     return await Promise.all(BREEDS.map(async (rawBreedData: RawBreedData) => {
         const breedTemplate: Breed = {
             group: null,

@@ -5,7 +5,7 @@ import path from 'path';
 import {initRoutes} from "./src/routes";
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import {createBaseBreedCollection} from "./src/integrations/createBaseBreedCollection";
+import {checkAndInsertBreeds} from "./src/integrations/checkAndInsertBreeds";
 
 const PORT = process.env.PORT || 8000;
 // const MONGO_URI = process.env.MONGODB_URI || 'mongodb://nuynel:secretPassword@localhost:27017';
@@ -43,7 +43,7 @@ const startServer = async () => {
   await mongoDataBase.connect()
   initRoutes(app, mongoDataBase)
 
-  // await createBaseBreedCollection(mongoDataBase)
+  // await checkAndInsertBreeds(mongoDataBase)
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../front', 'index.html'));
