@@ -12,7 +12,9 @@ const getFulfilledMigrations = async (client: MongoClient) => {
 
 // Получить список файлов с миграциями из папки
 const getMigrationFiles = (folderPath: string) => {
-  return fs.readdirSync(folderPath).filter(file => file.endsWith('.ts'));
+  const t = fs.readdirSync(folderPath)
+  console.log(111222333, t)
+  return t.filter(file => file.endsWith('.ts'));
 };
 
 // Выполнить миграцию
