@@ -34,8 +34,7 @@ const permissions = {
 }
 
 export const up = async (client: MongoClient) => {
-  console.log('!!! start migration UP -big_permissions_update- !!!')
-  const dogs_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.DOGS).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.DOGS).updateMany(
     {},
     {
       $set: {
@@ -49,8 +48,7 @@ export const up = async (client: MongoClient) => {
       }
     }
   );
-  console.log('dogs_migration_result => ', dogs_migration_result)
-  const litters_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.LITTERS).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.LITTERS).updateMany(
     {},
     {
       $rename: { 'profileId': 'creatorProfileId' },
@@ -67,8 +65,7 @@ export const up = async (client: MongoClient) => {
       }
     }
   );
-  console.log('litters_migration_result => ', litters_migration_result)
-  const profiles_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.PROFILES).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.PROFILES).updateMany(
     {},
     {
       $rename: { 'dogIds': 'ownDogIds' },
@@ -79,12 +76,10 @@ export const up = async (client: MongoClient) => {
       }
     }
   );
-  console.log('profiles_migration_result => ', profiles_migration_result)
 }
 
 export const down = async (client: MongoClient) => {
-  console.log('!!! start migration DOWN -big_permissions_update- !!!')
-  const dogs_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.DOGS).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.DOGS).updateMany(
     {},
     {
       $set: {
@@ -98,8 +93,7 @@ export const down = async (client: MongoClient) => {
       }
     }
   );
-  console.log('dogs_migration_result => ', dogs_migration_result)
-  const litters_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.LITTERS).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.LITTERS).updateMany(
     {},
     {
       $rename: { 'creatorProfileId': 'profileId' },
@@ -111,8 +105,7 @@ export const down = async (client: MongoClient) => {
       }
     }
   );
-  console.log('litters_migration_result => ', litters_migration_result)
-  const profiles_migration_result = await client.db(DB_NAME).collection(COLLECTIONS.PROFILES).updateMany(
+  await client.db(DB_NAME).collection(COLLECTIONS.PROFILES).updateMany(
     {},
     {
       $rename: { 'ownDogIds': 'dogIds' },
@@ -123,5 +116,4 @@ export const down = async (client: MongoClient) => {
       }
     }
   );
-  console.log('profiles_migration_result => ', profiles_migration_result)
 }

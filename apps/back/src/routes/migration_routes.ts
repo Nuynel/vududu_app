@@ -1,6 +1,5 @@
 import {Application, Request, Response, NextFunction} from "express";
 import {MongoClient} from "mongodb";
-import path from "path";
 import {processMigrations} from "../integrations/runMigrations";
 
 const username = process.env.MONGO_EXPRESS_USERNAME || 'metacerkar!y';
