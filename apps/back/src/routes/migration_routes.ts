@@ -1,6 +1,7 @@
 import {Application, Request, Response, NextFunction} from "express";
 import {MongoClient} from "mongodb";
 import {processMigrations} from "../integrations/runMigrations";
+import {getTimestamp} from "../methods";
 
 const username = process.env.MONGO_EXPRESS_USERNAME || 'metacerkar!y';
 const password = process.env.MONGO_EXPRESS_PASSWORD || 'plumb0l0g0l0v';
@@ -28,6 +29,7 @@ const basicAuth = (req: Request, res: Response, next: NextFunction) => {
 
 export const initMigrationRoutes = (app: Application, client: MongoClient) => {
   app.get<{}, {}, {}, {}>('/api/migration/up', basicAuth, async (req, res) => {
+    console.log(getTimestamp(), 'REQUEST TO GET/MIGRATION')
     try {
       const result = await processMigrations(client);
       res.send(result);
