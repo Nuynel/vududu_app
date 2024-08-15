@@ -13,10 +13,10 @@ export const getFieldsConfigFromHistoryRecords = (events: HistoryRecord[] | null
   }))
 }
 
-export const getFieldsConfigFromPuppiesList = (puppies: {id: string, name: string, fullName: string}[]) => {
+export const getFieldsConfigFromPuppiesList = (puppies: {id: string, fullName: string, verified: boolean}[]) => {
   return puppies.map(puppy => ({
     key: puppy.id,
-    value: puppy.fullName || puppy.name,
+    value: puppy.fullName,
     link: true,
     linkValue: `/dogs/dog/${puppy.id}`
   }))

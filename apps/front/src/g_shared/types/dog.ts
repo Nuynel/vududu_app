@@ -5,19 +5,12 @@ export enum GENDER {
   FEMALE = 'FEMALE',
 }
 
-export enum DOG_TYPES {
-  PUPPY = 'PUPPY',
-  DOG = 'DOG',
-  MALE_DOG = 'MALE_DOG',
-  FEMALE_DOG = 'FEMALE_DOG',
-}
-
 export type IncomingDogData = {
   _id: string;
 
   name: string | null;
-  fullName: string; // имя как в документах (null на случай когда добавляют щенков вместе с пометом)
-  dateOfBirth: string;
+  fullName: string | null; // имя как в документах (null на случай когда добавляют щенков вместе с пометом)
+  dateOfBirth: string | null;
   dateOfDeath: string | null;
   breedId: string | null;
   gender: GENDER | null;
@@ -34,10 +27,9 @@ export type IncomingDogData = {
 
   puppyCardId: string | null; // ссылка на документ (щенячку)
   puppyCardNumber: string | null;
-  type: DOG_TYPES;
   pedigreeId: string | null;
 
-  litterData: HistoryRecord | null;
+  litterData: HistoryRecord & { verified: boolean } | null;
   diagnostics: HistoryRecord[] | null;
   treatments: HistoryRecord[] | null;
   vaccinations: HistoryRecord[] | null;
@@ -47,10 +39,10 @@ export type IncomingDogData = {
     heats: string[] | null;
     mates: string[] | null;
     births: string[] | null;
-  } | null
+  };
   permissions: Permissions | null;
-  ownerProfileName: string | null,
-  creatorProfileName: string | null,
+  ownerProfileName: string | null;
+  creatorProfileName: string | null;
 }
 
 export type RawDogFields =

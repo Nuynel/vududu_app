@@ -18,7 +18,7 @@ const LittersList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
     return list.map(entity => ({
       _id: entity._id,
       icon: null,
-      title: `${entity.fatherFullName}/${entity.motherFullName}`,
+      title: `${entity.fatherData.fullName}/${entity.motherData.fullName}`,
       date: [entity.dateOfBirth],
     }))
   }

@@ -100,4 +100,11 @@ export enum FIELDS_NAMES {
   HEALTH_CERTIFICATE_IDS = 'healthCertificateIds',
   OWNER_PROFILE_NAME = 'ownerProfileName',
   CREATOR_PROFILE_NAME = 'creatorProfileName',
+  FATHER_DATA = 'fatherData',
+  MOTHER_DATA = 'motherData',
+  VERIFIED_PUPPY_IDS = 'verifiedPuppyIds',
+  COMMENTS = 'comments',
+  VERIFIED = 'verified',
+  LITTER_SUMMARY = 'litterSummary',
+  PUPPIES_DATA = 'puppiesData'
 }

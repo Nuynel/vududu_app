@@ -34,15 +34,15 @@ const LitterInformation = () => {
       switch (fieldName) {
         case 'fatherFullName': return {
           key: fieldName,
-          value: litter.fatherFullName,
+          value: litter.fatherData.fullName,
           link: true,
-          linkValue: `/dogs/dog/${litter.fatherId}`,
+          linkValue: `/dogs/dog/${litter.fatherData.id}`,
         }
         case 'motherFullName': return {
           key: fieldName,
-          value:  litter.motherFullName,
+          value:  litter.motherData.fullName,
           link: true,
-          linkValue: `/dogs/dog/${litter.motherId}`,
+          linkValue: `/dogs/dog/${litter.motherData.id}`,
         }
         case 'dateOfBirth': return {
           key: fieldName,
@@ -67,7 +67,7 @@ const LitterInformation = () => {
         {
           blockName: 'puppies',
           blockType: BLOCK_TYPES.ARRAY,
-          blockFields: getFieldsConfigFromPuppiesList(litter.puppiesData)
+          blockFields: litter.puppiesData ? getFieldsConfigFromPuppiesList(litter.puppiesData) : []
         },
       ]
     }

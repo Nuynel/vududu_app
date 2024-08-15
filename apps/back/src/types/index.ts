@@ -16,7 +16,7 @@ import { History, ContactList } from './historyAndList'
 
 import { Contact } from "./contact";
 import { Document } from './document';
-import { DatabaseLitter, ClientLitter, RawLitterData } from "./litter";
+import { DatabaseLitter, ClientLitter, RawLitterData, ProtectedClientLitterData } from "./litter";
 
 import {
   DatabaseDogEvent,
@@ -63,9 +63,8 @@ import {
   DATA_GROUPS,
   PERMISSION_GROUPS,
   Permissions,
-  DogDataGroups,
   LitterDataGroups,
-  ProfilePermissionsByDog,
+  ProfilePermissionsByEntity,
   DogDataGroupsByFieldName
 } from "./dataPermissions";
 
@@ -119,6 +118,7 @@ export {
 
   DatabaseLitter,
   ClientLitter,
+  ProtectedClientLitterData,
   RawLitterData,
 
   DatabaseDogEvent,
@@ -158,8 +158,7 @@ export {
   DATA_GROUPS,
   PERMISSION_GROUPS,
   Permissions,
-  DogDataGroups,
   LitterDataGroups,
-  ProfilePermissionsByDog,
+  ProfilePermissionsByEntity,
   DogDataGroupsByFieldName,
 }

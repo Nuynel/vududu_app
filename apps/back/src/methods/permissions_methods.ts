@@ -4,8 +4,8 @@ import {
   DatabaseDog,
   DatabaseProfile,
   DogDataGroupsByFieldName,
-  PERMISSION_GROUPS,
-  ProfilePermissionsByDog,
+  PERMISSION_GROUPS, Permissions,
+  ProfilePermissionsByEntity,
   ProtectedClientDogData
 } from "../types";
 import {constructDogForClient} from "./data_methods";
@@ -50,6 +50,43 @@ const getEmptyClientDogData = (id: ObjectId): ProtectedClientDogData => ({
   permissions: null
 })
 
+export const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
+  // todo получать шаблон пермишенов из профиля, если шаблона нет, то возвращать дефолт
+
+  const permissions: Permissions = {
+    viewers: {
+      [DATA_GROUPS.PUBLIC]: {
+        group: PERMISSION_GROUPS.REGISTERED,
+        profileIds: [],
+      },
+      [DATA_GROUPS.PROTECTED]: {
+        group: PERMISSION_GROUPS.ORGANISATION,
+        profileIds: [],
+      },
+      [DATA_GROUPS.PRIVATE]: {
+        group: null,
+        profileIds: [],
+      }
+    },
+    editors: {
+      [DATA_GROUPS.PUBLIC]: {
+        group: null,
+        profileIds: creatorProfileId ? [creatorProfileId] : []
+      },
+      [DATA_GROUPS.PROTECTED]: {
+        group: null,
+        profileIds: []
+      },
+      [DATA_GROUPS.PRIVATE]: {
+        group: null,
+        profileIds: []
+      },
+    }
+  }
+
+  return permissions
+}
+
 const checkDogDataPermissions = (
   profile: WithId<DatabaseProfile> | null,
   {group, profileIds}: { group: PERMISSION_GROUPS | null, profileIds: ObjectId[] | null },
@@ -60,7 +97,7 @@ const checkDogDataPermissions = (
   || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations.canineFederation === dog.federationId)
   || !!(profile && profileIds?.includes(profile?._id))
 
-const getProfilePermissionsByDog = (profile: WithId<DatabaseProfile>, dog: WithId<DatabaseDog>): ProfilePermissionsByDog => ({
+const getProfilePermissionsByEntity = (profile: WithId<DatabaseProfile>, dog: WithId<DatabaseDog>): ProfilePermissionsByEntity => ({
   view: {
     [DATA_GROUPS.PUBLIC]: checkDogDataPermissions(profile, dog.permissions.viewers[DATA_GROUPS.PUBLIC], dog),
     [DATA_GROUPS.PROTECTED]: checkDogDataPermissions(profile, dog.permissions.viewers[DATA_GROUPS.PROTECTED], dog),
@@ -74,7 +111,7 @@ const getProfilePermissionsByDog = (profile: WithId<DatabaseProfile>, dog: WithI
 })
 
 export const constructProtectedDogForClient = async (client: MongoClient, dog: WithId<DatabaseDog>, profile: WithId<DatabaseProfile>): Promise<ProtectedClientDogData> => {
-  const profilePermissionsByDog = getProfilePermissionsByDog(profile, dog)
+  const profilePermissionsByEntity = getProfilePermissionsByEntity(profile, dog)
 
   const preparedDogForClient = await constructDogForClient(client, dog)
 
@@ -89,7 +126,7 @@ export const constructProtectedDogForClient = async (client: MongoClient, dog: W
         case FIELDS_NAMES.BREED_ID:
         case FIELDS_NAMES.GENDER: {
           const isCreator = dog.creatorProfileId.equals(profile._id)
-          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+          return (profilePermissionsByEntity.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
             || isCreator)
             ? { ...acc, [key]: value }
             : { ...acc }
@@ -97,7 +134,7 @@ export const constructProtectedDogForClient = async (client: MongoClient, dog: W
         case FIELDS_NAMES.CREATOR_PROFILE_ID: {
           if (!value) return { ...acc }
           const isCreator = dog.creatorProfileId.equals(profile._id)
-          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+          return (profilePermissionsByEntity.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
             || isCreator)
             ? { ...acc, [key]: value as ObjectId | null, [FIELDS_NAMES.CREATOR_PROFILE_NAME]: creatorProfile ? creatorProfile.name : null}
             : { ...acc, [FIELDS_NAMES.CREATOR_PROFILE_NAME]: null }
@@ -105,13 +142,13 @@ export const constructProtectedDogForClient = async (client: MongoClient, dog: W
         case FIELDS_NAMES.OWNER_PROFILE_ID: {
           if (!value) return { ...acc }
           const isCreator = dog.creatorProfileId.equals(profile._id)
-          return (profilePermissionsByDog.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
+          return (profilePermissionsByEntity.view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
             || isCreator)
             ? { ...acc, [key]: value as ObjectId | null, [FIELDS_NAMES.OWNER_PROFILE_NAME]: ownerProfile ? ownerProfile.name : null}
             : { ...acc, [FIELDS_NAMES.OWNER_PROFILE_NAME]: null }
         }
         default: {
-          return profilePermissionsByDog
+          return profilePermissionsByEntity
             .view[DogDataGroupsByFieldName[key as keyof typeof DogDataGroupsByFieldName]]
             ? { ...acc, [key]: value }
             : { ...acc }

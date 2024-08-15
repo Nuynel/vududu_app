@@ -20,11 +20,11 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
   const father = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(rawLitterData.fatherId))
   const mother = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(rawLitterData.motherId))
 
-  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 63});
+  if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 23});
 
-  const parentNames = { // todo а это точно требуется? надо перепроверить
-    fatherFullName: father.fullName,
-    motherFullName: mother.fullName,
+  const parentsData = { // todo а это точно требуется? надо перепроверить
+    fatherData: {id: rawLitterData.fatherId.toHexString(), fullName: father.fullName},
+    motherData: {id: rawLitterData.motherId.toHexString(), fullName: mother.fullName},
   }
 
   const puppiesData: (WithId<DatabaseDog> | null)[] = (await Promise.all(rawLitterData.puppyIds.map(
@@ -33,16 +33,17 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
 
   return {
     ...rawLitterData,
-    ...parentNames,
+    ...parentsData,
     puppiesData: puppiesData.map(puppyData => {
       if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
-      return { id: puppyData._id.toHexString(), name: puppyData.name, fullName: puppyData.fullName, status: false }
+      return { id: puppyData._id.toHexString(), fullName: puppyData.fullName, verified: false }
     })
   }
 }
 
-export const getLitterData = async (client: MongoClient, litterId: ObjectId): Promise<HistoryRecord> => {
-  const litter = await findEntityById(client, COLLECTIONS.LITTERS, litterId)
+export const getLitterData = async <T extends boolean | { fatherOwner: boolean, motherOwner: boolean }> (client: MongoClient, litterId: ObjectId, dogId: ObjectId | null = null)
+  : Promise<HistoryRecord & {verified: T}> => {
+  const litter = await findEntityById<DatabaseLitter>(client, COLLECTIONS.LITTERS, litterId)
 
   if (!litter) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 94});
 
@@ -51,15 +52,22 @@ export const getLitterData = async (client: MongoClient, litterId: ObjectId): Pr
 
   if (!father || !mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 99});
 
-  return {id: litterId, date: [litter.dateOfBirth], title: `${father.fullName}/${mother.fullName}`}
+  // если передан dogId, то проверяют, есть ли собака в верефицированных щенках этого помёта,
+  // а если dogId не передан, то собака - производитель и проверяется, верифицирован ли помет в целом
+
+  const verified = dogId
+    ? litter.verifiedPuppyIds.some(id => id.equals(dogId))
+    : litter.verified
+
+  return {id: litterId, date: [litter.dateOfBirth], title: `${father.fullName}/${mother.fullName}`, verified: verified as T}
 }
 
 export const constructDogForClient = async (client: MongoClient, rawDogData: WithId<DatabaseDog>): Promise<ClientDog> => {
-  const litterData = rawDogData.litterId ? await getLitterData(client, rawDogData.litterId) : null
+  const litterData = rawDogData.litterId ? await getLitterData<boolean>(client, rawDogData.litterId, rawDogData._id) : null
 
   const littersData = rawDogData.reproductiveHistory.litterIds ? await Promise.all(
     rawDogData.reproductiveHistory.litterIds.map(
-      litterId => getLitterData(client, litterId)
+      litterId => getLitterData<{ fatherOwner: boolean, motherOwner: boolean }>(client, litterId)
     )
   ) : rawDogData.reproductiveHistory.litterIds
 

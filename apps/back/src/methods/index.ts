@@ -46,7 +46,7 @@ import {deleteEventFromDog, deleteEventFromProfile, deleteEvent, getFieldNameByE
 
 import {constructDogForClient, constructLitterForClient} from "./data_methods";
 import {getCookiesPayload} from "./validation_methods";
-import {constructProtectedDogForClient} from "./permissions_methods";
+import {constructProtectedDogForClient, getPermissionsSample} from "./permissions_methods";
 import dayjs from "dayjs";
 
 export const verifyProfileType = async (client: MongoClient, profileId: string) => {
@@ -116,4 +116,5 @@ export {
   shiftDatesWithTimezone,
   searchDogByParams,
   constructProtectedDogForClient,
+  getPermissionsSample,
 }

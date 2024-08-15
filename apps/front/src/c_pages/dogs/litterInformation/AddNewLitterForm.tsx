@@ -11,13 +11,14 @@ import {useBreeds} from "../../../f_entities/hooks/useBreeds";
 import FormPageWrapper from "../../../e_features/FormPageWrapper";
 
 const initNewLitterData: Pick<IncomingLitterData, RawLitterFields> = {
-  fatherId: '',
-  motherId: '',
+  fatherData: { id: '', fullName: '' },
+  motherData: { id: '', fullName: '' },
   dateOfBirth: '',
   comments: '',
   puppyIds: [],
   breedId: null,
   litterTitle: '',
+  verifiedPuppyIds: [],
 }
 
 const LitterInformationCreator = () => {
@@ -65,8 +66,8 @@ const LitterInformationCreator = () => {
   }
 
   const createLitterData = (): OutgoingLitterData => {
-    const fatherFullName = maleDogsList.find((dog) => dog._id === newLitterData.fatherId).fullName
-    const motherFullName = femaleDogsList.find((dog) => dog._id === newLitterData.motherId).fullName
+    const fatherFullName = maleDogsList.find((dog) => dog._id === newLitterData.fatherData.id).fullName
+    const motherFullName = femaleDogsList.find((dog) => dog._id === newLitterData.motherData.id).fullName
 
     return {
       ...newLitterData,
@@ -103,12 +104,12 @@ const LitterInformationCreator = () => {
   }, [newLitterData.dateOfBirth])
 
   useEffect(() => {
-    if (newLitterData.motherId && newLitterData.fatherId) {
-      const fatherBreed = maleDogsList.find(stud => stud._id === newLitterData.fatherId).breedId;
-      const motherBreed = femaleDogsList.find(stud => stud._id === newLitterData.motherId).breedId;
+    if (newLitterData.motherData.id && newLitterData.fatherData.id) {
+      const fatherBreed = maleDogsList.find(stud => stud._id === newLitterData.fatherData.id).breedId;
+      const motherBreed = femaleDogsList.find(stud => stud._id === newLitterData.motherData.id).breedId;
       handleInputChange('breedId', fatherBreed === motherBreed ? fatherBreed : null);
     }
-  }, [newLitterData.motherId, newLitterData.fatherId])
+  }, [newLitterData.motherData.id, newLitterData.fatherData.id])
 
   useEffect(() => getAllBreeds(), [])
 

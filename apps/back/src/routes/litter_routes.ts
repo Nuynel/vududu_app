@@ -1,6 +1,6 @@
 import {Application} from "express";
 import {MongoClient, ObjectId} from "mongodb";
-import {BreederProfile, DatabaseDog, KennelProfile, DatabaseLitter, RawLitterData, ClientLitter} from "../types";
+import {BreederProfile, ClientLitter, DatabaseDog, DatabaseLitter, KennelProfile, RawLitterData} from "../types";
 import {
   assignIdToField,
   constructLitterForClient,
@@ -8,7 +8,9 @@ import {
   errorHandler,
   findEntityById,
   findLittersByDate,
-  getCookiesPayload, getTimestamp,
+  getCookiesPayload,
+  getPermissionsSample,
+  getTimestamp,
   insertEntity,
   modifyNestedArrayField,
   modifyNestedArrayFieldById,
@@ -20,27 +22,43 @@ import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 
 // todo владелец кобеля не может добавлять помет!!! Это может делать только владелец суки
 
+// todo подумать над тем кто может добавлять информацию о пометах и какой доступ имеет к ней.
+//  Например, можно ли ограничить владельца кобеля в доступе к информации о помете
+
+// если creatorProfileId === mother.ownerProfileId, то профиль является владельцем
+
+const checkLitterOwner = async (motherId: string, client: MongoClient, profileId: ObjectId): Promise<boolean> => {
+  const mother = await findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(motherId))
+  if (!mother) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'litter_routes', line: 34})
+  const creatorProfileId = new ObjectId(profileId)
+  return creatorProfileId.equals(mother.ownerProfileId)
+}
+
 export const initLitterRoutes = (app: Application, client: MongoClient) => {
   app.post<{}, {litter: ClientLitter}, RawLitterData, {}>('/api/litter', async (req, res) => {
     try {
       const {profileId} = getCookiesPayload(req)
       console.log(getTimestamp(), 'REQUEST TO /POST/LITTERS, profileId >>> ', profileId)
       await verifyProfileType(client, profileId)
+      const isOwner = await checkLitterOwner(req.body.motherId, client, new ObjectId(profileId))
       const newLitter: DatabaseLitter = {
         ...req.body,
         creatorProfileId: new ObjectId(profileId),
         fatherId: new ObjectId(req.body.fatherId),
         motherId: new ObjectId(req.body.motherId),
         puppyIds: req.body.puppyIds.map((puppyId: string) => new ObjectId(puppyId)),
+        verifiedPuppyIds: [],
         breedId: req.body.breedId ? new ObjectId(req.body.breedId) : null,
-        puppiesCount: { //todo puppies count
+        litterSummary: { //todo puppies count
           male: null,
           female: null
         },
-        verified: { // todo verified
-          status: false
-        },
+        verified: {
+          fatherOwner: false,
+          motherOwner: false,
+        }, // todo verified
         federationId: null,
+        permissions: getPermissionsSample(isOwner ? null : new ObjectId(profileId))
       }
       const { insertedId: litterId } = await insertEntity(client, COLLECTIONS.LITTERS, newLitter)
       await modifyNestedArrayFieldById<DatabaseDog>(client, COLLECTIONS.DOGS, newLitter.fatherId,

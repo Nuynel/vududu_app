@@ -1,5 +1,5 @@
 import {ObjectId, WithId} from "mongodb";
-import {HistoryRecord, Permissions, ProfilePermissionsByDog} from "./index";
+import {HistoryRecord, Permissions, ProfilePermissionsByEntity} from "./index";
 
 export enum GENDER {
   MALE = 'MALE',
@@ -93,12 +93,12 @@ export type ClientReproductiveHistory = {
 }
 
 export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHistory' | 'diagnosticIds' | 'treatmentIds' | 'healthCertificateIds'> & {
-  litterData: HistoryRecord | null;
+  litterData: HistoryRecord & { verified: boolean } | null;
   diagnostics: HistoryRecord[] | null;
   treatments: HistoryRecord[] | null;
   vaccinations: HistoryRecord[] | null;
   healthCertificates: HistoryRecord[] | null;
-  reproductiveHistory: ClientReproductiveHistory
+  reproductiveHistory: ClientReproductiveHistory;
 }
 
 export type RawDogFields =
@@ -131,12 +131,15 @@ export type RawOtherDogData = Pick <DatabaseDog, RawOtherDogFields> & {
   breedId: string,
 }
 
-export type ProtectedClientDogData = Omit<ClientDog, 'permissions' | 'reproductiveHistory' | 'creatorProfileId' | 'gender'>
+type NonNullableClientDogFields = 'permissions' | 'reproductiveHistory' | 'creatorProfileId' | 'gender' | 'dateOfBirth'
+
+export type ProtectedClientDogData = Omit<ClientDog, NonNullableClientDogFields>
   & {
-  permissions: ProfilePermissionsByDog | null,
+  permissions: ProfilePermissionsByEntity | null,
   reproductiveHistory: {litters: HistoryRecord[] | null},
-  creatorProfileId: null | ObjectId,
+  creatorProfileId: ObjectId | null,
   gender: GENDER | null,
   ownerProfileName: string | null,
   creatorProfileName: string | null,
+  dateOfBirth: string | null,
 }

@@ -1,34 +1,25 @@
 export type IncomingLitterData = {
   _id: string;
 
-  creatorProfileId: string;
+  creatorProfileId: string | null;
 
   federationId: string | null;
 
-  fatherId: string;
-  motherId: string;
-  litterTitle: string;
+  fatherData: {id: string, fullName: string} | null;
+  motherData: {id: string, fullName: string} | null;
+  litterTitle: string | null;
   breedId: string | null;
-  dateOfBirth: string;
+  dateOfBirth: string | null;
   comments: string | null;
-  puppyIds: string[];
-
-  puppiesCount: {
+  puppyIds: string[] | null;
+  verifiedPuppyIds: string[] | null;
+  litterSummary: {
     male: number | null
     female: number | null
-  }
-  verified: {
-    status: boolean
-  }
+  };
+  verified: { fatherOwner: boolean, motherOwner: boolean } | null;
 
-  fatherFullName: string,
-  motherFullName: string,
-  puppiesData: {
-    id: string,
-    name: string | null,
-    fullName: string | null,
-    status: boolean,
-  }[],
+  puppiesData: {id: string, fullName: string, verified: boolean}[] | null;
 }
 
 export type LittersStore = {
@@ -37,11 +28,12 @@ export type LittersStore = {
 }
 
 export type RawLitterFields =
-  | 'fatherId'
-  | 'motherId'
+  | 'fatherData'
+  | 'motherData'
   | 'dateOfBirth'
   | 'comments'
   | 'puppyIds'
+  | 'verifiedPuppyIds'
   | 'breedId'
   | 'litterTitle'
 

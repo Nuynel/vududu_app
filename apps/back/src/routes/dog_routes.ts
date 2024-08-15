@@ -18,11 +18,11 @@ import {
   updateBaseDogInfoById,
   verifyProfileType,
   constructProtectedDogForClient,
+  getPermissionsSample,
 } from "../methods";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {
   ClientDog,
-  DATA_GROUPS,
   DatabaseDog,
   DatabaseDogEvent,
   DatabaseLitter,
@@ -33,8 +33,6 @@ import {
   GENDER,
   HistoryRecord,
   MaleReproductiveHistory,
-  PERMISSION_GROUPS,
-  Permissions,
   PuppyReproductiveHistory,
   RawDogData,
   RawOtherDogData,
@@ -64,44 +62,8 @@ const getNewDogReproductiveHistory = (gender: GENDER):
   }
 }
 
-const getPermissionsSample = (creatorProfileId: ObjectId | null = null) => {
-  // todo получать шаблон пермишенов из профиля, если шаблона нет, то возвращать дефолт
-
-  const permissions: Permissions = {
-    viewers: {
-      [DATA_GROUPS.PUBLIC]: {
-        group: PERMISSION_GROUPS.REGISTERED,
-        profileIds: [],
-      },
-      [DATA_GROUPS.PROTECTED]: {
-        group: PERMISSION_GROUPS.ORGANISATION,
-        profileIds: [],
-      },
-      [DATA_GROUPS.PRIVATE]: {
-        group: null,
-        profileIds: [],
-      }
-    },
-    editors: {
-      [DATA_GROUPS.PUBLIC]: {
-        group: null,
-        profileIds: creatorProfileId ? [creatorProfileId] : []
-      },
-      [DATA_GROUPS.PROTECTED]: {
-        group: null,
-        profileIds: []
-      },
-      [DATA_GROUPS.PRIVATE]: {
-        group: null,
-        profileIds: []
-      },
-    }
-  }
-
-  return permissions
-}
-
-const checkDogIdentification = (req: Request<{}, PostDogResBody, Omit<RawDogData | RawOtherDogData, 'litterId'>, {}>): boolean => {
+// todo переделать определение является ли профиль владельцем собаки??
+const checkDogIdentification = (req: Request<{}, PostDogResBody, RawDogData | RawOtherDogData, {}>): boolean => {
   return ('microchipNumber' in req.body && !!req.body.microchipNumber) || ('tattooNumber' in req.body && !!req.body.tattooNumber)
 }
 
