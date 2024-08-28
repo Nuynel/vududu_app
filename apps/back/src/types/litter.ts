@@ -41,6 +41,7 @@ export type ClientLitter = Omit<WithId<DatabaseLitter>, 'fatherId' | 'motherId'>
   fatherData: {id: string, fullName: string};
   motherData: {id: string, fullName: string};
   puppiesData: {id: string, fullName: string, verified: boolean}[];
+  creatorProfileName: string,
 }
 
 export type RawLitterData = Pick<DatabaseLitter, 'dateOfBirth' | 'comments' | 'litterTitle'> & {
@@ -53,6 +54,7 @@ export type RawLitterData = Pick<DatabaseLitter, 'dateOfBirth' | 'comments' | 'l
 type NonNullableClientLitterFields =
   | 'permissions'
   | 'creatorProfileId'
+  | 'creatorProfileName'
   | 'fatherData'
   | 'motherData'
   | 'litterTitle'
@@ -66,6 +68,7 @@ type NonNullableClientLitterFields =
 export type ProtectedClientLitterData = Omit<ClientLitter, NonNullableClientLitterFields> & {
   permissions: ProfilePermissionsByEntity | null;
   creatorProfileId: ObjectId | null;
+  creatorProfileName: string | null,
   fatherData: {id: ObjectId, fullName: string} | null;
   motherData: {id: ObjectId, fullName: string} | null;
   litterTitle: string | null;

@@ -2,6 +2,7 @@ export type IncomingLitterData = {
   _id: string;
 
   creatorProfileId: string | null;
+  creatorProfileName: string | null;
 
   federationId: string | null;
 

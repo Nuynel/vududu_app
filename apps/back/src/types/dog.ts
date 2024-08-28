@@ -99,6 +99,8 @@ export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHist
   vaccinations: HistoryRecord[] | null;
   healthCertificates: HistoryRecord[] | null;
   reproductiveHistory: ClientReproductiveHistory;
+  creatorProfileName: string;
+  ownerProfileName: string | null;
 }
 
 export type RawDogFields =
@@ -131,7 +133,7 @@ export type RawOtherDogData = Pick <DatabaseDog, RawOtherDogFields> & {
   breedId: string,
 }
 
-type NonNullableClientDogFields = 'permissions' | 'reproductiveHistory' | 'creatorProfileId' | 'gender' | 'dateOfBirth'
+type NonNullableClientDogFields = 'permissions' | 'reproductiveHistory' | 'creatorProfileId' | 'gender' | 'dateOfBirth' | 'creatorProfileName'
 
 export type ProtectedClientDogData = Omit<ClientDog, NonNullableClientDogFields>
   & {

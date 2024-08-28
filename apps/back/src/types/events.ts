@@ -14,11 +14,6 @@ export enum EVENT_TYPE {
   COMPETITION = 'COMPETITION',
 }
 
-export enum EVENT_STATUSES {
-  PLANNED = 'PLANNED',
-  ARCHIVED = 'ARCHIVED',
-}
-
 type EventsDate = string[] | null; //todo нахуя тут null??
 
 export enum TREATMENT_TYPE {

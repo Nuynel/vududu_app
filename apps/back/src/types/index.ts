@@ -15,7 +15,7 @@ import {
 import { History, ContactList } from './historyAndList'
 
 import { Contact } from "./contact";
-import { Document } from './document';
+import { DatabaseDocument, ClientDocument, DOCUMENT_TYPE, ProtectedClientDocument } from './document';
 import { DatabaseLitter, ClientLitter, RawLitterData, ProtectedClientLitterData } from "./litter";
 
 import {
@@ -35,7 +35,6 @@ import {
   RawHeatFields,
   RawHeatData,
   ClientHeat,
-  // EVENT_STATUSES,
 } from './events'
 
 import {
@@ -63,9 +62,10 @@ import {
   DATA_GROUPS,
   PERMISSION_GROUPS,
   Permissions,
-  LitterDataGroups,
   ProfilePermissionsByEntity,
-  DogDataGroupsByFieldName
+  DogDataGroupsByFieldName,
+  LitterDataGroupsByFieldName,
+  DocumentDataGroupsByFieldName,
 } from "./dataPermissions";
 
 // IMPORTANT:
@@ -114,7 +114,10 @@ export {
 
   Contact,
 
-  Document,
+  DatabaseDocument,
+  ClientDocument,
+  DOCUMENT_TYPE,
+  ProtectedClientDocument,
 
   DatabaseLitter,
   ClientLitter,
@@ -158,7 +161,8 @@ export {
   DATA_GROUPS,
   PERMISSION_GROUPS,
   Permissions,
-  LitterDataGroups,
   ProfilePermissionsByEntity,
   DogDataGroupsByFieldName,
+  LitterDataGroupsByFieldName,
+  DocumentDataGroupsByFieldName
 }

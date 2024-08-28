@@ -10,7 +10,7 @@ export enum COLLECTIONS {
   DOGS = 'DOGS',
   CONTACTS = 'CONTACTS',
   // CONTACT_LISTS = 'CONTACT_LISTS',
-  // DOCUMENTS = 'DOCUMENTS',
+  DOCUMENTS = 'DOCUMENTS',
   // TREATMENTS = 'TREATMENTS',
   // TREATMENT_HISTORIES = 'TREATMENT_HISTORIES',
   DIAGNOSTICS = 'DIAGNOSTICS',
@@ -62,6 +62,7 @@ export enum FIELDS_NAMES {
   CONTACT_IDS = 'contactIds',
   TREATMENT_IDS = 'treatmentIds',
   EVENT_IDS = 'eventIds',
+  EVENT_ID = 'eventId',
   DIAGNOSTIC_IDS = 'diagnosticIds',
   PROFILE_ID = 'profileId',
   ACTIVE_PROFILE_ID = 'activeProfileId',
@@ -106,5 +107,10 @@ export enum FIELDS_NAMES {
   COMMENTS = 'comments',
   VERIFIED = 'verified',
   LITTER_SUMMARY = 'litterSummary',
-  PUPPIES_DATA = 'puppiesData'
+  PUPPIES_DATA = 'puppiesData',
+  LINK = 'link',
+  TYPE = 'type',
+  DATA = 'data',
+  PERMISSIONS = 'permissions',
+  DOCUMENT_IDS = 'documentIds',
 }

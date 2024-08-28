@@ -1,5 +1,14 @@
 import {MongoClient, ObjectId, WithId} from "mongodb";
-import {HistoryRecord, DatabaseDog, DatabaseDogEvent, EVENT_TYPE, DatabaseLitter, ClientLitter, ClientDog} from "../types";
+import {
+  ClientDog,
+  ClientLitter,
+  DatabaseDog,
+  DatabaseDogEvent,
+  DatabaseLitter,
+  DatabaseProfile,
+  EVENT_TYPE,
+  HistoryRecord
+} from "../types";
 import {findEntityById} from "./db_methods";
 import {COLLECTIONS} from "../constants";
 import {CustomError, ERROR_NAME} from "./error_messages_methods";
@@ -27,6 +36,8 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
     motherData: {id: rawLitterData.motherId.toHexString(), fullName: mother.fullName},
   }
 
+  const creatorProfile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, rawLitterData.creatorProfileId)
+
   const puppiesData: (WithId<DatabaseDog> | null)[] = (await Promise.all(rawLitterData.puppyIds.map(
     puppyId => findEntityById<DatabaseDog>(client, COLLECTIONS.DOGS, new ObjectId(puppyId))
   )))
@@ -37,7 +48,8 @@ export const constructLitterForClient = async (client: MongoClient, rawLitterDat
     puppiesData: puppiesData.map(puppyData => {
       if (!puppyData) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'data_methods', line: 83})
       return { id: puppyData._id.toHexString(), fullName: puppyData.fullName, verified: false }
-    })
+    }),
+    creatorProfileName: creatorProfile ? creatorProfile.name : '',
   }
 }
 
@@ -70,6 +82,9 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
       litterId => getLitterData<{ fatherOwner: boolean, motherOwner: boolean }>(client, litterId)
     )
   ) : rawDogData.reproductiveHistory.litterIds
+
+  const creatorProfile = await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, rawDogData.creatorProfileId)
+  const ownerProfile = rawDogData.ownerProfileId ? await findEntityById<DatabaseProfile>(client, COLLECTIONS.PROFILES, rawDogData.ownerProfileId) : null;
 
   let allTreatments: (WithId<DatabaseDogEvent> | null)[] = []
 
@@ -107,6 +122,8 @@ export const constructDogForClient = async (client: MongoClient, rawDogData: Wit
       heats: rawDogData.reproductiveHistory.heatIds,
       mates: rawDogData.reproductiveHistory.mateIds,
       births: rawDogData.reproductiveHistory.birthIds,
-    }
+    },
+    creatorProfileName: creatorProfile ? creatorProfile.name : '',
+    ownerProfileName: ownerProfile ? ownerProfile.name : ''
   }
 }

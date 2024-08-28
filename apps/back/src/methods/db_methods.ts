@@ -12,10 +12,11 @@ import {
   Breed,
   BreedIssue,
   RawTreatmentFields,
+  DatabaseDocument,
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES, DB_NAME} from "../constants";
 
-type DatabaseTypes = DatabaseDog | User | DatabaseProfile | DatabaseLitter | History | Contact | ContactList | DatabaseDogEvent | Breed | BreedIssue
+type DatabaseTypes = DatabaseDog | User | DatabaseProfile | DatabaseLitter | History | Contact | ContactList | DatabaseDogEvent | Breed | BreedIssue | DatabaseDocument
 
 export const insertEntity = async(
   client: MongoClient,
