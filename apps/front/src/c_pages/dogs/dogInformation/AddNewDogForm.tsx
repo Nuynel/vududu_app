@@ -158,7 +158,7 @@ const DogInformationCreator = () => {
         />
       )}
 
-      {(dogDataMatch && dogDataMatch.length > 0) || (dogDataMatch && !selectedDogId) && (
+      {(dogDataMatch && dogDataMatch.length > 0) || (dogDataMatch && dogDataMatch.length > 0 && !selectedDogId) && (
         <Box margin={"small"} style={{minHeight: '24px'}}>
           <CheckBox
             label={'Здесь нет такой собаки'}
@@ -169,7 +169,7 @@ const DogInformationCreator = () => {
       )}
 
       {dogDataMatch && dogDataMatch.length === 0 && (
-        <Box margin={"small"} style={{minHeight: '24px'}} width={'100%'}>
+        <Box margin={"small"} style={{minHeight: 'min-content'}} width={'100%'}>
           <Text textAlign={"center"}>
             Собак с такими данными не найдено, продолжите заполнение формы для добавления
           </Text>
