@@ -1,93 +1,130 @@
-import {Button, Nav} from "grommet";
-import {Link, useLocation, useRoute} from "wouter";
-import {CalendarIcon, DocumentIcon, PawIcon, GraphIcon, PersonIcon, ContactsIcon} from "../g_shared/icons";
+import {Link, useRoute} from "wouter";
+import {CalendarIcon, DocumentIcon, PawIcon, GraphIcon, PersonIcon, ContactsIcon, IconProps} from "../g_shared/icons";
 import * as React from "react";
 import {Paths} from "../g_shared/constants/routes";
 
 const Menu = ({isDesktop}: {isDesktop: boolean}) => {
-  const [currentLocation] = useLocation();
-
   const [matchDogsRoutes] = useRoute('/dogs/*?')
   const [matchLittersRoutes] = useRoute('/litters/*?')
   const [matchEventsRoutes] = useRoute('/events/*?')
-  const [matchProfileRoutes] = useRoute('/profile')
-  const [matchContactsRoutes] = useRoute('/contacts')
+  const [matchProfileRoutes] = useRoute(Paths.profile)
+  const [matchContactsRoutes] = useRoute(Paths.contacts)
+  const [matchDocumentsRoutes] = useRoute(Paths.documents)
+  const [matchPedigreesRoutes] = useRoute(Paths.pedigrees)
 
-  const getIconColor = (location) => currentLocation === location ? '#e4b33a' : '#4c4c4c';
+  const DesktopMenuConfig: {
+    icon: (props: IconProps) => JSX.Element,
+    to: string,
+    title: { ru: string, en: string },
+    routeComparison: boolean
+  }[] = [
+    {
+      icon: PersonIcon,
+      to: Paths.profile,
+      title: { ru: 'Профиль', en: 'Profile'},
+      routeComparison: matchProfileRoutes
+    },
+    {
+      icon: ContactsIcon,
+      to: Paths.contacts,
+      title: { ru: 'Контакты', en: 'Contacts'},
+      routeComparison: matchContactsRoutes
+    },
+    {
+      icon: PawIcon,
+      to: Paths.dogs,
+      title: { ru: 'Собаки', en: 'Dogs'},
+      routeComparison: matchDogsRoutes
+    },
+    {
+      icon: PawIcon,
+      to: Paths.litters,
+      title: { ru: 'Пометы', en: 'Litters'},
+      routeComparison: matchLittersRoutes
+    },
+    {
+      icon: CalendarIcon,
+      to: Paths.events,
+      title: { ru: 'События', en: 'Events'},
+      routeComparison: matchEventsRoutes
+    },
+    {
+      icon: DocumentIcon,
+      to: Paths.documents,
+      title: { ru: 'Документы', en: 'Documents'},
+      routeComparison: matchDocumentsRoutes
+    },
+    {
+      icon: GraphIcon,
+      to: Paths.pedigrees,
+      title: { ru: 'Родословные', en: 'Pedigrees'},
+      routeComparison: matchPedigreesRoutes
+    }
+  ]
 
   if (isDesktop) {
     return (
-      <Nav
-        gridArea="nav"
-        pad={{horizontal: 'small', vertical: 'medium'}}
-        justify='start'
-        direction="column"
-        border={{color: '#F1F5F8', side: 'top', size: 'xsmall', style: 'solid'}}
-      >
-        <Link to={Paths.profile} asChild>
-          <Button
-            label='Профиль'
-            icon={<PersonIcon color={getIconColor('/profile')}/>}
-          />
-        </Link>
-        <Link to={Paths.contacts} asChild>
-          <Button
-            label='Контакты'
-            icon={<ContactsIcon color={getIconColor('/contacts')}/>}
-          />
-        </Link>
-        <Link to={Paths.dogs} asChild>
-          <Button
-            label='Cобаки'
-            icon={<PawIcon color={matchDogsRoutes ? '#e4b33a' : '#4c4c4c'}/>}
-          />
-        </Link>
-        <Link to={Paths.litters} asChild>
-          <Button
-            label='Пометы'
-            icon={<PawIcon color={matchLittersRoutes ? '#e4b33a' : '#4c4c4c'}/>}
-          />
-        </Link>
-        <Link to={Paths.events} asChild>
-          <Button
-            label='События'
-            icon={<CalendarIcon color={matchEventsRoutes ? '#e4b33a' : '#4c4c4c'}/>}
-          />
-        </Link>
-        <Link to={Paths.documents} asChild>
-          <Button
-            label='Документы'
-            icon={<DocumentIcon color={getIconColor('/documents')}/>}
-          />
-        </Link>
-        <Link to={Paths.pedigrees} asChild>
-          <Button
-            label='Родословные'
-            icon={<GraphIcon color={getIconColor('/pedigrees')}/>}
-          />
-        </Link>
-      </Nav>
+      <nav className="grid-area-nav py-4 px-2 flex flex-col justify-start">
+        {DesktopMenuConfig.map(config => {
+          const DynamicIcon = config.icon
+          return (
+            <Link to={config.to}>
+              <button className="flex mb-3 px-5 w-full h-9 items-center p-2 text-left border-2 border-yellow-500 rounded-3xl">
+                <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
+                <span className="ml-2">{config.title.ru}</span>
+              </button>
+            </Link>
+          )
+        })}
+      </nav>
     )
   }
 
+  const MobileMenuConfig: {
+    icon: (props: IconProps) => JSX.Element,
+    to: string,
+    routeComparison: boolean
+  }[] = [
+    {
+      icon: PersonIcon,
+      to: Paths.profile,
+      routeComparison: matchProfileRoutes || matchContactsRoutes
+    },
+    {
+      icon: PawIcon,
+      to: Paths.dogs,
+      routeComparison: matchDogsRoutes || matchLittersRoutes
+    },
+    {
+      icon: CalendarIcon,
+      to: Paths.events,
+      routeComparison: matchEventsRoutes
+    },
+    {
+      icon: DocumentIcon,
+      to: Paths.documents,
+      routeComparison: matchDocumentsRoutes
+    },
+    {
+      icon: GraphIcon,
+      to: Paths.pedigrees,
+      routeComparison: matchPedigreesRoutes
+    }
+  ]
+
   return (
-    <Nav gridArea="nav" height='60px' align='center' justify='around' direction="row" border={{color: '#F1F5F8', side: 'top', size: 'xsmall', style: 'solid'}}>
-      <Link to={Paths.profile} asChild>
-        <Button icon={<PersonIcon  color={(matchProfileRoutes || matchContactsRoutes) ? '#e4b33a' : '#4c4c4c'}/>}/>
-      </Link>
-      <Link to={Paths.dogs} asChild>
-        <Button icon={<PawIcon color={(matchDogsRoutes || matchLittersRoutes) ? '#e4b33a' : '#4c4c4c'}/>}/>
-      </Link>
-      <Link to={Paths.events} asChild>
-        <Button icon={<CalendarIcon color={matchEventsRoutes ? '#e4b33a' : '#4c4c4c'}/>}/>
-      </Link>
-      <Link to={Paths.documents} asChild>
-        <Button icon={<DocumentIcon color={getIconColor('/documents')}/>}/>
-      </Link>
-      <Link to={Paths.pedigrees} asChild>
-        <Button icon={<GraphIcon color={getIconColor('/pedigrees')}/>}/>
-      </Link>
-    </Nav>
+    <nav className="grid-area-nav h-16 flex items-center justify-around border-t border-gray-200">
+      {MobileMenuConfig.map(config => {
+        const DynamicIcon = config.icon
+        return (
+          <Link to={config.to}>
+            <button className="p-2">
+              <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
+            </button>
+          </Link>
+        )
+      })}
+    </nav>
   )
 }
 
