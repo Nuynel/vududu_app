@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/react";
 import App from './a_app/App';
 import {navigationAfterInit} from "./g_shared/methods/helpers";
 import {refreshAccessToken} from "./g_shared/methods/api";
+import './input.css';
 
 // "styled-components": "^5.3.11" в package.json потому что grommet на момент написания комментария не поддерживает версию 6 и выше
 
