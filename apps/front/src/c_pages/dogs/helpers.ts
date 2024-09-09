@@ -1,7 +1,7 @@
 import {HistoryRecord} from "../../g_shared/types";
 import {formatDateOrRange, sortDates} from "../../g_shared/methods/helpers";
 
-export const getFieldsConfigFromHistoryRecords = (events: HistoryRecord[] | null, route = '/events') => {
+export const getFieldsConfigFromHistoryRecords = (events: HistoryRecord[] | null, route = '/app/events/event') => {
   if (!events) return []
   events.sort(sortDates)
   return events.map(event => ({
@@ -18,6 +18,6 @@ export const getFieldsConfigFromPuppiesList = (puppies: {id: string, fullName: s
     key: puppy.id,
     value: puppy.fullName,
     link: true,
-    linkValue: `/dogs/dog/${puppy.id}`
+    linkValue: `/app/dogs/dog/${puppy.id}`
   }))
 }

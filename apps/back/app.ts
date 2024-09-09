@@ -8,7 +8,6 @@ import 'dotenv/config';
 import {checkAndInsertBreeds} from "./src/integrations/checkAndInsertBreeds";
 
 const PORT = process.env.PORT || 8000;
-// const MONGO_URI = process.env.MONGODB_URI || 'mongodb://nuynel:secretPassword@localhost:27017';
 const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
@@ -35,7 +34,7 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }));
 
 // Обслуживание статических файлов React
-app.use(express.static(path.join(__dirname, '../front')));
+app.use('/app', express.static(path.join(__dirname, '../front')));
 
 app.use('/api', router);
 
@@ -45,8 +44,12 @@ const startServer = async () => {
 
   // await checkAndInsertBreeds(mongoDataBase)
 
-  app.get('*', (req, res) => {
+  app.get('/app/*', (req, res) => {
     res.sendFile(path.join(__dirname, '../front', 'index.html'));
+  });
+
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front/landing', 'index.html'));  // Указываем полный путь до файла
   });
 
   app.listen(PORT, () => {

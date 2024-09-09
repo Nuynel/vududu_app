@@ -1,28 +1,30 @@
 import * as React from "react";
+import {useState} from "react";
 import {
+  Accordion,
+  AccordionPanel,
   Box,
+  Button,
   Card,
   CardBody,
   CardFooter,
-  Text,
-  Grid,
-  Accordion,
-  AccordionPanel,
-  Button,
   Form,
   FormField,
-  TextInput, Spinner
+  Grid,
+  Spinner,
+  Text,
+  TextInput
 } from "grommet";
 import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
 import {PROFILE_TYPES} from "../../g_shared/types/profile";
 import SignOutButton from "../../d_widgets/SignOutButton";
 import SectionHeader from "../../e_features/SectionHeader";
-import {useState} from "react";
 import {useRoute} from "wouter";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import Contacts from "../contacts/Contacts";
 import {createBreed} from "../../g_shared/methods/api";
 import {toast} from "react-toastify";
+import {Paths} from "../../g_shared/constants/routes";
 
 enum DATA_TYPES {
   PROFILE = 'PROFILE',
@@ -30,7 +32,7 @@ enum DATA_TYPES {
 }
 
 const ProfileScreen = () => {
-  const [matchProfileRoute] = useRoute('/profile')
+  const [matchProfileRoute] = useRoute(Paths.profile)
   const [activeDataType, setActiveDataType] = useState<DATA_TYPES>(matchProfileRoute ? DATA_TYPES.PROFILE : DATA_TYPES.CONTACTS)
   const {isSmall, columns, rows, areas} = useResponsiveGrid();
 
@@ -79,8 +81,8 @@ const ProfileScreen = () => {
         <SectionHeader
           activeDataType={activeDataType}
           buttons={[
-            {type: DATA_TYPES.PROFILE, label: 'Профиль', link: '/profile'},
-            {type: DATA_TYPES.CONTACTS, label: 'Контакты', link: '/contacts'},
+            {type: DATA_TYPES.PROFILE, label: 'Профиль', link: Paths.profile},
+            {type: DATA_TYPES.CONTACTS, label: 'Контакты', link: Paths.contacts},
           ]}
           isLink={true}
           setActiveDataType={setActiveDataType}

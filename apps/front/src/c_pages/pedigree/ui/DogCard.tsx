@@ -73,8 +73,8 @@ const DogCard = ({dogId}: Props) => {
           align={"center"}
           justify={"around"}
         >
-          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/dogs/dog/${dogId}`)} label='Карточка собаки'/>
-          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/litters/litter/${getDogById(dogId).litterData?.id}`)} label='Карточка помета'/>
+          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/app/dogs/dog/${dogId}`)} label='Карточка собаки'/>
+          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/app/litters/litter/${getDogById(dogId).litterData?.id}`)} label='Карточка помета'/>
         </Box>
       )}
     </Box>

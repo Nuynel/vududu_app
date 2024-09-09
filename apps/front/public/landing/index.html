@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="http://localhost:8000/app/favicons/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vududu — удобное приложение для заводчиков собак. Управляйте прививками, родословными, документами и всем, что касается ваших питомцев в одном месте!">
+    <meta name="keywords" content="приложение для собак, заводчики собак, Vududu, календарь прививок, управление родословными, документы для собак, прививки для собак, Вудуду, dogs pedigree">
+    <title>Vududu — Приложение для заводчиков собак | Управление родословными, прививками и документами</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .container {
+            align-self: center;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container > p {
+            max-width: 70%;
+            text-align: center;
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .feature {
+            flex-basis: 20%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .feature h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .feature p {
+            font-size: 1rem;
+            color: #666;
+        }
+        .cta-button {
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .cta-button a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background-color: #45a049;
+        }
+
+        .faq {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .faq h2 {
+            font-size: 2rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 20px;
+        }
+
+        .faq-item header h3 {
+            font-size: 1.5rem;
+            color: #4CAF50;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .faq-item > header {
+            background-color: white;
+        }
+
+        .faq-item p {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .cta-button:last-child {
+            margin-bottom: 3rem;
+        }
+
+        @media only screen and (max-width: 600px) {
+            header {
+                display: flex;
+                padding: 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav {
+                margin-top: 1rem;
+            }
+
+            .container > p {
+                max-width: 100%;
+            }
+
+            .features {
+                flex-direction: column;
+                flex-wrap: nowrap;
+            }
+
+            .feature {
+                margin-top: 1rem;
+            }
+
+            .cta-button {
+                margin-bottom: 2rem;
+            }
+
+            .faq {
+                padding: 1.5rem;
+            }
+
+            .faq h2 {
+                font-size: 1.5rem;
+            }
+
+            .faq-item header h3 {
+                font-size: 1.3rem;
+            }
+
+            .faq-item p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>VUDUDU</h1>
+    <nav>
+        <a href="https://vududu.ru/app/sign-in">Вход</a>
+        <a href="https://vududu.ru/app/sign-up">Регистрация</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Приложение для заводчиков собак: всё в одном месте</h2>
+    <p>Vududu — это удобная платформа для заводчиков собак, которая помогает управлять всей информацией о ваших питомцах в одном месте. Наши основные фичи:</p>
+
+    <section class="features">
+        <article class="feature">
+            <h3>Календарь мероприятий</h3>
+            <p>Легко отслеживайте даты прививок, течек, выставок и т.д. для каждой собаки.</p>
+        </article>
+        <article class="feature">
+            <h3>Работа с родословными</h3>
+            <p>Храните и управляйте родословными ваших собак с возможностью делиться данными с другими заводчиками.</p>
+        </article>
+        <article class="feature">
+            <h3>Все данные защищены</h3>
+            <p>Самостоятельно настраивайте разные уровни приватности для разных типов данных.</p>
+        </article>
+        <article class="feature">
+            <h3>Хранение и обработка документации</h3>
+            <p>Загружайте и храните все необходимые документы, такие как медицинские карты или результаты выставок.</p>
+        </article>
+    </section>
+
+    <h2>Управляйте всей информацией о вашем поголовье в Vududu</h2>
+    <button class="cta-button"><a href="https://vududu.ru/app/sign-up">Попробовать!</a></button>
+
+    <section class="faq" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Часто задаваемые вопросы (FAQ)</h2>
+
+        <article class="faq-item">
+            <header>
+                <h3>Что такое Vududu?</h3>
+            </header>
+            <p>Vududu — это приложение для заводчиков собак, которое помогает управлять всеми данными о ваших питомцах в одном месте, включая прививки, родословные и документы.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Как я могу следить за прививками моих собак?</h3>
+            </header>
+            <p>В Vududu есть встроенный календарь, который помогает отслеживать даты прививок и других важных событий, таких как выставки и осмотры ветеринара.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Можно ли делиться родословными с другими заводчиками?</h3>
+            </header>
+            <p>Да, вы можете легко делиться родословными через приложение с другими заводчиками или специалистами, чтобы упростить процесс общения и обмена информацией.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Какие документы можно хранить в приложении?</h3>
+            </header>
+            <p>Вы можете загружать и хранить любые документы, связанные с вашими питомцами: медицинские карты, результаты выставок, сертификаты и многое другое.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Как защищены мои данные?</h3>
+            </header>
+            <p>Vududu использует современные методы шифрования, а также позволяет вам настраивать уровни доступа для разных типов данных.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Есть ли мобильное приложение?</h3>
+            </header>
+            <p>Vududu работает как PWA (Progressive Web App), что означает, что вам не нужно скачивать и устанавливать отдельное приложение из магазина. Это современная технология, которая позволяет использовать Vududu прямо через браузер — как если бы это было приложение на вашем устройстве. Всё, что нужно — это сохранить Vududu на главный экран, и оно будет доступно как обычное приложение, с минимальными требованиями к устройству и, одновременно, безопасным хранением данных.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Могу ли я экспортировать данные о своих собаках?</h3>
+            </header>
+            <p>Да, пользователи Vududu могут в любой момент экспортировать все данные о своих питомцах, включая фотографии документов, в облако или в Excel-файлы для удобного хранения и дальнейшей работы с информацией.</p>
+        </article>
+
+        <article class="faq-item">
+            <header>
+                <h3>Сколько стоит использование Vududu?</h3>
+            </header>
+            <p>Vududu предлагает бесплатный тариф, который позволит вам попробовать все возможности платформы. Этот тариф также идеально подойдет для заводчиков или владельцам, у которых три и менее собаки, и может использоваться ими на постоянной основе. Для тех, у кого больше питомцев, доступны расширенные платные тарифы с расширенными лимитами и дополнительными возможностями.</p>
+        </article>
+    </section>
+
+    <h2>Устали от беспорядка? Соберите всё в одном месте с Vududu!</h2>
+    <button class="cta-button"><a href="https://vududu.ru/app/sign-up">Регистрация</a></button>
+</div>
+
+<footer>
+    <p>&copy; 2024 Vududu. Все права защищены.</p>
+</footer>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 import * as React from "react";
+import {useState} from "react";
 import {Box, Grid} from "grommet";
 import EventsList from "./EventsList";
-import {useState} from "react";
 import SectionHeader from "../../e_features/SectionHeader";
 import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
 import {DATA_TYPES} from "../../g_shared/types/event";
@@ -51,8 +51,8 @@ const CalendarScreen = () => {
       <SectionHeader
         activeDataType={activeDataType}
         buttons={[
-          {type: DATA_TYPES.PLANNED, label: 'Планировщик', link: '/events/planned'},
-          {type: DATA_TYPES.HISTORY, label: 'История', link: '/events/history'},
+          {type: DATA_TYPES.PLANNED, label: 'Планировщик', link: Paths.events},
+          {type: DATA_TYPES.HISTORY, label: 'История', link: Paths.history},
         ]}
         isLink={true}
         setActiveDataType={setActiveDataType}

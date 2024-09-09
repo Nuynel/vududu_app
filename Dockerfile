@@ -8,6 +8,7 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 ARG REACT_APP_BACKEND_URL
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+ENV PUBLIC_URL=/app
 RUN pnpm run -r build
 RUN pnpm deploy --filter=@vududu/back --prod /prod/back
 RUN pnpm deploy --filter=@vududu/front --prod /prod/front

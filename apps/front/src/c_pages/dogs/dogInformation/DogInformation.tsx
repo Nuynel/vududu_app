@@ -66,7 +66,7 @@ const DogInformation = () => {
         {
           blockName: 'litters',
           blockType: BLOCK_TYPES.ARRAY,
-          blockFields: getFieldsConfigFromHistoryRecords(dog.reproductiveHistory.litters, '/litters/litter')
+          blockFields: getFieldsConfigFromHistoryRecords(dog.reproductiveHistory.litters, '/app/litters/litter')
         },
       ]
     }

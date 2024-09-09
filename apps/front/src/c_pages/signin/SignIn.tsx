@@ -86,7 +86,7 @@ const SignInScreen = () => {
             Регистрация
           </Button>
         </Link>
-        <Link to={'/password-recovery'} style={{display: 'flex', justifyContent: 'center'}}>
+        <Link to={Paths.passwordRecovery} style={{display: 'flex', justifyContent: 'center'}}>
           <Button secondary margin='xsmall'>
             Забыли пароль?
           </Button>

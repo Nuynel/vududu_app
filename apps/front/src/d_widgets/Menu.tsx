@@ -4,9 +4,9 @@ import * as React from "react";
 import {Paths} from "../g_shared/constants/routes";
 
 const Menu = ({isDesktop}: {isDesktop: boolean}) => {
-  const [matchDogsRoutes] = useRoute('/dogs/*?')
-  const [matchLittersRoutes] = useRoute('/litters/*?')
-  const [matchEventsRoutes] = useRoute('/events/*?')
+  const [matchDogsRoutes] = useRoute('/app/dogs/*?')
+  const [matchLittersRoutes] = useRoute('/app/litters/*?')
+  const [matchEventsRoutes] = useRoute('/app/events/*?')
   const [matchProfileRoutes] = useRoute(Paths.profile)
   const [matchContactsRoutes] = useRoute(Paths.contacts)
   const [matchDocumentsRoutes] = useRoute(Paths.documents)

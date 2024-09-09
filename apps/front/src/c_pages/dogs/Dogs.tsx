@@ -43,7 +43,7 @@ const litterTypeOptions = [
 
 const DogsScreen = () => {
   const [show, setShow] = useState(false);
-  const [matchDogsRoutes] = useRoute('/dogs/*?')
+  const [matchDogsRoutes] = useRoute('/app/dogs/*?')
   const [, setLocation] = useLocation();
   const [activeDataType, setActiveDataType] = useState<DATA_TYPES>(matchDogsRoutes ? DATA_TYPES.DOGS : DATA_TYPES.LITTERS)
   const [editingMode, switchEditingMode] = useState<boolean>(false)
