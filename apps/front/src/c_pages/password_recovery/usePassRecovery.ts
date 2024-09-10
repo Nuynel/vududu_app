@@ -15,7 +15,7 @@ const usePassRecovery = () => {
   const handleSubmit = () => {
     if (email) {
       setIsLoading(true)
-      recoveryPassword({email})
+      recoveryPassword({email: email.toLowerCase()})
         .then(() => {
           changeIsRecoveryInitialized(true)
         })

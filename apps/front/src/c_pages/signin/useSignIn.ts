@@ -18,7 +18,7 @@ const useSignIn = () => {
   useEffect(() => {
     if (isLoading === true) {
       signIn({
-        email,
+        email: email.toLowerCase(),
         password,
       }).then(async (result: {accessToken: string}) => {
         const {accessToken} = result;

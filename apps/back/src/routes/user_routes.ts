@@ -178,8 +178,8 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const user = await findUserById(client, userId);
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 167})
       console.log(getTimestamp(), '>>> CONTINUE FOR /GET/PASSWORD-RECOVERY, email >>> ', user.email, user.passwordRecoveryToken !== recoveryToken)
-      if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/sign-in/expired')
-      res.redirect(URL + `/password-recovery/${recoveryToken}`)
+      if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/app/sign-in/expired')
+      res.redirect(URL + `/app/password-recovery/${recoveryToken}`)
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
@@ -241,7 +241,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const {id, activator} = req.query
       console.log(getTimestamp(), 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
       await activateProfileByActivator(client, id, activator)
-      res.redirect(URL + '/sign-in?activated')
+      res.redirect(URL + '/app/sign-in?activated')
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }

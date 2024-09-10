@@ -42,7 +42,7 @@ const useSignUp = () => {
     if (isEmailValid && isPasswordValid && isControlPasswordValid) {
       setIsLoading(true)
       signUp({
-        email,
+        email: email.toLowerCase(),
         password,
       }).then(() => {
         setError(null)

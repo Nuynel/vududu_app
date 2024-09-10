@@ -35,8 +35,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // Обслуживание статических файлов React
 app.use('/app', express.static(path.join(__dirname, '../front')));
-
 app.use('/api', router);
+app.use('/', express.static(path.join(__dirname, '../front/landing')));
 
 const startServer = async () => {
   await mongoDataBase.connect()
