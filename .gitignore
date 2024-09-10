@@ -4,8 +4,8 @@
 node_modules
 /.pnp
 .pnp.js
-/apps/back/node_modules
-/apps/front/node_modules
+/apps/back/node_modules/
+/apps/front/node_modules/
 
 .env
 
