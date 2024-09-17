@@ -38,4 +38,7 @@ export type RawLitterFields =
   | 'breedId'
   | 'litterTitle'
 
-export type OutgoingLitterData = Pick<IncomingLitterData, RawLitterFields>
+export type OutgoingLitterData = Omit<Pick<IncomingLitterData, RawLitterFields>, 'fatherData' | 'motherData'> & {
+  fatherId: string,
+  motherId: string,
+}

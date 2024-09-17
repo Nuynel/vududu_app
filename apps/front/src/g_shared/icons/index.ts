@@ -18,6 +18,10 @@ import BackIcon from './Back';
 import TrashIcon from './Trash';
 import PersonIcon from './Person';
 import GraphIcon from './Graph';
+import ChevronDownIcon from './ChevronDown';
+import ChevronUpIcon from './ChevronUp';
+import PeopleIcon from './People';
+import ExitIcon from './Exit';
 
 //https://coolors.co/e4b33a-34536f
 
@@ -63,7 +67,11 @@ export {
   BackIcon,
   TrashIcon,
   PersonIcon,
-  GraphIcon
+  GraphIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PeopleIcon,
+  ExitIcon,
 }
 
 

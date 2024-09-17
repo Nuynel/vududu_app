@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {Box, Button} from "grommet";
 import {PencilIcon, PlusIcon, TrashIcon} from "../g_shared/icons";
 import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
 
@@ -23,45 +22,47 @@ const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showP
   }
 
   return (
-    <Box
-      direction={"row"}
-      justify={"between"}
-      pad={{horizontal: 'medium'}}
-      style={{height: '48px', width: getBlockWidth(), position: "absolute", bottom: isSmall ? isStandalone ? 92 : 72 : 24}}
+    <div
+      className={`flex justify-between items-center px-4`}
+      style={{
+        height: '48px',
+        width: getBlockWidth(),
+        position: 'absolute',
+        bottom: isSmall ? (isStandalone ? '92px' : '72px') : '24px',
+      }}
     >
-      <Box direction={"row"} gap={'medium'}>
-        <Button
-          focusIndicator={false}
-          icon={<PencilIcon color='white' />}
-          fill={false}
-          style={{width: '48px', borderRadius: '24px'}}
-          primary
+      <div className="flex gap-4">
+        {/* Кнопка редактирования */}
+        <button
+          className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center"
           onClick={switchEditingMode}
-        />
+        >
+          <PencilIcon color="white" />
+        </button>
+
+        {/* Кнопка удаления, если активен режим редактирования */}
         {isEditingModeActive && (
-          <Button
-            focusIndicator={false}
-            icon={<TrashIcon color='white' />}
-            fill={false}
-            style={{width: '48px', borderRadius: '24px'}}
-            primary
+          <button
+            className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center"
             onClick={showPopup}
-          />
+          >
+            <TrashIcon color="white" />
+          </button>
         )}
 
+        {/* Другие элементы */}
         {children}
+      </div>
 
-      </Box>
-      <Button
-        disabled={isEditingModeActive}
-        focusIndicator={false}
-        icon={<PlusIcon color='white' />}
-        fill={false}
-        style={{width: '48px', borderRadius: '24px'}}
-        primary
+      {/* Кнопка добавления */}
+      <button
+        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
         onClick={openCreator}
-      />
-    </Box>
+        disabled={isEditingModeActive}
+      >
+        <PlusIcon color="white" />
+      </button>
+    </div>
   )
 }
 

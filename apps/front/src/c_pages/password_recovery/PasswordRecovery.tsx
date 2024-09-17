@@ -5,18 +5,6 @@ import StartPassRecovery from "./ui/StartPassRecovery";
 import ContinuePassRecovery from "./ui/ContinuePassRecovery";
 import FinishPassRecovery from "./ui/FinishPassRecovery";
 
-type Props = {
-  email: string,
-  password: string,
-  controlPassword: string,
-  isRecoveryInitialized: null | boolean,
-  isLoading:  null | boolean,
-  setEmail: () => void,
-  setPassword: () => void,
-  setControlPassword: () => void,
-  handleSubmit: () => void,
-}
-
 const ConfirmEmailScreen = () => {
   const {recoveryToken}: {recoveryToken: string} = useParams();
 

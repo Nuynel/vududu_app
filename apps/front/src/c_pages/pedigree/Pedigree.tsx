@@ -1,4 +1,3 @@
-import {Box, Grid} from "grommet";
 import {useEffect, useState} from "react";
 import {Pedigree} from "../../g_shared/types";
 import {getPedigreeByDogId} from "../../g_shared/methods/api";
@@ -49,46 +48,36 @@ const PedigreeScreen = () => {
   }, [probandId])
 
   return (
-    <Grid
-      rows={['80px', isSmall ? '80px' : '264px', 'auto']}
-      columns={['auto']}
-      areas={[
-        { name: 'mainFilter', start: [0, 0], end: [0, 0] },
-        { name: 'secondaryFilter', start: [0, 1], end: [0, 1] },
-        { name: 'content', start: [0, 2], end: [0, 2] },
-      ]}
-      // height={'100%'}
-      fill={"vertical"}
-    >
-      <ProbandSelect probandId={probandId} changeProbandId={setProbandId}/>
+    <div className="grid grid-rows-[80px_80px_auto] lg:grid-rows-[80px_264px_auto] grid-cols-1 h-full">
+    <ProbandSelect probandId={probandId} changeProbandId={setProbandId}/>
       <DogCard dogId={activePedigreeDogId}/>
-      <Box
-        gridArea={'content'}
-        pad={"small"}
-        gap={"small"}
-        background={'lightBackground'}
-        direction={"row"}
-        overflow={"scroll"}
-      >
-        {!!nodes.length && (
-          <Grid
-            rows={PEDIGREE_GRIDS.COMMON_PEDIGREE.rows}
-            columns={PEDIGREE_GRIDS.COMMON_PEDIGREE.columns}
-            areas={PEDIGREE_GRIDS.COMMON_PEDIGREE.areas}
-          >
-            {nodes.map(({id, fullName, position}, index) => (
-              <PedigreeNode
-                nodeId={id}
-                fullName={fullName}
-                position={position}
-                setActiveDogId={setActivePedigreeDogId}
+      <div className="grid-area-content p-2 gap-2 bg-gray-100 flex flex-row overflow-scroll">
+      {!!nodes.length && (
+          <div className="grid grid-rows-16 grid-cols-4 gap-2">
+            {nodes.map(({ id, fullName, position }, index) => (
+              <div
                 key={index}
-              />
+                className={`col-span-${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].end[1] -
+                PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].start[1] + 1} 
+        row-span-${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].end[0] -
+                PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].start[0] + 1} bg-white border p-2`}
+                style={{
+                  gridRow: `${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].start[0] + 1} / ${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].end[0] + 2}`,
+                  gridColumn: `${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].start[1] + 1} / ${PEDIGREE_GRIDS.COMMON_PEDIGREE.areas[index].end[1] + 2}`,
+                }}
+              >
+                <PedigreeNode
+                  nodeId={id}
+                  fullName={fullName}
+                  position={position}
+                  setActiveDogId={setActivePedigreeDogId}
+                />
+              </div>
             ))}
-          </Grid>
+          </div>
         )}
-      </Box>
-    </Grid>
+      </div>
+    </div>
   );
 }
 

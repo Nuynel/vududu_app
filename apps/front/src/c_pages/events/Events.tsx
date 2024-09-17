@@ -1,19 +1,16 @@
 import * as React from "react";
 import {useState} from "react";
-import {Box, Grid} from "grommet";
 import EventsList from "./EventsList";
-import SectionHeader from "../../e_features/SectionHeader";
 import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
-import {DATA_TYPES} from "../../g_shared/types/event";
 import ActivateButton from "./uiComponents/ActivateButton";
 import EditingButtons from "../../d_widgets/EditingButtons";
 import EventFilter from "./uiComponents/EventFilter";
 import SubmitActionPopup from "../../e_features/SubmitActionPopup";
 import {deleteEventsByIds} from "../../g_shared/methods/api";
 import useGetInitialData from "../../f_entities/hooks/useGetInitialData";
-import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {Paths} from "../../g_shared/constants/routes";
-import {useLocation} from "wouter";
+import {useLocation, useRoute} from "wouter";
+import PageComponent from "../../d_widgets/PageComponent";
 
 const deletePopupText = 'Вы уверены, что хотите удалить эти события?'
 
@@ -21,8 +18,9 @@ const CalendarScreen = () => {
   const [show, setShow] = useState(false);
   const [massEditing, switchEditingMode] = useState<boolean>(false)
   const [selectedIds, changeSelectedIds] = useState<string[]>([])
+  const [matchEventsRoutes] = useRoute(Paths.events)
 
-  const {columns, rows, areas} = useResponsiveGrid(true);
+  // const {columns, rows, areas} = useResponsiveGrid(true);
   const {eventTypeFilter, activeDataType, setActiveDataType} = useUIStateStore()
   const [, setLocation] = useLocation();
 
@@ -41,27 +39,46 @@ const CalendarScreen = () => {
     await getInitialData()
   }
 
+  const headerProps = {
+    title: 'calendar',
+    back: false,
+    submenu: {
+      left: {
+        path: Paths.events,
+        title: 'events',
+        isActive: matchEventsRoutes
+      },
+      right: {
+        path: Paths.history,
+        title: 'history',
+        isActive: !matchEventsRoutes
+      }
+    }
+  }
+
   return (
-    <Grid
-      rows={rows}
-      columns={columns}
-      areas={areas}
-      height={'100%'}
-    >
-      <SectionHeader
-        activeDataType={activeDataType}
-        buttons={[
-          {type: DATA_TYPES.PLANNED, label: 'Планировщик', link: Paths.events},
-          {type: DATA_TYPES.HISTORY, label: 'История', link: Paths.history},
-        ]}
-        isLink={true}
-        setActiveDataType={setActiveDataType}
-      />
+    <PageComponent filter headerProps={headerProps}>
+
+    {/*// <Grid*/}
+    {/*//   rows={rows}*/}
+    {/*//   columns={columns}*/}
+    {/*//   areas={areas}*/}
+    {/*//   height={'100%'}*/}
+    {/*// >*/}
+    {/*//   <SectionHeader*/}
+    {/*//     activeDataType={activeDataType}*/}
+    {/*//     buttons={[*/}
+    {/*//       {type: DATA_TYPES.PLANNED, label: 'Планировщик', link: Paths.events},*/}
+    {/*//       {type: DATA_TYPES.HISTORY, label: 'История', link: Paths.history},*/}
+    {/*//     ]}*/}
+    {/*//     isLink={true}*/}
+    {/*//     setActiveDataType={setActiveDataType}*/}
+    {/*//   />*/}
 
       <EventFilter/>
 
-      <Box gridArea={'content'} pad={{left: 'small', right: 'small'}} background={'lightBackground'}>
-        <Box overflow='auto'>
+      <div className="p-2 bg-gray-100">
+        <div className="overflow-auto">
           <EventsList
             activeType={activeDataType}
             activeEventType={eventTypeFilter}
@@ -69,8 +86,21 @@ const CalendarScreen = () => {
             selectedIds={selectedIds}
             switchIsIdSelected={switchIsIdSelected}
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
+
+
+      {/*<Box gridArea={'content'} pad={{left: 'small', right: 'small'}} background={'lightBackground'}>*/}
+      {/*  <Box overflow='auto'>*/}
+      {/*    <EventsList*/}
+      {/*      activeType={activeDataType}*/}
+      {/*      activeEventType={eventTypeFilter}*/}
+      {/*      selectMode={massEditing}*/}
+      {/*      selectedIds={selectedIds}*/}
+      {/*      switchIsIdSelected={switchIsIdSelected}*/}
+      {/*    />*/}
+      {/*  </Box>*/}
+      {/*</Box>*/}
 
       <EditingButtons
         isEditingModeActive={massEditing}
@@ -89,7 +119,7 @@ const CalendarScreen = () => {
           text={deletePopupText}
         />
       )}
-    </Grid>
+</PageComponent>
   );
 }
 

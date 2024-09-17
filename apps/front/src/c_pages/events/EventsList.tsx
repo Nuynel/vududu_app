@@ -52,7 +52,7 @@ const EventsList = ({activeType, activeEventType, selectMode, selectedIds, switc
   return (
     <EntityList
       list={filteredEventsData}
-      setActiveId={(id) => setLocation(`/events/${id}`)}
+      setActiveId={(id) => setLocation(`/app/events/${id}`)}
       hasColorIndicator={activeType === DATA_TYPES.PLANNED}
       hasIcons
       selectMode={selectMode}

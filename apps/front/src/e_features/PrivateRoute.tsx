@@ -1,10 +1,7 @@
 import * as React from "react";
-import {Box} from "grommet";
 import {useLocation, useRoute} from "wouter";
 import {isAuthenticated, parseJwt} from "../g_shared/methods/helpers";
 import {Paths} from "../g_shared/constants/routes";
-import {navigate} from "wouter/types/use-browser-location";
-import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
 
 const PrivateRoute = ({ children }) => {
   const [, setLocation] = useLocation();
@@ -26,9 +23,9 @@ const PrivateRoute = ({ children }) => {
   }
 
   return (
-    <Box gridArea="main" height={'full'}>
+    <div className="grid-area-main h-full">
       {children}
-    </Box>
+    </div>
   );
 }
 

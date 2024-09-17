@@ -26,7 +26,7 @@ const LitterInformation = () => {
 
 
   const openLitterEditor = () => {
-    setLocation(`/litters/litter/${params.id}/editor`);
+    setLocation(`/app/litters/litter/${params.id}/editor`);
   }
 
   const getCardsConfig = (): BlocksConfig => {
@@ -36,13 +36,13 @@ const LitterInformation = () => {
           key: fieldName,
           value: litter.fatherData.fullName,
           link: true,
-          linkValue: `/dogs/dog/${litter.fatherData.id}`,
+          linkValue: `/app/dogs/dog/${litter.fatherData.id}`,
         }
         case 'motherFullName': return {
           key: fieldName,
           value:  litter.motherData.fullName,
           link: true,
-          linkValue: `/dogs/dog/${litter.motherData.id}`,
+          linkValue: `/app/dogs/dog/${litter.motherData.id}`,
         }
         case 'dateOfBirth': return {
           key: fieldName,

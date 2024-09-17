@@ -1,14 +1,13 @@
 import * as React from "react";
-import {Box, Heading, Diagram, Stack} from "grommet";
 
 
 const DocumentScreen = () => {
   return (
-     <Box align='center' background={'lightBackground'} fill={"vertical"}>
-       <Heading level={2}>
-         Скоро!
-       </Heading>
-     </Box>
+    <div className="flex flex-col items-center bg-gray-100 h-full">
+      <h2 className="text-2xl font-bold">
+        Скоро!
+      </h2>
+    </div>
   );
 }
 

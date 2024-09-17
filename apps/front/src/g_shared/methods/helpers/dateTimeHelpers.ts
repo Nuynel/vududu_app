@@ -1,5 +1,14 @@
 import {DATA_TYPES} from "../../types/event";
 
+const getTimezoneOffset = () => {
+  const offset = new Date().getTimezoneOffset();
+  const sign = offset > 0 ? '-' : '+';
+  const absOffset = Math.abs(offset);
+  const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+  const minutes = String(absOffset % 60).padStart(2, '0');
+  return `${sign}${hours}:${minutes}`;
+};
+
 export function getFormatTimezoneOffset() {
   const offset = new Date().getTimezoneOffset();
   const absOffset = Math.abs(offset);
@@ -16,7 +25,7 @@ export const formatSingleDate = (dateString) => {
   const day = date.getUTCDate().toString().padStart(2, '0');
   const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Месяцы начинаются с 0
   const year = date.getUTCFullYear();
-  return `${day}.${month}.${year}`;
+  return `${year}-${month}-${day}`;
 };
 
 export function formatDateOrRange(input) {
@@ -36,19 +45,20 @@ export const getFormattedDate = (date: Date) => {
   const day = date.getDate().toString().padStart(2, '0'); // Добавляем ведущий ноль, если необходимо
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Месяцы начинаются с 0, добавляем 1
   const year = date.getFullYear();
-  return `${day}.${month}.${year}`;
+  return `${year}-${month}-${day}`;
 }
 
 export const fixTimezone = (value: string) => {
   if (value && value.includes('Z')) {
-    return value.replace('Z', getFormatTimezoneOffset())
+    return value.replace('Z', getTimezoneOffset());
   }
   if (value && value.length >= 10) {
-    const dateWithTime = (new Date(value)).setHours(12)
-    return (new Date(dateWithTime)).toISOString().replace('Z', getFormatTimezoneOffset())
+    const dateWithTime = new Date(value).setHours(12);
+    return new Date(dateWithTime).toISOString().replace('Z', getTimezoneOffset());
   }
   return value;
-}
+};
+
 
 export const compareDates = (dates: string[] | null, dataType: DATA_TYPES) => {
   if (!dates) return false

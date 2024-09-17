@@ -32,7 +32,7 @@ export const componentsMapping = {
     path: Paths.history,
   },
   [Paths.contacts]: {
-    component: Profile,
+    component: Contacts,
     private: true,
     path: Paths.contacts,
   },

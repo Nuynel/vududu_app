@@ -83,7 +83,7 @@ const EventInformation = () => {
     >
       <EntityPage
         config={getCardsConfig()}
-        openBaseInfoEditor={() => setLocation(`/events/${event._id}/editor`)}
+        openBaseInfoEditor={() => setLocation(`/app/events/${event._id}/editor`)}
       />
     </EntityPageWrapper>
   )

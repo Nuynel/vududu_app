@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {Box, CheckBox, Text} from 'grommet';
 import {IncomingDogData, IncomingLitterData, OutgoingDogData} from "../../../g_shared/types";
 import {fixTimezone} from "../../../g_shared/methods/helpers";
 import {createDog, getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
@@ -159,32 +158,41 @@ const DogInformationCreator = () => {
       )}
 
       {(dogDataMatch && dogDataMatch.length > 0) || (dogDataMatch && dogDataMatch.length > 0 && !selectedDogId) && (
-        <Box margin={"small"} style={{minHeight: '24px'}}>
-          <CheckBox
-            label={'Здесь нет такой собаки'}
-            checked={isNoMatch}
-            onChange={(event) => switchIsNoMatch(event.target.checked)}
-          />
-        </Box>
+        <div className="m-2" style={{ minHeight: '24px' }}>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={isNoMatch}
+              onChange={(event) => switchIsNoMatch(event.target.checked)}
+              className="form-checkbox"
+            />
+            <span>Здесь нет такой собаки</span>
+          </label>
+        </div>
       )}
 
       {dogDataMatch && dogDataMatch.length === 0 && (
-        <Box margin={"small"} style={{minHeight: 'min-content'}} width={'100%'}>
-          <Text textAlign={"center"}>
+        <div className="m-2 w-full" style={{ minHeight: 'min-content' }}>
+          <p className="text-center">
             Собак с такими данными не найдено, продолжите заполнение формы для добавления
-          </Text>
-        </Box>
+          </p>
+        </div>
       )}
 
       {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (
-        <Box margin={"small"} style={{minHeight: '24px'}}>
-          <CheckBox
-            label={'Собака принадлежит мне'}
-            checked={isOwnDog}
-            disabled={!!selectedDogId}
-            onChange={(event) => switchIsOwnDog(event.target.checked)}
-          />
-        </Box>
+        <div className="m-2" style={{ minHeight: '24px' }}>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={isOwnDog}
+              disabled={!!selectedDogId}
+              onChange={(event) => switchIsOwnDog(event.target.checked)}
+              className="form-checkbox"
+            />
+            <span>Собака принадлежит мне</span>
+          </label>
+        </div>
+
       )}
 
       {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (

@@ -1,9 +1,9 @@
-import {Accordion, AccordionPanel, Box, Button, Card, Grid, Text} from "grommet";
 import {OpenIcon} from '../g_shared/icons';
 import {FieldData} from "../g_shared/types";
 import {getRuTranslate} from '../g_shared/constants/translates'
 import * as React from "react";
 import {useLocation} from "wouter";
+import {Accordion} from '../g_shared/ui_components'
 
 const areasByDataType = {
   dateValue: [
@@ -21,51 +21,43 @@ const AccordionCard = ({cardName, fields}: { cardName: string, fields: FieldData
   const [, setLocation] = useLocation();
 
   return (
-    <Card margin='small' pad='medium' gap='medium' overflow='visible' style={{minHeight: 'unset'}} background='white'>
-      <Accordion>
-        <AccordionPanel label={getRuTranslate(cardName)}>
+    <div className="m-2 p-4 gap-4 bg-white overflow-visible" style={{ minHeight: 'unset' }}>
+      <Accordion title={getRuTranslate(cardName)}>
           {fields.map((field, i) => (
-            <Grid
-              rows={['auto']}
-              columns={['80px', 'auto', '60px']}
-              areas={areasByDataType[field.date ? 'dateValue' : 'value']}
-              key={i}
-              margin={"small"}
-            >
+            <div className="grid grid-cols-[80px_auto_60px] gap-4 p-2 m-2">
               {field.date && (
-                <Box gridArea={'date'} justify={'center'}>
-                  <Text size={"small"}>
+                <div className="flex items-center justify-center">
+                  <p className="text-sm">
                     {field.date}
-                  </Text>
-                </Box>
+                  </p>
+                </div>
               )}
-              <Box gridArea={'text'} justify={'center'}>
-                <Text truncate size={"small"}>
+
+              <div className="flex items-center justify-center">
+                <p className="truncate text-sm">
                   {field.value || '-'}
-                </Text>
-              </Box>
-              <Box gridArea='button' justify={"center"} align={'center'}>
-                <Button
-                  focusIndicator={false}
-                  icon={<OpenIcon color='black'/>}
-                  fill={false}
-                  style={{width: '48px', borderRadius: '24px'}}
-                  secondary
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <button
+                  className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center focus:outline-none"
                   onClick={() => setLocation(field.linkValue)}
-                />
-              </Box>
-            </Grid>
+                >
+                  <OpenIcon color='black'/>
+                </button>
+              </div>
+            </div>
           ))}
           {!fields.length && (
-            <Box margin='small'>
-              <Text size={"small"}>
-                Пусто
-              </Text>
-            </Box>
+            <div className="m-2">
+              <p className="text-sm">
+                {getRuTranslate('empty')}
+              </p>
+            </div>
           )}
-        </AccordionPanel>
       </Accordion>
-    </Card>
+    </div>
   )
 }
 

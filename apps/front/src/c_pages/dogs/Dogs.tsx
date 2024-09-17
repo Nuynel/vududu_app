@@ -1,8 +1,6 @@
 import {useState} from "react";
-import {Box, Grid} from "grommet";
 import DogsList from "./DogsList";
 import LittersList from "./LittersList";
-import SectionHeader from "../../e_features/SectionHeader";
 import * as React from "react";
 import EditingButtons from "../../d_widgets/EditingButtons";
 import SubmitActionPopup from "../../e_features/SubmitActionPopup";
@@ -13,6 +11,7 @@ import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {Paths} from "../../g_shared/constants/routes";
 import Filter from "../../g_shared/ui_components/Filter";
 import {useUIStateStore} from "../../f_entities/store/uiStateStoreHook";
+import PageComponent from "../../d_widgets/PageComponent";
 
 enum DATA_TYPES {
   DOGS = 'DOGS',
@@ -74,33 +73,33 @@ const DogsScreen = () => {
     await getInitialData()
   }
 
-  return (
-    <Grid
-      rows={rows}
-      columns={columns}
-      areas={areas}
-      height={'100%'}
-    >
-      {isSmall && (
-        <SectionHeader
-          activeDataType={activeDataType}
-          buttons={[
-            {type: DATA_TYPES.DOGS, label: 'Собаки', link: Paths.dogs},
-            {type: DATA_TYPES.LITTERS, label: 'Пометы', link: Paths.litters},
-          ]}
-          isLink
-          setActiveDataType={setActiveDataType}
-        />
-      )}
+  const headerProps = {
+    title: 'population',
+    back: false,
+    submenu: {
+      left: {
+        path: Paths.dogs,
+        title: 'dogs',
+        isActive: matchDogsRoutes
+      },
+      right: {
+        path: Paths.litters,
+        title: 'litters',
+        isActive: !matchDogsRoutes
+      }
+    }
+  }
 
+  return (
+    <PageComponent filter headerProps={headerProps}>
       <Filter
         options={matchDogsRoutes ? dogTypeOptions : litterTypeOptions}
         value={matchDogsRoutes ? dogTypeFilter : litterTypeFilter}
         setValue={matchDogsRoutes ? setDogTypeFilter : setLitterTypeFilter}
       />
 
-      <Box gridArea={'content'} pad={{left: 'small', right: 'small'}} background={'lightBackground'}>
-        <Box overflow='auto'>
+      <div className="w-full p-2 bg-lightBackground">
+        <div className="overflow-auto">
           {matchDogsRoutes ? (
             <DogsList
               selectMode={editingMode}
@@ -114,8 +113,8 @@ const DogsScreen = () => {
               switchIsIdSelected={switchIsIdSelected}
             />
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       <EditingButtons
         isEditingModeActive={editingMode}
@@ -132,7 +131,7 @@ const DogsScreen = () => {
           submitAction={deleteEntities}
         />
       )}
-    </Grid>
+    </PageComponent>
   )
 }
 

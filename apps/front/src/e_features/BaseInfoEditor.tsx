@@ -9,24 +9,12 @@ import {
 } from "../g_shared/types";
 import {GENDER} from "../g_shared/types/dog";
 import {baseInfoFieldsConfig} from '../g_shared/constants/baseInfoEditorFieldsConfig'
-import {
-  Box,
-  Button,
-  CheckBox,
-  DateInput,
-  Form,
-  FormField,
-  Grid,
-  RadioButtonGroup,
-  Select,
-  SelectMultiple, Spinner,
-  TextArea,
-  TextInput
-} from "grommet";
 import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
 import {getRuTranslate} from "../g_shared/constants/translates";
+import {CustomSpinner} from "../g_shared/ui_components";
 import {EVENT_TYPE} from "../g_shared/types/event";
 import {PERIODS} from "../c_pages/events/constants";
+import {formatSingleDate} from "../g_shared/methods/helpers";
 
 type Entity =
   | Pick<IncomingDogData, 'dateOfBirth' | 'gender' | 'breedId'>
@@ -72,7 +60,7 @@ const BaseInfoFieldsByEntity = {
   newOwnDog: ['fullName', 'name', 'dateOfDeath', 'microchipNumber', 'tattooNumber', 'pedigreeNumber', 'color', 'isNeutered', 'litterData'],
   newOtherDog: ['fullName', 'name', 'dateOfDeath', 'color', 'isNeutered', 'litterData'],
   litter: ['fatherFullName', 'motherFullName', 'dateOfBirth', 'comments'],
-  newLitter: ['fatherId', 'motherId', 'dateOfBirth', 'breedId', 'comments', 'puppyIds'],
+  newLitter: ['fatherData', 'motherData', 'dateOfBirth', 'breedId', 'comments', 'puppyIds'],
   newAntiparasiticTreatment: ['eventType', 'dogId', 'date', 'comments', 'validity', 'medication', 'repeat'],
   newVaccination: ['eventType', 'dogId', 'date', 'comments', 'validity', 'medication', 'repeat'],
   newHeat: ['eventType', 'dogId', 'date', 'comments', 'repeat'],
@@ -98,9 +86,9 @@ const BaseInfoEditor = (props: Props) => {
   const {getDogById} = useProfileDataStore();
 
   return (
-    <Form
+    <form
       onSubmit={props.handleSubmit}
-      style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}
+      className="flex flex-col justify-center"
     >
       {BaseInfoFieldsByEntity[props.entityType].map((key) => {
         const fieldConfig = baseInfoFieldsConfig[key]
@@ -116,435 +104,443 @@ const BaseInfoEditor = (props: Props) => {
           case 'validity':
           case 'color': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-                validate={() => dogIdentificationValidator(key, props.entity)}
-                validateOn={"submit"}
-              >
-                <TextInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="text"
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={props.entity[key]}
                   placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+                {dogIdentificationValidator(key, props.entity) && (
+                  <p className="mt-2 text-red-600 text-sm">
+                    {dogIdentificationValidator(key, props.entity)}
+                  </p>
+                )}
+              </div>
             )
           }
           case 'comments': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <TextArea
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <textarea
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={props.entity[key]}
                   placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'disabledDogId': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <TextInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="text"
                   disabled
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={'dogId' in props.entity && (getDogById(props.entity.dogId).name || getDogById(props.entity.dogId).fullName)}
+                  value={
+                    'dogId' in props.entity &&
+                    (getDogById(props.entity.dogId)?.name || getDogById(props.entity.dogId)?.fullName)
+                  }
                   placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, 'dogId', props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, 'dogId', props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'dogId': {
             const femaleDogsList = props.dogsList.filter(dog => dog.gender === GENDER.FEMALE)
             const filteredDogsList = props.newEventType === EVENT_TYPE.HEAT ? femaleDogsList : props.dogsList
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <Select
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <select
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={fieldConfig.valueGetter(filteredDogsList, props.entity[key])}
-                  options={filteredDogsList}
-                  labelKey={fieldConfig.labelKey}
-                  placeholder={fieldConfig.placeholder}
-                  onSearch={(searchString) => props.handleSearch(searchString.trim().toLowerCase())}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+                  value={fieldConfig.valueGetter(filteredDogsList, props.entity[key])?._id}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {filteredDogsList.map((dog) => (
+                    <option key={dog._id} value={dog._id}>
+                      {dog[fieldConfig.labelKey]}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )
           }
           case 'status': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <TextInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="text"
                   disabled
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={getRuTranslate(props.entity[key])}
                   placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-                { ['heat', 'vaccination', 'treatment'].includes(props.entityType) && (props.entity[key] === 'overdue' || props.entity[key] === 'planned') && (
-                  <Button
-                    focusIndicator={false}
-                    margin='small'
-                    label={'Активировать'}
-                    fill={false}
-                    primary
+                {['heat', 'vaccination', 'treatment'].includes(props.entityType) && (props.entity[key] === 'overdue' || props.entity[key] === 'planned') && (
+                  <button
+                    className="mt-2 bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm"
                     onClick={() => props.handleInputChange('status', 'archived')}
-                  />
+                  >
+                    Активировать
+                  </button>
                 )}
-              </FormField>
+              </div>
             )
           }
           case 'fatherFullName':
           case 'motherFullName': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <TextInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="text"
                   disabled
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={props.entity[key]}
                   placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'dateOfBirth': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <DateInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="date"
                   disabled={props.entityType === 'litter' || props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={props.entity[key]}
-                  format='dd.mm.yyyy'
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  value={formatSingleDate(props.entity[key])}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'dateOfDeath': {
             return (
-              <Box key={fieldConfig.id}>
+              <div key={fieldConfig.id}>
                 {props.entity[key] === null && (
-                  <Button
-                    margin='small'
-                    secondary
-                    label="Добавить дату гибели"
-                    onClick={() => props.handleInputChange('dateOfDeath', (new Date()).toISOString())}
-                  />
+                  <button
+                    className="mt-2 bg-gray-200 text-gray-700 py-2 px-4 rounded-md shadow-sm"
+                    onClick={() => props.handleInputChange('dateOfDeath', new Date().toISOString())}
+                  >
+                    Добавить дату гибели
+                  </button>
                 )}
-                {
-                  props.entity[key] !== null && (
-                    <FormField
+
+                {props.entity[key] !== null && (
+                  <div className="mb-4">
+                    <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                      {fieldConfig.label}
+                    </label>
+                    <input
+                      type="date"
+                      disabled={props.entityType === 'litter' || props.isFormDisabled}
+                      id={fieldConfig.id}
                       name={fieldConfig.label}
-                      htmlFor={fieldConfig.id}
-                      label={fieldConfig.label}
-                      disabled={props.isFormDisabled}
-                    >
-                      <DateInput
-                        disabled={props.entityType === 'litter' || props.isFormDisabled}
-                        id={fieldConfig.id}
-                        name={fieldConfig.label}
-                        value={props.entity[key]}
-                        format='dd.mm.yyyy'
-                        onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                      />
-                    </FormField>
-                  )
-                }
-              </Box>
+                      value={formatSingleDate(props.entity[key])}
+                      onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                      className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                )}
+              </div>
             )
           }
           case 'date': {
             const date = props.entity[key]
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <DateInput
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="date"
                   disabled={!isFutureEvent(props.entity) || props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={date.length === 2 ? date : date[0]}
-                  format={props.entityType === EVENT_TYPE.HEAT ? 'dd.mm.yyyy-dd.mm.yyyy' : 'dd.mm.yyyy'}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'gender': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <RadioButtonGroup
-                  disabled={props.isFormDisabled}
-                  id={fieldConfig.id}
-                  name={fieldConfig.label}
-                  value={props.entity[key]}
-                  options={[{
-                    disabled: hasPuppies,
-                    id: GENDER.MALE,
-                    value: GENDER.MALE,
-                    label: 'Кобель'
-                  }, {
-                    disabled: hasPuppies,
-                    id: GENDER.FEMALE,
-                    value: GENDER.FEMALE,
-                    label: 'Сука'
-                  }]}
-                  // placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <div className="mt-2">
+                  {[
+                    {
+                      disabled: hasPuppies,
+                      id: GENDER.MALE,
+                      value: GENDER.MALE,
+                      label: 'Кобель',
+                    },
+                    {
+                      disabled: hasPuppies,
+                      id: GENDER.FEMALE,
+                      value: GENDER.FEMALE,
+                      label: 'Сука',
+                    }
+                  ].map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id={option.id}
+                        name={fieldConfig.label}
+                        disabled={option.disabled || props.isFormDisabled}
+                        value={option.value}
+                        checked={props.entity[key] === option.value}
+                        onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                        className="form-radio"
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             )
           }
           case 'isNeutered': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <CheckBox
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <input
+                  type="checkbox"
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   checked={props.entity[key]}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="form-checkbox h-4 w-4 text-blue-600"
                 />
-              </FormField>
+              </div>
             )
           }
           case 'breedId': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <Select
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <select
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={props.breeds.find(breed => 'breedId' in props.entity && breed._id === props.entity.breedId)}
-                  options={props.breeds}
+                  value={props.breeds.find(breed => 'breedId' in props.entity && breed._id === props.entity.breedId)?._id}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
                   disabled={hasPuppies || props.entityType === 'newLitter' || props.isFormDisabled}
-                  labelKey={(elem: Breed) => elem.name ? elem.name.rus : ''}
-                  onSearch={(searchString) => fieldConfig.searchHandler(searchString, props.handleSearch)}
-                  placeholder='Название породы'
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {props.breeds.map((breed) => (
+                    <option key={breed._id} value={breed._id}>
+                      {breed.name ? breed.name.rus : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )
           }
           case 'litterData': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <Select
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <select
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={props.litters.find(litter => 'litterData' in props.entity && litter._id === props.entity.litterData?.id)}
-                  options={props.litters}
-                  labelKey='litterTitle'
-                  placeholder='дд.мм.гггг, Отец/Мать'
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+                  value={props.litters.find(litter => 'litterData' in props.entity && litter._id === props.entity.litterData?.id)?._id}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {props.litters.map((litter) => (
+                    <option key={litter._id} value={litter._id}>
+                      {litter.litterTitle}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )
           }
-          case 'fatherId':
-          case 'motherId': {
-            const dogsList = key === 'fatherId' ? props.maleDogsList : props.femaleDogsList
+          case 'fatherData':
+          case 'motherData': {
+            const dogsList = key === 'fatherData' ? props.maleDogsList : props.femaleDogsList
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <Select
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <select
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
                   value={fieldConfig.valueGetter(dogsList, props.entity[key])}
-                  options={dogsList}
-                  labelKey={fieldConfig.labelKey}
-                  placeholder={fieldConfig.placeholder}
-                  onSearch={(searchString) => fieldConfig.searchHandler(searchString, props.handleSearchByGender)}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {dogsList.map((dog) => (
+                    <option key={dog._id} value={dog._id}>
+                      {dog[fieldConfig.labelKey]}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )
           }
           case 'puppyIds': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <SelectMultiple
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <select
+                  multiple
                   disabled={props.isFormDisabled}
                   id={fieldConfig.id}
                   name={fieldConfig.label}
-                  value={props.entity[key].map(puppyId => props.puppiesList.find(puppy => puppy._id === puppyId))}
-                  options={props.puppiesList}
-                  labelKey={fieldConfig.labelKey}
-                  placeholder={fieldConfig.placeholder}
-                  onChange={(event) => fieldConfig.handler(event, key, props.handleInputChange)}
-                />
-              </FormField>
+                  value={props.entity[key]}
+                  onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {props.puppiesList.map((puppy) => (
+                    <option key={puppy._id} value={puppy._id}>
+                      {puppy[fieldConfig.labelKey]}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )
           }
           case 'eventType': {
             return (
-              <FormField
-                key={fieldConfig.id}
-                name={fieldConfig.label}
-                htmlFor={fieldConfig.id}
-                label={fieldConfig.label}
-                disabled={props.isFormDisabled}
-              >
-                <RadioButtonGroup
-                  disabled={props.isFormDisabled}
-                  id={fieldConfig.id}
-                  name={fieldConfig.label}
-                  value={props.newEventType}
-                  options={fieldConfig.options}
-                  onChange={({target}) => props.changeNewEventType(target.value as EVENT_TYPE)}
-                />
-              </FormField>
+              <div className="mb-4" key={fieldConfig.id}>
+                <label htmlFor={fieldConfig.id} className="block text-sm font-medium">
+                  {fieldConfig.label}
+                </label>
+                <div className="mt-2">
+                  {fieldConfig.options.map((option) => (
+                    <label key={option.value} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id={fieldConfig.id}
+                        name={fieldConfig.label}
+                        disabled={props.isFormDisabled}
+                        checked={props.newEventType === option.value}
+                        value={option.value}
+                        onChange={(e) => props.changeNewEventType(e.target.value as EVENT_TYPE)}
+                        className="form-radio"
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             )
           }
           case 'repeat': {
             return (
-              <Box pad='small' key={fieldConfig.id}>
-                <CheckBox
-                  id={fieldConfig.id}
-                  label={fieldConfig.label}
-                  disabled={props.isFormDisabled}
-                  checked={props.repeat}
-                  onChange={props.switchRepeat}
-                />
-                {props.repeat && (
-                  <FormField
-                    htmlFor='frequency-input-id'
-                    label='Следующее событие будет запланировано через'
+              <div className="p-2" key={fieldConfig.id}>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={fieldConfig.id}
                     disabled={props.isFormDisabled}
-                  >
-                    <Select
+                    checked={props.repeat}
+                    onChange={props.switchRepeat}
+                    className="form-checkbox"
+                  />
+                  <span>{fieldConfig.label}</span>
+                </label>
+
+                {props.repeat && (
+                  <div className="mt-2">
+                    <label htmlFor="frequency-input-id" className="block text-sm font-medium">
+                      Следующее событие будет запланировано через
+                    </label>
+                    <select
                       disabled={props.isFormDisabled}
-                      id='frequency-input-id'
+                      id="frequency-input-id"
                       name={fieldConfig.label}
-                      options={PERIODS}
-                      labelKey={'label'}
-                      value={PERIODS.find(per => per.value === props.frequencyInDays)}
-                      onChange={(event) => props.changeFrequency(event.value.value)}
-                    />
-                  </FormField>
+                      value={props.frequencyInDays}
+                      onChange={(e) => props.changeFrequency(Number(e.target.value))}
+                      className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {PERIODS.map((per) => (
+                        <option key={per.value} value={per.value}>
+                          {per.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 )}
-              </Box>
+              </div>
             )
           }
           default: {
-            return (<Box>UNHANDLED INPUT</Box>)
+            return (<div>UNHANDLED INPUT</div>)
           }
         }
       })}
-      <Button margin='small' type="submit" primary>
-        <Grid
-          gap={"medium"}
-          height={"36px"}
-          rows={['1fr']}
-          columns={['1fr', '200px', '1fr']}
-          areas={[
-            { name: 'filler', start: [0, 0], end: [0, 0]},
-            { name: 'text', start: [1, 0], end: [1, 0] },
-            { name: 'spinner', start: [2, 0], end: [2, 0] },
-          ]}
-        >
-          <Box gridArea={'filler'}/>
-          <Box gridArea={'text'} justify={"center"} alignContent={"center"}>
-            {props.saveButtonLabel}
-          </Box>
-          <Box gridArea={'spinner'} justify={"center"}>
-            {props.isLoading && <Spinner color={'white'}/>}
-          </Box>
-        </Grid>
-      </Button>
-    </Form>
+      <button
+        type="submit"
+        className="bg-blue-500 text-white py-2 px-4 rounded-md flex justify-center items-center space-x-4"
+      >
+        <div className="flex-1"></div>
+        <div className="w-48 text-center">
+          {props.saveButtonLabel}
+        </div>
+        <div className="flex-1 flex justify-center">
+          {props.isLoading && <CustomSpinner />}
+        </div>
+      </button>
+    </form>
   )
 }
 

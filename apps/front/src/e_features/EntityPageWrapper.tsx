@@ -1,4 +1,3 @@
-import {Grid, Box, Heading, Button} from "grommet";
 import * as React from "react";
 import {CloseIcon, BackIcon} from "../g_shared/icons";
 import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
@@ -14,64 +13,39 @@ const EntityPageWrapper = ({children, title, closeEntityPage}: Props) => {
   const {isSmall} = useResponsiveGrid()
 
   return (
-    <Grid
-      rows={[`${isSmall ? 60 : 90}px`, 'auto']}
-      columns={['60px', 'auto', '60px']}
-      areas={[
-        { name: 'back', start: [0, 0], end: [0, 0] },
-        { name: 'header', start: [1, 0], end: [1, 0] },
-        { name: 'exit', start: [2, 0], end: [2, 0] },
-        { name: 'content', start: [0, 1], end: [2, 1] },
-      ]}
-      height={'100%'}
-    >
-      <Box
-        gridArea='back'
-        height={'100%'}
-        justify={"center"}
-        align={'center'}
-        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
-      >
-        <Button
-          focusIndicator={false}
-          icon={<BackIcon color='black'/>}
-          fill={false}
-          style={{width: '48px', borderRadius: '24px'}}
-          secondary
+    <div className="grid grid-rows-[60px_auto] lg:grid-rows-[90px_auto] grid-cols-[60px_auto_60px] h-full">
+      {/* Кнопка "Назад" */}
+      <div className="flex justify-center items-center border-b border-gray-200">
+        <button
+          className="w-12 h-12 bg-gray-200 rounded-full focus:outline-none"
           onClick={() => window.history.back()}
-        />
-      </Box>
-      <Box
-        gridArea='header'
-        direction='row'
-        alignSelf='center'
-        justify='around'
-        background={'white'}
-        height={'100%'}
-        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
-      >
-        <Heading level={3}>
+        >
+          <BackIcon color='black' />
+        </button>
+      </div>
+
+      {/* Заголовок */}
+      <div className="flex justify-around items-center bg-white border-b border-gray-200">
+        <h3 className="text-lg font-bold">
           {title}
-        </Heading>
-      </Box>
-      <Box
-        gridArea='exit'
-        height={'100%'}
-        justify={"center"}
-        align={'center'}
-        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
-      >
-        <Button
-          focusIndicator={false}
-          icon={<CloseIcon color='black'/>}
-          fill={false}
-          style={{width: '48px', borderRadius: '24px'}}
-          secondary
+        </h3>
+      </div>
+
+      {/* Кнопка "Закрыть" */}
+      <div className="flex justify-center items-center border-b border-gray-200">
+        <button
+          className="w-12 h-12 bg-gray-200 rounded-full focus:outline-none"
           onClick={closeEntityPage}
-        />
-      </Box>
-      { children }
-    </Grid>
+        >
+          <CloseIcon color='black' />
+        </button>
+      </div>
+
+      {/* Контент */}
+      <div className="col-span-3 row-start-2 overflow-auto">
+        {children}
+      </div>
+    </div>
   )
 }
 

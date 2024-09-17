@@ -1,4 +1,3 @@
-import {Button, Card, CardBody, CardHeader, Heading} from "grommet";
 import {FieldData} from "../g_shared/types";
 import {PencilIcon} from "../g_shared/icons";
 import {CommonField, LinkedField} from "../g_shared/ui_components"
@@ -9,29 +8,31 @@ const CommonCard = ({blockName, blockFields, openBaseInfoEditor}: {blockName: st
   const [, setLocation] = useLocation();
 
   return (
-    <Card margin='small' pad='medium' gap='medium' overflow='visible' style={{minHeight: 'unset'}} background='white'>
-      <CardHeader>
-        <Heading level={3} margin='small'>{getRuTranslate(blockName)}</Heading>
-        <Button
-          focusIndicator={false}
-          icon={<PencilIcon color='black' />}
-          fill={false}
-          style={{width: '48px', borderRadius: '24px'}}
-          secondary
+    <div className="bg-white p-4 m-2 rounded-md shadow-md overflow-visible" style={{ minHeight: 'unset' }}>
+      {/* Заголовок карточки */}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold m-2">
+          {getRuTranslate(blockName)}
+        </h3>
+        <button
+          className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center focus:outline-none"
           onClick={openBaseInfoEditor}
-        />
-      </CardHeader>
-      <CardBody style={{minHeight: 'unset'}}>
+        >
+          <PencilIcon color='black'/>
+        </button>
+      </div>
+
+      {/* Тело карточки */}
+      <div className="flex flex-col gap-4" style={{ minHeight: 'unset' }}>
         {blockFields.map((field, index) => {
           return field.link ? (
-            <LinkedField key={index} fieldName={field.key} fieldValue={field.value} redirectFunc={() => setLocation(field.linkValue)}/>
+            <LinkedField key={index} fieldName={field.key} fieldValue={field.value} redirectFunc={() => setLocation(field.linkValue)} />
           ) : (
-            <CommonField key={index} fieldName={field.key} fieldValue={field.value}/>
-          )
-          }
-        )}
-      </CardBody>
-    </Card>
+            <CommonField key={index} fieldName={field.key} fieldValue={field.value} />
+          );
+        })}
+      </div>
+    </div>
   )
 }
 

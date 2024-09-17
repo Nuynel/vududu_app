@@ -1,11 +1,9 @@
-import {Box, Button, Card, CardHeader, CheckBox, InfiniteScroll, Text} from "grommet";
 import {formatDateOrRange, getDateDiff} from "../g_shared/methods/helpers";
 import * as React from "react";
 import {EVENT_TYPE} from "../g_shared/types/event";
 import {BugIcon, FemaleIcon, InjectorIcon, MaleIcon, WaterIcon} from "../g_shared/icons";
 import {GENDER} from "../g_shared/types/dog";
-
-import {BorderType} from "grommet/utils";
+import {InfiniteScroll} from '../g_shared/ui_components'
 import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
 
 const colors = {
@@ -77,8 +75,10 @@ const getBorderColor = (dateDiff: number) => {
   return colors.darkBlue
 }
 
-const getBorderSideAndSize = (dateDiff: number): {side: 'all' | 'left', size: 'small' | 'medium'} => {
-  return dateDiff < 0 ? {side: 'all', size: 'small'} : {side: 'left', size: 'medium'}
+const getBorderSideAndSize = (dateDiff: number): {border: string} | {borderLeft: string} => {
+  return dateDiff < 0
+    ? {border: '1px solid'} // small border
+    : {borderLeft: '2px solid'} // medium border on the left
 }
 
 const getIconComponent = (iconType: keyof typeof iconsMapping) => {
@@ -86,10 +86,15 @@ const getIconComponent = (iconType: keyof typeof iconsMapping) => {
   return <IconComponent color={color}/>
 }
 
-const getBorder = (hasColorIndicator: boolean, date: string[]): BorderType => {
-  const dateDiff = getDateDiff(date[0])
+const getBorder = (hasColorIndicator: boolean, date: string[]): React.CSSProperties | undefined => {
+  const dateDiff: number = getDateDiff(date[0])
   const borderSideAndSize = getBorderSideAndSize(dateDiff)
-  return hasColorIndicator ? {...borderSideAndSize, color: getBorderColor(dateDiff), style: 'solid'} : false
+  const borderColor = getBorderColor(dateDiff)
+
+  return hasColorIndicator ? {
+    ...borderSideAndSize,
+    borderColor: borderColor,
+  } : undefined
 }
 
 const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds, isDogChooser, switchIsIdSelected, selectMode}: Props) => {
@@ -108,60 +113,55 @@ const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds
     <InfiniteScroll items={list}>
       {(entity: Entity, index: number) => {
         return isDogChooser ? (
-          <Card
-            background={'white'}
-            focusIndicator={false}
-            pad={isSmall ? 'medium' : 'small'}
-            margin={getMargin(index, list)}
-            flex={false}
+          <div
+            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} ${getMargin(index, list)} rounded-md shadow-md`}
             key={index}
-            border={false}
           >
-            <CardHeader justify='between' align={isSmall ? 'start' : "center"} direction={isSmall ? 'column' : "row"}>
-              <Box direction='row' gap={'medium'}>
-                <Text truncate={!isSmall} margin={{left: 'small'}}>
+            <div className={`flex ${isSmall ? 'flex-col items-center' : 'flex-row justify-between items-center'}`}>
+              {/* Заголовок и информация */}
+              <div className="flex flex-row gap-4">
+                <p className={`truncate ${!isSmall ? 'ml-2' : ''}`}>
                   {entity.title}
                   {entity.hasOwner && ', собака уже закреплена за владельцем'}
-                </Text>
-              </Box>
-              <Button
-                size={isSmall ? 'small' : 'medium'}
-                primary={!entity.hasOwner}
-                alignSelf={"center"}
+                </p>
+              </div>
+              {/* Кнопка */}
+              <button
+                className={`${
+                  isSmall ? 'text-sm mt-3 px-2 py-1' : 'text-md px-3 py-2'
+                } ${entity.hasOwner ? 'bg-red-500' : 'bg-blue-500'} text-white font-semibold rounded-md`}
                 onClick={() => cardClickEventHandler(entity._id)}
-                label={entity.hasOwner ? 'Оспорить владение' : 'Это моя собака'}
-              />
-            </CardHeader>
-          </Card>
+              >
+                {entity.hasOwner ? 'Оспорить владение' : 'Это моя собака'}
+              </button>
+            </div>
+          </div>
           ) : (
-          <Card
-            background={'white'}
-            focusIndicator={false}
-            pad={isSmall ? 'medium' : 'small'}
-            margin={getMargin(index, list)}
-            flex={false}
+          <div
+            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} ${getMargin(index, list)} rounded-md shadow-md cursor-pointer`}
             key={index}
             onClick={() => cardClickEventHandler(entity._id)}
-            border={getBorder(hasColorIndicator, entity.date)}
+            style={getBorder(hasColorIndicator, entity.date)}
           >
-            <CardHeader justify='between'>
-              <Box direction='row' gap={'medium'}>
-                {selectMode && (
-                  <CheckBox
-                    checked={selectedIds.includes(entity._id)}
-                    onChange={() => switchIsIdSelected(entity._id)}
-                  />
-                )}
-                {hasIcons && entity.icon && getIconComponent(entity.icon)}
-                <Text truncate margin={{left: 'small'}}>
-                  {entity.title}
-                </Text>
-              </Box>
-              <Text style={{maxWidth: 'min-content'}}>
+            {/* Заголовок карточки */}
+            <div className={`grid grid-rows-[auto] ${selectMode ? 'grid-cols-[30px_30px_1fr_auto]' : hasIcons ? 'grid-cols-[30px_1fr_auto]' : 'grid-cols-[1fr_auto]'}`}>
+              {selectMode && (
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(entity._id)}
+                  onChange={() => switchIsIdSelected(entity._id)}
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                />
+              )}
+              {hasIcons && entity.icon && getIconComponent(entity.icon)}
+              <div className="ml-2 truncate">
+                {entity.title}
+              </div>
+              <p className="text-sm" style={{ maxWidth: 'min-content' }}>
                 {formatDateOrRange(entity.date)}
-              </Text>
-            </CardHeader>
-          </Card>
+              </p>
+            </div>
+          </div>
         )
       }}
     </InfiniteScroll>

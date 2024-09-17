@@ -26,7 +26,7 @@ const LittersList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
   return (
     <EntityList
       list={getEntityList(littersData)}
-      setActiveId={(id) => setLocation(`/litters/litter/${id}`)}
+      setActiveId={(id) => setLocation(`/app/litters/litter/${id}`)}
       hasColorIndicator={false}
       hasIcons={false}
       selectMode={selectMode}

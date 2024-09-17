@@ -1,4 +1,3 @@
-import {Box, Button, Card, CardHeader, Form, FormField, Heading, CardBody, TextInput, CardFooter} from 'grommet'
 import SignOutButton from "../../d_widgets/SignOutButton";
 import {useState} from "react";
 import * as React from "react";
@@ -55,140 +54,139 @@ const CreateProfile = () => {
 
 
   return (
-    <Box
-      background={'dark-6'}
-      justify={"center"}
-      align={"center"}
-      fill={true}
-    >
-      <Card
-        background={'white'}
-        margin={'large'}
-        pad={"medium"}
-        width={isSmall ? '90%' : "large"}
-      >
-        <CardHeader >
-          <Heading level={3} margin={{top: 'none'}}>
+    <div className="flex justify-center items-center bg-gray-800 w-full h-full">
+      <div className={`bg-white p-6 rounded-lg shadow-lg ${isSmall ? 'w-11/12' : 'w-96'} m-6`}>
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-center">
             {!profileType && 'Шаг 1 из 3'}
             {profileType && !isNameFilled && 'Шаг 2 из 3'}
             {profileType && isNameFilled && 'Шаг 3 из 3'}
-          </Heading>
-        </CardHeader>
-        <CardBody>
+          </h3>
+        </div>
+        <div className="mb-6">
           {!profileType && (
-            <Box gap={"medium"}>
-              <Button
-                primary
+            <div className="flex flex-col gap-4">
+              <button
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
                 onClick={() => setProfileType(PROFILE_TYPES.KENNEL)}
-                label={isSmall ? 'Добавить питомник' : 'Зарегистрироваться как питомник'}
-              />
-              <Button
-                primary
+              >
+                {isSmall ? 'Добавить питомник' : 'Зарегистрироваться как питомник'}
+              </button>
+              <button
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
                 onClick={() => setProfileType(PROFILE_TYPES.BREEDER)}
-                label={isSmall ? 'Добавить заводчика' : 'Зарегистрироваться как заводчик'}
-              />
-            </Box>
+              >
+                {isSmall ? 'Добавить заводчика' : 'Зарегистрироваться как заводчик'}
+              </button>
+            </div>
           )}
 
           {profileType && !isNameFilled && (
-            <Box gap={'medium'}>
-              <Form onSubmit={() => switchIsNameFilled(true)}>
-                <FormField name='name' htmlFor="name-input-id" label={profileType === PROFILE_TYPES.KENNEL ? 'Название вашего питомника' : 'ФИО'}>
-                  <TextInput
+            <div className="flex flex-col gap-4">
+              <form onSubmit={() => switchIsNameFilled(true)} className="space-y-4">
+                <div>
+                  <label htmlFor="name-input-id" className="block text-sm font-medium text-gray-700">
+                    {profileType === PROFILE_TYPES.KENNEL ? 'Название вашего питомника' : 'ФИО'}
+                  </label>
+                  <input
                     id="name-input-id"
                     placeholder={profileType === PROFILE_TYPES.KENNEL ? 'Василёк' : 'Иванов Иван Иванович'}
                     value={name}
                     onChange={event => setName(event.target.value)}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   />
-                </FormField>
-                <Button fill={'horizontal'} primary type="submit" label={profileType === PROFILE_TYPES.KENNEL ? 'Сохранить название питомника' : 'Сохранить имя заводчика'}/>
-              </Form>
-              <Button primary onClick={() => setProfileType(null)} label='Назад'/>
-            </Box>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
+                >
+                  {profileType === PROFILE_TYPES.KENNEL ? 'Сохранить название питомника' : 'Сохранить имя заводчика'}
+                </button>
+              </form>
+              <button
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
+                onClick={() => setProfileType(null)}
+              >
+                Назад
+              </button>
+            </div>
           )}
 
           {profileType && isNameFilled && (
-            <Box gap={"medium"}>
-              <Form onSubmit={submit}>
-                <FormField name='canineFederationName' htmlFor="canine-federation-name-input-id" label="Название кинологической федерации">
-                  <TextInput
+            <div className="flex flex-col gap-4">
+              <form onSubmit={submit} className="space-y-4">
+                <div>
+                  <label htmlFor="canine-federation-name-input-id" className="block text-sm font-medium text-gray-700">
+                    Название кинологической федерации
+                  </label>
+                  <input
                     id="canine-federation-name-input-id"
-                    placeholder='Российская кинологическая федерация'
+                    placeholder="Российская кинологическая федерация"
                     value={canineFederationName}
                     onChange={event => setCanineFederationName(event.target.value)}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   />
-                </FormField>
-                <FormField name='nationalBreedClubName' htmlFor="national-breed-club-name-input-id" label="Название национального клуба породы">
-                  <TextInput
+                </div>
+                <div>
+                  <label htmlFor="national-breed-club-name-input-id" className="block text-sm font-medium text-gray-700">
+                    Название национального клуба породы
+                  </label>
+                  <input
                     id="national-breed-club-name-input-id"
-                    placeholder='НКА Немецкая овчарка'
+                    placeholder="НКА Немецкая овчарка"
                     value={nationalBreedClubName}
                     onChange={event => setNationalBreedClubName(event.target.value)}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   />
-                </FormField>
-                <FormField name='canineClubName' htmlFor="canine-club-name-input-id" label="Название кинологического клуба">
-                  <TextInput
+                </div>
+                <div>
+                  <label htmlFor="canine-club-name-input-id" className="block text-sm font-medium text-gray-700">
+                    Название кинологического клуба
+                  </label>
+                  <input
                     id="canine-club-name-input-id"
                     placeholder='Клуб РОО КЦ "Март"'
                     value={canineClubName}
                     onChange={event => setCanineClubName(event.target.value)}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   />
-                </FormField>
+                </div>
                 {profileType === PROFILE_TYPES.BREEDER && (
-                  <FormField name='kennelName' htmlFor="kennel-name-input-id" label="Название питомника">
-                    <TextInput
+                  <div>
+                    <label htmlFor="kennel-name-input-id" className="block text-sm font-medium text-gray-700">
+                      Название питомника
+                    </label>
+                    <input
                       id="kennel-name-input-id"
-                      placeholder='Василёк'
+                      placeholder="Василёк"
                       value={kennelName}
                       onChange={event => setKennelName(event.target.value)}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
-                  </FormField>
+                  </div>
                 )}
-                <Button fill={"horizontal"} type="submit" primary label="Сохранить связанные организации" />
-              </Form>
-              <Button primary onClick={() => switchIsNameFilled(false)} label='Назад'/>
-            </Box>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
+                >
+                  Сохранить связанные организации
+                </button>
+              </form>
+              <button
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md"
+                onClick={() => switchIsNameFilled(false)}
+              >
+                Назад
+              </button>
+            </div>
           )}
-        </CardBody>
+        </div>
 
-        <CardFooter margin={{top: 'medium'}} alignSelf={"end"} fill={'horizontal'}>
-          <SignOutButton fill={true}/>
-        </CardFooter>
-
-
-        {/*<CardHeader>*/}
-        {/*  <Heading level={2} margin={"medium"}>Вход</Heading>*/}
-        {/*</CardHeader>*/}
-        {/*<Form*/}
-        {/*  onSubmit={handleSubmit}*/}
-        {/*  style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}*/}
-        {/*>*/}
-        {/*  <FormField name='E-mail' htmlFor="email-input-id" label="E-mail">*/}
-        {/*    <TextInput*/}
-        {/*      id="email-input-id"*/}
-        {/*      placeholder='email@gmail.com'*/}
-        {/*      value={email}*/}
-        {/*      onChange={event => setEmail(event.target.value)}*/}
-        {/*    />*/}
-        {/*  </FormField>*/}
-        {/*  <FormField name='Password' htmlFor="password-input-id" label="Пароль">*/}
-        {/*    <TextInput*/}
-        {/*      id="password-input-id"*/}
-        {/*      type='password'*/}
-        {/*      placeholder='********'*/}
-        {/*      value={password}*/}
-        {/*      onChange={event => setPassword(event.target.value)}*/}
-        {/*    />*/}
-        {/*  </FormField>*/}
-        {/*  <Button margin='small' type="submit" primary label="Вход" />*/}
-        {/*</Form>*/}
-        {/*<Link to="/sign-up" style={{display: 'flex', justifyContent: 'center'}}>*/}
-        {/*  <Button secondary margin='xsmall'>*/}
-        {/*    Регистрация*/}
-        {/*  </Button>*/}
-        {/*</Link>*/}
-      </Card>
-    </Box>
+        <div className="flex justify-end mt-4 w-full">
+          <SignOutButton fill />
+        </div>
+      </div>
+    </div>
   )
 }
 

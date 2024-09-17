@@ -1,48 +1,43 @@
 import * as React from 'react'
-import {Card, Button, CardBody, CardFooter, Layer} from "grommet";
 
 type Props = {text: string, submitButtonText?: string, closePopup: () => void; submitAction?: () => void}
 
 const SubmitActionPopup = ({closePopup, submitAction, text, submitButtonText}: Props) => {
   return (
-    <Layer
-      full={true}
-      modal={true}
-      plain={false}
-      background={{
-        color: 'black',
-        opacity: 'medium'
-      }}
-      style={{justifyContent: 'center', alignItems: 'center'}}
-      onEsc={closePopup}
-      onClickOutside={closePopup}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={closePopup}
+      onKeyDown={(e) => e.key === 'Escape' && closePopup()}
+      tabIndex={-1}
     >
-      <Card pad={"medium"} background={'white'} margin={{horizontal: 'medium'}}>
-        <CardBody margin={{bottom: 'small'}}>
+      <div
+        className="bg-white p-6 rounded-md shadow-lg mx-4"
+        onClick={(e) => e.stopPropagation()} // Остановить закрытие при клике внутри
+      >
+        {/* Текстовое содержимое */}
+        <div className="mb-4">
           {text}
-        </CardBody>
-        <CardFooter justify={"around"}>
-          <Button
-            focusIndicator={false}
-            label='Закрыть'
-            fill={false}
-            style={{borderRadius: '24px'}}
-            primary
+        </div>
+
+        {/* Кнопки */}
+        <div className="flex justify-around">
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded-full"
             onClick={closePopup}
-          />
+          >
+            Закрыть
+          </button>
           {submitButtonText && (
-            <Button
-              focusIndicator={false}
-              label={submitButtonText}
-              fill={false}
-              style={{borderRadius: '24px'}}
-              primary
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded-full"
               onClick={submitAction}
-            />
+            >
+              {submitButtonText}
+            </button>
           )}
-        </CardFooter>
-      </Card>
-    </Layer>
+        </div>
+      </div>
+    </div>
   )
 }
 

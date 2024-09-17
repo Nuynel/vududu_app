@@ -1,9 +1,3 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Heading,
-} from "grommet";
 import {CloseIcon} from "../g_shared/icons";
 import * as React from "react";
 import {ReactNode} from "react";
@@ -17,47 +11,29 @@ type Props = {
 const FormPageWrapper = ({children, title}: Props) => {
 
   return (
-    <Grid
-      rows={['60px', 'auto']}
-      columns={['60px', 'auto', '60px']}
-      areas={[
-        { name: 'header', start: [1, 0], end: [1, 0] },
-        { name: 'exit', start: [2, 0], end: [2, 0] },
-        { name: 'content', start: [0, 1], end: [2, 1] },
-      ]}
-      height={'100%'}
-    >
-      <Box gridArea='exit' height={'100%'} justify={"center"} align={'center'}>
-        <Button
-          focusIndicator={false}
-          icon={<CloseIcon color='black'/>}
-          fill={false}
-          style={{width: '48px', borderRadius: '24px'}}
-          secondary
+    <div className="grid grid-rows-[60px_auto] grid-cols-[60px_auto_60px] h-full">
+      {/* Кнопка закрытия */}
+      <div className="col-start-1 col-end-2 row-start-1 row-end-2 flex justify-center items-center h-full">
+        <button
+          className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center focus:outline-none"
           onClick={() => window.history.back()}
-        />
-      </Box>
-      <Box
-        gridArea='header'
-        direction='row'
-        alignSelf='center'
-        justify='around'
-        background={'white'}
-        border={{color: '#F1F5F8', side: 'bottom', size: 'small', style: 'solid'}}
-      >
-        <Heading level={3} margin={{vertical: "small"}}>
+        >
+          <CloseIcon color='black' />
+        </button>
+      </div>
+
+      {/* Заголовок */}
+      <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex justify-around items-center bg-white border-b border-gray-200">
+        <h3 className="text-xl font-bold my-2">
           {title}
-        </Heading>
-      </Box>
-      <Box
-        gridArea='content'
-        overflow='scroll'
-        gap={"small"}
-        background={'white'}
-      >
-        { children }
-      </Box>
-    </Grid>
+        </h3>
+      </div>
+
+      {/* Контент */}
+      <div className="col-start-1 col-end-4 row-start-2 row-end-3 overflow-scroll gap-2 bg-white">
+        {children}
+      </div>
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 import {Link, useRoute} from "wouter";
-import {CalendarIcon, DocumentIcon, PawIcon, GraphIcon, PersonIcon, ContactsIcon, IconProps} from "../g_shared/icons";
+import {CalendarIcon, DocumentIcon, PawIcon, GraphIcon, PeopleIcon, ContactsIcon, IconProps} from "../g_shared/icons";
 import * as React from "react";
 import {Paths} from "../g_shared/constants/routes";
 
@@ -19,7 +19,7 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
     routeComparison: boolean
   }[] = [
     {
-      icon: PersonIcon,
+      icon: PeopleIcon,
       to: Paths.profile,
       title: { ru: 'Профиль', en: 'Profile'},
       routeComparison: matchProfileRoutes
@@ -65,10 +65,10 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
   if (isDesktop) {
     return (
       <nav className="grid-area-nav py-4 px-2 flex flex-col justify-start">
-        {DesktopMenuConfig.map(config => {
+        {DesktopMenuConfig.map((config, index) => {
           const DynamicIcon = config.icon
           return (
-            <Link to={config.to}>
+            <Link key={index} to={config.to}>
               <button className="flex mb-3 px-5 w-full h-9 items-center p-2 text-left border-2 border-yellow-500 rounded-3xl">
                 <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
                 <span className="ml-2">{config.title.ru}</span>
@@ -86,8 +86,8 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
     routeComparison: boolean
   }[] = [
     {
-      icon: PersonIcon,
-      to: Paths.profile,
+      icon: PeopleIcon,
+      to: Paths.contacts,
       routeComparison: matchProfileRoutes || matchContactsRoutes
     },
     {
@@ -114,10 +114,10 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
 
   return (
     <nav className="grid-area-nav h-16 flex items-center justify-around border-t border-gray-200">
-      {MobileMenuConfig.map(config => {
+      {MobileMenuConfig.map((config, index) => {
         const DynamicIcon = config.icon
         return (
-          <Link to={config.to}>
+          <Link key={index} to={config.to}>
             <button className="p-2">
               <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
             </button>

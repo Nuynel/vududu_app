@@ -1,5 +1,4 @@
 import {GENDER} from "../types/dog";
-import {CheckBox, RadioButtonGroup} from "grommet";
 import {EVENT_TYPE} from "../types/event";
 
 export const baseInfoFieldsConfig = {
@@ -18,21 +17,21 @@ export const baseInfoFieldsConfig = {
   dateOfBirth: {
     id: 'date-of-birth-input-id',
     label: 'Дата рождения',
-    placeholder: '13/10/2021',
-    format: 'dd/mm/yyyy',
-    handler: ({value}, key, method) => method(key, value),
+    placeholder: new Date(),
+    format: 'yyyy-mm-dd',
+    handler: (event, key, method) => method(key, event.target.value),
   },
   dateOfDeath: {
     id: 'date-of-death-input-id',
     label: 'Дата гибели',
-    format: 'dd/mm/yyyy',
-    handler: ({value}, key, method) => method(key, value),
+    format: 'yyyy-mm-dd',
+    handler: (event, key, method) => method(key, event.target.value),
   },
   date: {
     id: 'date-input-id',
     label: 'Дата',
     placeholder: new Date(),
-    handler: ({value}, key, method) => method(key, value),
+    handler: (event, key, method) => method(key, event.target.value),
   },
   breedId: {
     id: 'breed-id-input-id',
@@ -143,21 +142,21 @@ export const baseInfoFieldsConfig = {
     placeholder: '12',
     handler: (value, key, method) => method(key, value.target.value),
   },
-  fatherId: {
+  fatherData: {
     id: 'father-id-input-id',
     label: 'Отец',
     placeholder: 'Полная кличка кобеля',
     labelKey: 'fullName',
-    handler: (event, key, method) => method(key, event.option._id),
+    handler: (event, key, method) => method(key, {id: event.option._id, fullName: event.option.fullName}),
     searchHandler: (searchString, method) => method(searchString, GENDER.MALE),
     valueGetter: (dogsList, fatherId) => dogsList.find(stud => stud._id === fatherId),
   },
-  motherId: {
+  motherData: {
     id: 'mother-id-input-id',
     label: 'Мать',
     placeholder: 'Полная кличка суки',
     labelKey: 'fullName',
-    handler: (event, key, method) => method(key, event.option._id),
+    handler: (event, key, method) => method(key, {id: event.option._id, fullName: event.option.fullName}),
     searchHandler: (searchString, method) => method(searchString, GENDER.FEMALE),
     valueGetter: (dogsList, motherId) => dogsList.find(stud => stud._id === motherId),
   },

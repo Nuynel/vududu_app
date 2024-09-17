@@ -1,4 +1,3 @@
-import {Box, Grid, Text} from "grommet";
 import * as React from "react";
 
 type Props = {
@@ -30,43 +29,27 @@ const colors = {
 
 const PedigreeNode = ({nodeId, fullName, position, setActiveDogId}: Props) => {
   return (
-    <Box
+    <div
       id={nodeId}
-      gridArea={position}
-      style={{minWidth: '250px'}}
-      background={'white'}
-      round={roundSize[position.length]}
-      border={{color: '#777777', side: 'all', size: 'xsmall', style: 'solid'}}
-      margin={position.length <= 3 ? 'small' : 'xxsmall'}
+      className={`bg-white border border-gray-400 rounded-${roundSize[position.length]} 
+    ${position.length <= 3 ? 'm-4' : 'm-1'} cursor-pointer`}
+      style={{ minWidth: '250px' }}
       onClick={() => setActiveDogId(nodeId)}
     >
-      <Grid
-        pad={{horizontal: "small"}}
-        align={"center"}
-        fill={"vertical"}
-        gap={"small"}
-        columns={[imageSizes[position.length], 'auto']}
-        rows={['auto']}
-        areas={[
-          { name: 'image', start: [0, 0], end: [0, 0] },
-          { name: 'text', start: [position.length < 3 ? 1 : 0, 0], end: [1, 0] },
-        ]}
-      >
+      <div className="grid grid-cols-[auto_1fr] gap-2 items-center p-2 h-full">
         {position.length < 3 && (
-          <Box
-            height={imageSizes[position.length]}
-            width={imageSizes[position.length]}
-            background={'#777777'}
-            gridArea={'image'}
+          <div
+            className="bg-gray-400"
+            style={{ width: imageSizes[position.length], height: imageSizes[position.length] }}
           />
         )}
-        <Box gridArea={'text'}>
-          <Text size={'xsmall'}>
+        <div>
+          <p className="text-xs">
             {fullName}
-          </Text>
-        </Box>
-      </Grid>
-    </Box>
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }
 

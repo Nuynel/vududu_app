@@ -36,7 +36,7 @@ const DogsList = ({selectMode, selectedIds, switchIsIdSelected}: Props) => {
   return (
     <EntityList
       list={getEntityList(dogTypeFilter === 'ownDogs' ? dogsData : otherDogsData)}
-      setActiveId={(id) => setLocation(`/dogs/dog/${id}`)}
+      setActiveId={(id) => setLocation(`/app/dogs/dog/${id}`)}
       hasColorIndicator={false}
       hasIcons
       selectMode={selectMode}

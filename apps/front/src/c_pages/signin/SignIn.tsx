@@ -1,11 +1,11 @@
 import * as React from "react";
-import {Box, Form, FormField, TextInput, Button, Card, CardHeader, Heading, Spinner} from 'grommet';
 import {Link, useSearch} from "wouter"
 import useSignIn from "./useSignIn";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import {useEffect} from "react";
 import {toast} from "react-toastify";
 import {Paths} from "../../g_shared/constants/routes";
+import {CustomSpinner} from "../../g_shared/ui_components"
 
 const SignInScreen = () => {
   const {
@@ -27,72 +27,62 @@ const SignInScreen = () => {
   }, [search])
 
   return (
-    <Box
-      background={'dark-6'}
-      justify={"center"}
-      align={"center"}
-      fill={true}
-    >
-      <Card
-        background={'white'}
-        margin={'large'}
-        pad={"medium"}
-        width={isSmall ? '90%' : "large"}
-      >
-        <CardHeader>
-          <Heading level={2} margin={"medium"}>Вход</Heading>
-        </CardHeader>
-        <Form
-          onSubmit={handleSubmit}
-          style={{display: "flex", justifyContent: 'center', flexDirection: 'column'}}
-        >
-          <FormField
-            name='E-mail'
-            htmlFor="email-input-id"
-            label="E-mail"
-            validate={() => {
-              if (!email) return 'Введите адрес электронной почты'
-            }}
-          >
-            <TextInput
+    <div className="flex justify-center items-center bg-gray-800 w-full h-full">
+      <div className={`bg-white p-6 rounded-lg shadow-lg ${isSmall ? 'w-11/12' : 'w-96'} m-6`}>
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-center">Вход</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col justify-center space-y-4">
+          <div>
+            <label htmlFor="email-input-id" className="block text-sm font-medium text-gray-700">
+              E-mail
+            </label>
+            <input
               id="email-input-id"
-              placeholder='email@gmail.com'
+              placeholder="email@gmail.com"
               value={email}
               onChange={event => setEmail(event.target.value)}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
             />
-          </FormField>
-          <FormField
-            name='Password'
-            htmlFor="password-input-id"
-            label="Пароль"
-          >
-            <TextInput
+            {!email && <p className="mt-1 text-sm text-red-600">Введите адрес электронной почты</p>}
+          </div>
+          <div>
+            <label htmlFor="password-input-id" className="block text-sm font-medium text-gray-700">
+              Пароль
+            </label>
+            <input
               id="password-input-id"
-              type='password'
-              placeholder='********'
+              type="password"
+              placeholder="********"
               value={password}
               onChange={event => setPassword(event.target.value)}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
             />
-          </FormField>
-          <Button margin='small' type="submit" primary>
-            <Box direction={"row"} align={"center"} justify={"center"} gap={"medium"} height={"36px"}>
-              Вход
-              {isLoading && <Spinner color={'white'}/>}
-            </Box>
-          </Button>
-        </Form>
-        <Link to={Paths.sign_up} style={{display: 'flex', justifyContent: 'center'}}>
-          <Button secondary margin='xsmall'>
-            Регистрация
-          </Button>
-        </Link>
-        <Link to={Paths.passwordRecovery} style={{display: 'flex', justifyContent: 'center'}}>
-          <Button secondary margin='xsmall'>
-            Забыли пароль?
-          </Button>
-        </Link>
-      </Card>
-    </Box>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-full flex justify-center items-center"
+          >
+            Вход
+            {isLoading && <CustomSpinner />}
+          </button>
+        </form>
+        <div className="flex justify-center mt-4">
+          <Link to={Paths.sign_up}>
+            <button className="bg-transparent border border-gray-300 text-gray-700 py-2 px-4 rounded-md">
+              Регистрация
+            </button>
+          </Link>
+        </div>
+        <div className="flex justify-center mt-2">
+          <Link to={Paths.passwordRecovery}>
+            <button className="bg-transparent border border-gray-300 text-gray-700 py-2 px-4 rounded-md">
+              Забыли пароль?
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }
 

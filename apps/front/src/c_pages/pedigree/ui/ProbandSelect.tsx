@@ -1,4 +1,3 @@
-import {Box, FormField, Select, Text} from "grommet";
 import * as React from "react";
 import useResponsiveGrid from "../../../f_entities/hooks/useResponsiveGrid";
 import {IncomingDogData} from "../../../g_shared/types";
@@ -25,34 +24,29 @@ const ProbandSelect = ({probandId, changeProbandId}: Props) => {
   }, [dogsData])
 
   return (
-    <Box
-      gridArea={'mainFilter'}
-      alignSelf='center'
-      justify={'around'}
-      background={'white'}
-      pad={'small'}
-      direction={"row"}
-    >
-      <Box>
-        <Text size={'small'} margin={{right: 'large', top: 'medium', bottom: 'small'}}>
+    <div className="flex justify-around items-center bg-white p-2 flex-row">
+      <div>
+        <p className="text-sm mr-8 mt-2 mb-1">
           Пробанд
-        </Text>
-      </Box>
-      <FormField htmlFor='filter-input-id' margin={{top: 'small'}}>
-        <Select
-          id='filter-input-id'
-          name='Фильтр'
-          value={dogsList.find((dogData) => dogData._id === probandId)}
-          options={dogsList}
-          labelKey='fullName'
-          placeholder='Фильтр'
-          size={"small"}
-          // border={{color: '#777777', side: 'all', size: 'xsmall', style: 'solid'}}
-          onSearch={(searchString) => handleSearch(searchString)}
-          onChange={(event) => changeProbandId(event.value._id)}
-        />
-      </FormField>
-    </Box>
+        </p>
+      </div>
+      <div className="mt-2">
+        <select
+          id="filter-input-id"
+          name="Фильтр"
+          value={probandId}
+          onChange={(e) => changeProbandId(e.target.value)}
+          className="block w-full p-2 border border-gray-400 rounded-md text-sm"
+        >
+          <option value="" disabled>Фильтр</option>
+          {dogsList.map((dogData) => (
+            <option key={dogData._id} value={dogData._id}>
+              {dogData.fullName}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import {Box, Button, Grid, Text} from "grommet";
 import {getRuTranslate} from "../../../g_shared/constants/translates";
 import * as React from "react";
 import {FieldData} from "../../../g_shared/types";
@@ -26,58 +25,49 @@ const DogCard = ({dogId}: Props) => {
   }
 
   return (
-    <Box
-      gridArea={'secondaryFilter'}
-    >
-      <Box
-        direction={"row"}
-        pad={"small"}
-      >
+    <div className="grid-area-secondaryFilter">
+      <div className="flex flex-row p-2">
         {!isSmall && dogId && (
-          <Box
-            height={isSmall ? 'xsmall' :"small"}
-            width={isSmall ? 'xsmall' : "small"}
-            background={'#777777'}
-            margin={{right: 'small'}}
+          <div
+            className={`bg-gray-500 ${isSmall ? 'h-8 w-8' : 'h-12 w-12'} mr-2`}
           />
         )}
         {dogId && (
-          <Box justify={isSmall ? 'start' : "around"}>
-            {getCardsConfig().map((field, index) => {
-                return (
-                  <Grid
-                    columns={isSmall ? ['1fr', '2fr'] : ['1fr', '1fr']}
-                    key={index}
-                    rows={['auto']}
-                    areas={[
-                      { name: 'title', start: [0, 0], end: [0, 0] },
-                      { name: 'value', start: [1, 0], end: [1, 0] },
-                    ]}
-                  >
-                    <Box gridArea={'title'} align={isSmall ? 'start' : "end"} pad={{right: 'small'}}>
-                      <Text size='small' margin={{right:'xxsmall'}}>{getRuTranslate(field.key)}:</Text>
-                    </Box>
-                    <Box  gridArea={'value'}>
-                      <Text truncate='tip' size='small' weight='bold'>{field.value}</Text>
-                    </Box>
-                  </Grid>
-                )
-              }
-            )}
-          </Box>
+          <div className={`flex flex-col ${isSmall ? 'justify-start' : 'justify-around'}`}>
+            {getCardsConfig().map((field, index) => (
+              <div
+                key={index}
+                className={`grid ${isSmall ? 'grid-cols-[1fr_2fr]' : 'grid-cols-[1fr_1fr]'} gap-2`}
+              >
+                <div className="flex items-center justify-end pr-2">
+                  <p className="text-sm mr-1">{getRuTranslate(field.key)}:</p>
+                </div>
+                <div>
+                  <p className="text-sm font-bold truncate">{field.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
-      </Box>
+      </div>
+
       {dogId && (
-        <Box
-          direction={"row"}
-          align={"center"}
-          justify={"around"}
-        >
-          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/app/dogs/dog/${dogId}`)} label='Карточка собаки'/>
-          <Button size={isSmall ? 'small' : 'medium'} primary onClick={() => setLocation(`/app/litters/litter/${getDogById(dogId).litterData?.id}`)} label='Карточка помета'/>
-        </Box>
+        <div className="flex flex-row items-center justify-around">
+          <button
+            className={`py-2 px-4 ${isSmall ? 'text-sm' : 'text-base'} bg-blue-500 text-white rounded-md`}
+            onClick={() => setLocation(`/app/dogs/dog/${dogId}`)}
+          >
+            Карточка собаки
+          </button>
+          <button
+            className={`py-2 px-4 ${isSmall ? 'text-sm' : 'text-base'} bg-blue-500 text-white rounded-md`}
+            onClick={() => setLocation(`/app/litters/litter/${getDogById(dogId).litterData?.id}`)}
+          >
+            Карточка помета
+          </button>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
 

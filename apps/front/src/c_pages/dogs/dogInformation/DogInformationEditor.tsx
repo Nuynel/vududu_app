@@ -52,7 +52,7 @@ const DogInformationEditor = () => {
     } else {
       changeDog(null);
     }
-  }, [params])
+  }, [params, dogsData])
 
   useEffect(() => {
     if (dog) {

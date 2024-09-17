@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { Grommet } from 'grommet';
 import Router from "./router/Router";
 import useAuth from "../f_entities/hooks/useAuth";
 import useGetInitialData from "../f_entities/hooks/useGetInitialData";
-import {theme} from "../g_shared/constants/theme";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useEffect} from "react";
@@ -36,8 +34,8 @@ const App = () => {
   }, [])
 
   return (
-    <Grommet theme={theme} style={{minHeight: window.innerHeight, height: window.innerHeight, maxHeight: window.innerHeight}}>
-      <Router/>
+    <div className="min-h-screen h-screen max-h-screen">
+    <Router/>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -45,7 +43,7 @@ const App = () => {
         newestOnTop
         closeOnClick
       ></ToastContainer>
-    </Grommet>
+    </div>
   )
 }
 

@@ -162,5 +162,41 @@
   "signIn": {
     "ru": "Войти",
     "en": "Sign in"
+  },
+  "profile": {
+    "ru": "Профиль",
+    "en": "Profile"
+  },
+  "contacts": {
+    "ru": "Контакты",
+    "en": "Contacts"
+  },
+  "soon": {
+    "ru": "Скоро!",
+    "en": "Soon!"
+  },
+  "population": {
+    "ru": "Поголовье",
+    "en": "Population"
+  },
+  "dogs": {
+    "ru": "Собаки",
+    "en": "Dogs"
+  },
+  "empty": {
+    "ru": "Пусто",
+    "en": "Empty"
+  },
+  "calendar": {
+    "ru": "Календарь",
+    "en": "Calendar"
+  },
+  "events": {
+    "ru": "Планировщик",
+    "en": "Events"
+  },
+  "history": {
+    "ru": "История",
+    "en": "History"
   }
 }

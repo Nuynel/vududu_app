@@ -66,12 +66,11 @@ const LitterInformationCreator = () => {
   }
 
   const createLitterData = (): OutgoingLitterData => {
-    const fatherFullName = maleDogsList.find((dog) => dog._id === newLitterData.fatherData.id).fullName
-    const motherFullName = femaleDogsList.find((dog) => dog._id === newLitterData.motherData.id).fullName
-
     return {
       ...newLitterData,
-      litterTitle: `${fatherFullName}/${motherFullName}`,
+      fatherId: newLitterData.fatherData.id,
+      motherId: newLitterData.motherData.id,
+      litterTitle: `${newLitterData.fatherData.fullName}/${newLitterData.motherData.fullName}`,
     }
   }
 

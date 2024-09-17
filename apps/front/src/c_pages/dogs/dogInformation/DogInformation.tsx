@@ -36,7 +36,7 @@ const DogInformation = () => {
   if (!dog) return null;
 
   const openDogEditor = () => {
-    setLocation(`/dogs/dog/${params.id}/editor`);
+    setLocation(`/app/dogs/dog/${params.id}/editor`);
   }
 
   const closeDogPage = () => {

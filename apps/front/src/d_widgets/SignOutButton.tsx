@@ -1,4 +1,3 @@
-import {Button} from "grommet";
 import * as React from "react";
 import {signOut} from "../g_shared/methods/api";
 import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
@@ -13,7 +12,16 @@ const SignOutButton = ({fill}: { fill: boolean }) => {
     // sessionStorage.removeItem('isSessionInitializationFinished')
   }
 
-  return <Button onClick={handleSignOut} primary label='Выйти' fill={fill ? 'horizontal' : false}/>
+  return (
+    <button
+      onClick={handleSignOut}
+      className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded ${
+        fill ? 'w-full' : ''
+      }`}
+    >
+      Выйти
+    </button>
+  )
 }
 
 export default SignOutButton;

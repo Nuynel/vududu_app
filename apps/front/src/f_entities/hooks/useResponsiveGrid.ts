@@ -1,6 +1,4 @@
-import {SCREEN_SIZES} from "../../g_shared/constants/theme";
-import * as React from "react";
-import {ResponsiveContext} from "grommet";
+import { useState, useEffect } from 'react';
 
 const GRID_CONFIG = {
   TWO_COMPONENT: {
@@ -38,25 +36,38 @@ const GRID_CONFIG = {
   },
 }
 
+const SCREEN_SIZES = {
+  SMALL: 768, // Можно заменить на ваше значение для малого экрана
+};
+
 const useResponsiveGrid = (hasFilter = false) => {
-  const size = React.useContext(ResponsiveContext)
-  const isSmall = size === SCREEN_SIZES.SMALL
+  const [isSmall, setIsSmall] = useState(window.innerWidth <= SCREEN_SIZES.SMALL);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmall(window.innerWidth <= SCREEN_SIZES.SMALL);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getGridConfig = () => {
     if (isSmall) {
-      return hasFilter ? GRID_CONFIG.THREE_COMPONENT_SMALL : GRID_CONFIG.TWO_COMPONENT_SMALL
+      return hasFilter ? GRID_CONFIG.THREE_COMPONENT_SMALL : GRID_CONFIG.TWO_COMPONENT_SMALL;
     }
-    return hasFilter ? GRID_CONFIG.THREE_COMPONENT : GRID_CONFIG.TWO_COMPONENT
-  }
+    return hasFilter ? GRID_CONFIG.THREE_COMPONENT : GRID_CONFIG.TWO_COMPONENT;
+  };
 
-  const { columns, rows, areas } = getGridConfig()
+  const { columns, rows, areas } = getGridConfig();
 
   return {
     isSmall,
     columns,
     rows,
     areas
-  }
-}
+  };
+};
+
 
 export default useResponsiveGrid
