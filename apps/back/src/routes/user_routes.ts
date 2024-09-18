@@ -208,7 +208,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       console.log(getTimestamp(), 'REQUEST TO /POST/SIGN-IN, email >>> ', email)
       const user: WithId<User> | null = await findUserByEmail(client, email);
       if (!email || !password) throw new CustomError(ERROR_NAME.WRONG_CREDENTIALS, {file: 'user_routes', line: 132})
-      if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL, {file: 'user_routes', line: 133})
+      if (!user) throw new CustomError(ERROR_NAME.USER_NOT_FOUND, {file: 'user_routes', line: 133})
       if (!user.isActivated) throw new CustomError(ERROR_NAME.INACTIVE_PROFILE, {file: 'user_routes', line: 134})
       const correctPassword = await isPasswordCorrect(user, password)
       if (!correctPassword) throw new CustomError(ERROR_NAME.WRONG_PASSWORD, {file: 'user_routes', line: 136})
