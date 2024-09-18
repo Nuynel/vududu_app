@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useEffect} from "react";
 import {EB_EVENTS_NAMES} from "../g_shared/constants/eventBusEventsNames";
-
+import {TranslationProvider} from "../f_entities/contexts/i18n"
 // todo реализовать редактирование профиля?
 //  А что там редактировать-то на данный момент? Разве что email и пароль, но это не горит совершенно
 
@@ -34,16 +34,18 @@ const App = () => {
   }, [])
 
   return (
-    <div className="min-h-screen h-screen max-h-screen">
-    <Router/>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-      ></ToastContainer>
-    </div>
+    <TranslationProvider>
+      <div className="min-h-screen h-screen max-h-screen">
+      <Router/>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+        ></ToastContainer>
+      </div>
+    </TranslationProvider>
   )
 }
 
