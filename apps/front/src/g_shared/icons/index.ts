@@ -28,6 +28,8 @@ import ExitIcon from './Exit';
 export type IconProps = {
   // size: string,
   color: string | 'white' | 'black'
+    | '#6B7280'
+
     | '#e4b33a'
     | '#34536F'
     | '#b3b3b3'
