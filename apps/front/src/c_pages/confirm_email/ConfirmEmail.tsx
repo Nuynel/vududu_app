@@ -1,6 +1,7 @@
 import * as React from "react";
 import {Link} from "wouter";
 import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {Paths} from "../../g_shared/constants/routes";
 
 const ConfirmEmailScreen = () => {
   const {isSmall} = useResponsiveGrid()
@@ -18,7 +19,7 @@ const ConfirmEmailScreen = () => {
           </p>
         </div>
         <div className="flex justify-center">
-          <Link to="/sign-in">
+          <Link to={Paths.sign_in}>
             <button className="bg-transparent border border-gray-300 text-gray-700 py-2 px-4 rounded-md">
               На главную
             </button>
