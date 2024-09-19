@@ -1,5 +1,6 @@
 import {User} from "../../types";
 import {checkResponse, URL} from './index';
+import {LANGUAGES} from "../../../f_entities/contexts/i18n";
 
 export async function signIn(data: User) {
   return await fetch(`${URL}/api/sign-in`, {
@@ -29,7 +30,7 @@ export async function signOut() {
   }
 }
 
-export async function signUp(data: User) {
+export async function signUp(data: User & {language: LANGUAGES}) {
   return await fetch(`${URL}/api/sign-up`, {
     method: 'POST',
     headers: {
@@ -58,7 +59,7 @@ export async function getUser() {
   }
 }
 
-export async function recoveryPassword(data: {email: string}) {
+export async function recoveryPassword(data: {email: string, language: LANGUAGES}) {
   return await fetch(`${URL}/api/password-recovery/init`, {
     method: 'POST',
     headers: {

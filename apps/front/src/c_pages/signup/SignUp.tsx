@@ -14,13 +14,14 @@ const SignUpScreen = () => {
   const [, setLocation] = useLocation();
   const { isSmall } = useResponsiveGrid();
   const [isLoading, setIsLoading] = useState<null | Boolean>(null)
-  const {translate} = useTranslation();
+  const {translate, language} = useTranslation();
 
   const onSubmit = ({email, password}: {email: string, password: string}) => {
     setIsLoading(true)
     signUp({
       email: email.toLowerCase(),
       password,
+      language
     }).then(() => {
       setIsLoading(false)
       setLocation(Paths.confirmEmail);

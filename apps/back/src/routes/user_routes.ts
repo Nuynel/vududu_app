@@ -37,6 +37,7 @@ import {
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 import {JsonWebTokenError} from "jsonwebtoken";
+import Wording from "../constants/Wording";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
 
@@ -64,7 +65,6 @@ const transporter = createTransport({
     pass: process.env.SMTP_PASSWORD || 'password'
   }
 });
-
 
 const pickUserData = (user: User): UserData => {
   const { profileIds, email } = user;
@@ -117,9 +117,9 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
 
   // todo рассмотреть вариант, когда сразу после регистрации пользователь попадает в приложение, и оттуда надо подтвердить почту
 
-  app.post('/api/sign-up', async (req, res) => {
+  app.post<{}, {}, {email: string, password: string, language: 'ru' | 'en'}, {}>('/api/sign-up', async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, language } = req.body;
       console.log(getTimestamp(), 'REQUEST TO /POST/SIGN-UP, email >>> ', email)
       if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 103})
       const user = await findUserByEmail(client, email);
@@ -129,40 +129,45 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const mailOptions = {
         from: 'vududu_support@vududu.ru',
         to: email,
-        subject: 'Подтверждение регистрации',
-        text: 'Пожалуйста, подтвердите вашу почту, перейдя по ссылке.',
-        html: '<p>Пожалуйста, подтвердите вашу почту, <a href="'+`${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}`+'">перейдя по этой ссылке</a>.</p>'
+        subject: Wording.registrationConfirmationSubject[language],
+        text: Wording.registrationConfirmationText[language],
+        html: `<p>${Wording.confirmEmailPrompt[language]} <a href="${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}">${Wording.confirmEmailLink[language]}.</a></p>`
       };
 
       // Отправка письма
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) return res.status(500).send('Mailing error: ' + error.message);
-        res.status(200).send({message: 'Письмо для подтверждения отправлено на адрес: ' + email});
+        res.status(200).send({message: Wording.confirmationEmailSent[language] + email});
       });
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)
     }
   });
 
-  app.post('/api/password-recovery/init', async (req, res) => {
+  app.post<{}, {}, {email: string, language: 'ru' | 'en'}, {}>('/api/password-recovery/init', async (req, res) => {
     try {
-      const { email } = req.body;
+      const { email, language } = req.body;
       console.log(getTimestamp(), 'REQUEST TO /POST/PASSWORD-RECOVERY/INIT, email >>> ', email)
       if (!email) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 125})
       const user = await findUserByEmail(client, email);
       if (!user) throw new CustomError(ERROR_NAME.WRONG_EMAIL, {file: 'user_routes', line: 127})
+      try {
+        if (user.passwordRecoveryToken && checkRecoveryToken(user.passwordRecoveryToken)) throw new CustomError(ERROR_NAME.VALID_TOKEN_EXIST, {file: 'user_routes', line: 174})
+      } catch (e) {
+        if (e instanceof Error && e.name !== 'TokenExpiredError') errorHandler(res, e)
+      }
       const recoveryToken = generateRecoveryToken(user._id.toHexString())
       await assignValueToField(client, COLLECTIONS.USERS, user._id, FIELDS_NAMES.PASSWORD_RECOVERY_TOKEN, recoveryToken)
       const mailOptions = {
         from: 'vududu_support@vududu.ru',
         to: email,
-        subject: 'Восстановление пароля',
-        text: 'Для восстановления пароля перейдите по ссылке',
-        html: '<p>Для восстановления пароля <a href="'+`${URL}/api/password-recovery?recoveryToken=${recoveryToken}`+'">перейдите по этой ссылке</a>. Ссылка будет действительна в течении 10 минут</p>'
+        subject: Wording.passwordRecoverySubject[language],
+        text: Wording.passwordRecoveryText[language],
+        html: `<p>${Wording.passwordRecoveryPrompt[language]} <a href="${URL}/api/password-recovery?recoveryToken=${recoveryToken}">${Wording.passwordRecoveryLink[language]}</p>`
       };
       transporter.sendMail(mailOptions, (error, info) => {
-        if (error) return res.status(500).send('Mailing error: ' + error.message);
-        res.status(200).send({message: 'Письмо для подтверждения отправлено на адрес: ' + email});
+        if (error) return res.status(500).send({message: ERROR_NAME.MAILING_ERROR, details: 'Mailing error: ' + error.message});
+        res.status(200).send({message: Wording.confirmationEmailSent[language] + email});
       });
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)

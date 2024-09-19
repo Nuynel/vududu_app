@@ -17,8 +17,10 @@ import {getBreeds, createBreed} from './breeds';
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
 
+const clientErrStatuses = [400, 401, 403, 429]
+
 export const checkResponse = async (r: Response) => {
-  if (r.status === 400 || r.status === 401 || r.status === 403) {
+  if (clientErrStatuses.includes(r.status)) {
     const {message}: {message: string} = await r.json()
     throw new Error(message)
   }

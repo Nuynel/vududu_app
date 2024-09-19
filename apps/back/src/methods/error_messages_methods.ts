@@ -26,6 +26,10 @@ export enum ERROR_NAME {
   TOKENS_GENERATION_ERROR = '500_TOKENS_GENERATION_ERROR',
   DATABASE_ERROR = '500_DATABASE_ERROR',
   HASHING_ERROR = '500_HASHING_ERROR',
+
+  TOKEN_MISSING = 'TOKEN_MISSING',
+  VALID_TOKEN_EXIST = 'VALID_TOKEN_EXIST',
+  MAILING_ERROR = 'MAILING_ERROR',
 }
 
 export class CustomError extends Error {
@@ -68,6 +72,8 @@ export const errorHandler = (res: Response, e: Error) => {
       case ERROR_NAME.INVALID_REFRESH_TOKEN:
       case ERROR_NAME.INVALID_ACCESS_TOKEN:
         return res.status(401).send({message: e.type})
+      case ERROR_NAME.VALID_TOKEN_EXIST:
+        return res.status(429).send({message: e.type})
       case ERROR_NAME.INTERNAL_SERVER_ERROR:
       case ERROR_NAME.HASHING_ERROR:
         return;

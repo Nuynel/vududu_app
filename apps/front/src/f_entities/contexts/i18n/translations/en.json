@@ -93,8 +93,7 @@
 
   "403_DELETE_ERROR": "Deletion forbidden",
 
-  "500_INTERNAL_SERVER_ERROR": "Internal server error",
-  "500_TOKENS_GENERATION_ERROR": "Tokens generation error",
-  "500_DATABASE_ERROR": "Database error",
-  "500_HASHING_ERROR": "Hashing error"
+  "500_INTERNAL_SERVER_ERROR": "Internal server error. Please try again later.",
+  "VALID_TOKEN_EXIST": "A valid recovery token already exists. Please check your email.",
+  "MAILING_ERROR": "Error sending the email. Please try again later."
 }

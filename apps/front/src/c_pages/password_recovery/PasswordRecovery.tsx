@@ -14,14 +14,15 @@ const ConfirmEmailScreen = () => {
   const [matchExpiredRoute] = useRoute('/app/password-recovery/token-expired')
   const [isRecoveryInitialized, changeIsRecoveryInitialized] = useState<null | boolean>(null)
   const [isLoading, setIsLoading] = useState<null | boolean>(null)
-  const {translate} = useTranslation();
+  const {translate, language} = useTranslation();
   const [, setLocation] = useLocation();
 
   const handleSubmit = ({email}: {email: string}) => {
     if (email) {
       setIsLoading(true)
       recoveryPassword({
-        email: email.toLowerCase()
+        email: email.toLowerCase(),
+        language
       }).then(() => {
         changeIsRecoveryInitialized(true)
       }).catch((e) => {
