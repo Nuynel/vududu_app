@@ -67,5 +67,31 @@
   "confirmPassword": "Confirm Password",
   "passwordsDoNotMatch": "Passwords do not match",
   "signIn": "Sign In",
-  "register": "Register"
+  "register": "Register",
+
+  "requiredEmail": "Enter your email address",
+  "requiredPassword": "Enter your password",
+  "passwordMinLength": "Password must be at least 6 characters",
+
+  "400_WRONG_CREDENTIALS": "Incorrect credentials",
+  "400_WRONG_CLIENT_TYPE": "Wrong client type",
+  "400_WRONG_EMAIL": "Invalid email",
+  "400_USER_NOT_FOUND": "User not found",
+  "400_EMAIL_ALREADY_EXISTS": "Email already exists",
+  "400_WRONG_PASSWORD": "Incorrect password",
+  "400_INACTIVE_PROFILE": "Inactive profile",
+  "400_INCOMPLETE_INCOMING_DATA": "Incomplete incoming data",
+  "400_INVALID_PAYLOAD": "Invalid request",
+  "400_NO_COOKIES": "No cookies found",
+  "400_INVALID_PROFILE_TYPE": "Invalid profile type",
+
+  "401_INVALID_REFRESH_TOKEN": "Invalid refresh token",
+  "401_INVALID_ACCESS_TOKEN": "Invalid access token",
+
+  "403_DELETE_ERROR": "Deletion forbidden",
+
+  "500_INTERNAL_SERVER_ERROR": "Internal server error",
+  "500_TOKENS_GENERATION_ERROR": "Tokens generation error",
+  "500_DATABASE_ERROR": "Database error",
+  "500_HASHING_ERROR": "Hashing error"
 }

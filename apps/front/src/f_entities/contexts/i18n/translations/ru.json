@@ -64,8 +64,34 @@
   "invalidEmail": "Невалидный e-mail",
   "passwordTooShort": "Слишком короткий пароль",
   "minLengthInfo": "Минимум 6 символов",
-  "confirmPassword": "Подтверждение пароля",
+  "confirmPassword": "Подтвердите пароль",
   "passwordsDoNotMatch": "Пароли не совпадают",
   "signIn": "Вход",
-  "register": "Зарегистрироваться"
+  "register": "Зарегистрироваться",
+
+  "requiredEmail": "Введите адрес электронной почты",
+  "requiredPassword": "Введите пароль",
+  "passwordMinLength": "Пароль должен содержать не менее 6 символов",
+
+  "400_WRONG_CREDENTIALS": "Неверные учетные данные",
+  "400_WRONG_CLIENT_TYPE": "Неверный тип клиента",
+  "400_WRONG_EMAIL": "Неверный email",
+  "400_USER_NOT_FOUND": "Пользователь не найден",
+  "400_EMAIL_ALREADY_EXISTS": "Email уже существует",
+  "400_WRONG_PASSWORD": "Неверный пароль",
+  "400_INACTIVE_PROFILE": "Профиль не активен",
+  "400_INCOMPLETE_INCOMING_DATA": "Неполные входящие данные",
+  "400_INVALID_PAYLOAD": "Неверный запрос",
+  "400_NO_COOKIES": "Файлы cookie отсутствуют",
+  "400_INVALID_PROFILE_TYPE": "Неверный тип профиля",
+
+  "401_INVALID_REFRESH_TOKEN": "Неверный токен обновления",
+  "401_INVALID_ACCESS_TOKEN": "Неверный токен доступа",
+
+  "403_DELETE_ERROR": "Удаление запрещено",
+
+  "500_INTERNAL_SERVER_ERROR": "Внутренняя ошибка сервера",
+  "500_TOKENS_GENERATION_ERROR": "Ошибка генерации токенов",
+  "500_DATABASE_ERROR": "Ошибка базы данных",
+  "500_HASHING_ERROR": "Ошибка хеширования"
 }
