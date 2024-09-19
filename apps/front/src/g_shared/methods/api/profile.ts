@@ -24,8 +24,8 @@ export async function createProfile(data: NewProfile) {
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -40,8 +40,8 @@ export async function getProfile(): Promise<{ profileData: ProfileData }> {
       headers: {
         "content-type": "application/json",
       },
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

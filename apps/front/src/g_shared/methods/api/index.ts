@@ -17,9 +17,10 @@ import {getBreeds, createBreed} from './breeds';
 // ToDo URL вынести в переменные окружения
 export const URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
 
-export const checkResponse = (r: Response) => {
-  if (r.status === 400 || r.status === 401) {
-    throw new Error('Пользователь не добавлен')
+export const checkResponse = async (r: Response) => {
+  if (r.status === 400 || r.status === 401 || r.status === 403) {
+    const {message}: {message: string} = await r.json()
+    throw new Error(message)
   }
 }
 
@@ -38,8 +39,8 @@ async function getInitialDataReq(): Promise<{
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -54,8 +55,8 @@ async function refreshAccessToken(): Promise<{accessToken: string | null}> {
       'Content-Type': 'application/json',
     },
     credentials: "include",
-  }).then(r => {
-    checkResponse(r)
+  }).then(async r => {
+    await checkResponse(r)
     return r.json()
   }).catch(() => ({accessToken: null}))
 }

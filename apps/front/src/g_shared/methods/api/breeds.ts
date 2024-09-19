@@ -10,8 +10,8 @@ export async function getBreeds (searchString: string, signal: AbortSignal): Pro
     },
     credentials: "include",
     signal,
-  }).then(r => {
-    checkResponse(r)
+  }).then(async r => {
+    await checkResponse(r)
     return r.json()
   })
 }
@@ -25,8 +25,8 @@ export async function createBreed(data: Pick<Breed, 'name'> & {breedDescription:
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

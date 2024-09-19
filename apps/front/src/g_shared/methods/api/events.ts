@@ -19,8 +19,8 @@ export async function createEvent(data: CreateEventData)
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -39,8 +39,8 @@ export async function updateHeatInfo (baseHeatInfo: Pick<OutgoingHeatData, 'comm
       },
       credentials: "include",
       body: JSON.stringify({baseHeatInfo})
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -59,8 +59,8 @@ export async function updateTreatmentInfo (baseTreatmentInfo: Pick<OutgoingTreat
       },
       credentials: "include",
       body: JSON.stringify({baseTreatmentInfo})
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -77,8 +77,8 @@ export async function deleteEventsByIds (eventsIds: string[]): Promise<{message:
       },
       credentials: "include",
       body: JSON.stringify({eventsIds})
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

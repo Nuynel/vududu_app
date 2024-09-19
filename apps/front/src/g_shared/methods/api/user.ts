@@ -9,8 +9,8 @@ export async function signIn(data: User) {
     },
     credentials: "include",
     body: JSON.stringify(data)
-  }).then(r => {
-    checkResponse(r)
+  }).then(async r => {
+    await checkResponse(r)
     return r.json()
   })
 }
@@ -36,8 +36,8 @@ export async function signUp(data: User) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data)
-  }).then(r => {
-    checkResponse(r)
+  }).then(async r => {
+    await checkResponse(r)
     return r.json()
   })
 }
@@ -66,8 +66,8 @@ export async function recoveryPassword(data: {email: string}) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -83,8 +83,8 @@ export async function saveNewPassword(data: {password: string, recoveryToken: st
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

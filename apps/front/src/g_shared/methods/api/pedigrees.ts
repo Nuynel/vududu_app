@@ -10,8 +10,8 @@ export async function getPedigreeByDogId({id, type}: {id: string, type: 'COMMON'
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

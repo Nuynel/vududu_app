@@ -10,8 +10,8 @@ export async function createLitter(data: OutgoingLitterData): Promise<{ litter: 
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -29,8 +29,8 @@ export async function getLittersByDate(date: string, breedId: string | null)
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -49,8 +49,8 @@ export async function updateBaseLitterInfo (data: Pick<OutgoingLitterData, 'comm
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -68,8 +68,8 @@ export async function deleteLitter (id: string)
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {

@@ -11,8 +11,8 @@ export async function createDog(data: Omit<OutgoingDogData, 'litterId'>): Promis
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -29,8 +29,8 @@ export async function deleteDog (id: string): Promise<{message: string}> {
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -49,8 +49,8 @@ export async function getStuds (searchString: string, gender: GENDER)
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -69,8 +69,8 @@ export async function getPuppies (dateOfBirth: string, breedId: string | null)
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -88,8 +88,8 @@ export async function updateBaseDogInfo (rawDogInfo: OutgoingDogData, id: string
       },
       credentials: "include",
       body: JSON.stringify({rawDogInfo, isAssigment})
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -108,8 +108,8 @@ export async function validateNewDog (
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (error) {
@@ -125,8 +125,8 @@ export async function getOtherDogs(): Promise<{ protectedOtherDogs: IncomingDogD
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (e) {
@@ -143,8 +143,8 @@ export async function getDog(id: string): Promise<IncomingDogData> {
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }).then(r => {
-      checkResponse(r)
+    }).then(async r => {
+      await checkResponse(r)
       return r.json()
     })
   } catch (e) {
