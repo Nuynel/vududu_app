@@ -7,7 +7,7 @@ import {PrivateRoutes} from "../../g_shared/constants/routes";
 import {refreshAccessToken} from "../../g_shared/methods/api";
 import {Paths} from "../../g_shared/constants/routes";
 
-import {EB_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
+import {EVENT_BUS_EVENTS_NAMES} from "../../g_shared/constants/eventBusEventsNames";
 import {isRoutePublic} from "../../g_shared/methods/helpers/navigationHelpers";
 
 const useAuth = () => {
@@ -48,7 +48,7 @@ const useAuth = () => {
       // && !sessionStorage.getItem('isSessionInitializationFinished')
     ) {
       // информируем слушателей о том, что у нас в наличии есть рабочий токен доступа (кейс, когда пользователь логинится)
-      window.dispatchEvent(new Event(EB_EVENTS_NAMES.USER_AUTHENTICATION_SUCCESS))
+      window.dispatchEvent(new Event(EVENT_BUS_EVENTS_NAMES.USER_AUTHENTICATION_SUCCESS))
     }
     if (isAuthenticated(accessToken)) {
       // планируем обновление токенов через 8 минут, срок жизни токена доступа 10 минут

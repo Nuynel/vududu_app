@@ -2,10 +2,8 @@ import * as React from 'react';
 import Router from "./router/Router";
 import useAuth from "../f_entities/hooks/useAuth";
 import useGetInitialData from "../f_entities/hooks/useGetInitialData";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useEffect} from "react";
-import {EB_EVENTS_NAMES} from "../g_shared/constants/eventBusEventsNames";
 import {TranslationProvider} from "../f_entities/contexts/i18n"
 // todo реализовать редактирование профиля?
 //  А что там редактировать-то на данный момент? Разве что email и пароль, но это не горит совершенно
@@ -24,14 +22,6 @@ import {TranslationProvider} from "../f_entities/contexts/i18n"
 const App = () => {
   useGetInitialData();
   useAuth();
-
-  useEffect(() => {
-    window.addEventListener(EB_EVENTS_NAMES.ERROR, () => toast.error('ERROR'))
-
-    return () => {
-      window.removeEventListener(EB_EVENTS_NAMES.ERROR, () => toast.error('ERROR'))
-    }
-  }, [])
 
   return (
     <TranslationProvider>
