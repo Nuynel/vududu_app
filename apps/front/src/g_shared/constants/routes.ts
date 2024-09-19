@@ -27,6 +27,7 @@ export enum Paths {
   document = '/app/document/:id',
   pedigrees = '/app/pedigrees',
   passwordRecovery = '/app/password-recovery',
+  passwordRecoveryExpired = '/app/password-recovery/token-expired',
   passwordRecoveryFinish = '/app/password-recovery/:recoveryToken',
 }
 
@@ -36,6 +37,7 @@ export const PublicRoutes = [
   Paths.confirmEmail,
   Paths.passwordRecovery,
   Paths.passwordRecoveryFinish,
+  Paths.passwordRecoveryExpired,
 ] as const;
 
 export const PrivateRoutes = [

@@ -1,38 +1,55 @@
-import * as React from "react";
+import React, {useState} from "react";
 import { Link } from "wouter";
 import { useForm } from "react-hook-form";
-import { CustomSpinner } from "../../g_shared/ui_components";
-import { Paths } from "../../g_shared/constants/routes";
-import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import {toast} from "react-toastify";
 import LanguageSelect from "../../e_features/LanguageSelect";
+import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
 import { useTranslation } from "../../f_entities/contexts/i18n";
+import { CustomSpinner } from "../../g_shared/ui_components";
+import {useProfileDataStore} from "../../f_entities/store/useProfileDataStore";
+import { Paths } from "../../g_shared/constants/routes";
 import {FORM_FIELDS, FormValues} from "../../g_shared/types/form";
-import useSignIn from "./useSignIn";
-
-const formFieldOptions = {
-  [FORM_FIELDS.EMAIL]: {
-    required: "Введите адрес электронной почты",
-    pattern: {
-      value: /^\S+@\S+$/i,
-      message: "Неверный формат email",
-    },
-  },
-  [FORM_FIELDS.PASSWORD]: {
-    required: "Введите пароль",
-    minLength: {
-      value: 6,
-      message: "Пароль должен содержать не менее 6 символов",
-    },
-  },
-};
+import {signIn} from "../../g_shared/methods/api";
 
 const SignInScreen = () => {
-  const {
-    isLoading,
-    onSubmit,
-  } = useSignIn();
+  const [isLoading, setIsLoading] = useState<null | boolean>(null)
+  const {setAccessToken, saveAccessToken} = useProfileDataStore();
+  const {translate} = useTranslation();
   const { isSmall } = useResponsiveGrid();
-  const { translate } = useTranslation();
+
+  const onSubmit = ({email, password}: {email: string, password: string}) => {
+    if (email && password) {
+      setIsLoading(true)
+      signIn({
+        email: email.toLowerCase(),
+        password,
+      }).then(({accessToken}: {accessToken: string}) => {
+        setAccessToken(accessToken);
+        saveAccessToken(accessToken);
+      }).catch((e) => {
+        toast.error(translate(e.message))
+      }).finally(() => {
+        setIsLoading(false)
+      })
+    }
+  }
+
+  const formFieldOptions = {
+    [FORM_FIELDS.EMAIL]: {
+      required: translate("requiredEmail"),
+      pattern: {
+        value: /^\S+@\S+$/i,
+        message: translate("invalidEmail"),
+      },
+    },
+    [FORM_FIELDS.PASSWORD]: {
+      required: translate("requiredPassword"),
+      minLength: {
+        value: 6,
+        message: translate("passwordMinLength"),
+      },
+    },
+  };
 
   const {
     register,
@@ -80,7 +97,7 @@ const SignInScreen = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-full flex justify-center items-center"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex justify-center items-center"
           >
             {translate('signIn')}
             {isLoading && <CustomSpinner />}

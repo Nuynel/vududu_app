@@ -136,4 +136,9 @@ export const componentsMapping = {
     private: false,
     path: Paths.passwordRecoveryFinish,
   },
+  [Paths.passwordRecoveryExpired]: {
+    component: PasswordRecovery,
+    private: false,
+    path: Paths.passwordRecoveryExpired,
+  },
 }

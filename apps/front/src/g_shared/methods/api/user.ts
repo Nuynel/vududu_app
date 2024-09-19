@@ -59,35 +59,27 @@ export async function getUser() {
 }
 
 export async function recoveryPassword(data: {email: string}) {
-  try {
-    return await fetch(`${URL}/api/password-recovery/init`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data)
-    }).then(async r => {
-      await checkResponse(r)
-      return r.json()
-    })
-  } catch (error) {
-    console.error(error)
-  }
+  return await fetch(`${URL}/api/password-recovery/init`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  }).then(async r => {
+    await checkResponse(r)
+    return r.json()
+  })
 }
 
 export async function saveNewPassword(data: {password: string, recoveryToken: string}) {
-  try {
-    return await fetch(`${URL}/api/password-recovery`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data)
-    }).then(async r => {
-      await checkResponse(r)
-      return r.json()
-    })
-  } catch (error) {
-    console.error(error)
-  }
+  return await fetch(`${URL}/api/password-recovery`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  }).then(async r => {
+    await checkResponse(r)
+    return r.json()
+  })
 }

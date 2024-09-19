@@ -73,6 +73,9 @@
   "requiredPassword": "Enter your password",
   "passwordMinLength": "Password must be at least 6 characters",
 
+  "tokenExpired": "The password recovery link was valid for 10 minutes and has expired.",
+  "saveNewPassword": "Save new password",
+
   "400_WRONG_CREDENTIALS": "Incorrect credentials",
   "400_WRONG_CLIENT_TYPE": "Wrong client type",
   "400_WRONG_EMAIL": "Invalid email",

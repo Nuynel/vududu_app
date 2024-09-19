@@ -36,6 +36,7 @@ import {
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
+import {JsonWebTokenError} from "jsonwebtoken";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
 
@@ -181,6 +182,9 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/app/sign-in/expired')
       res.redirect(URL + `/app/password-recovery/${recoveryToken}`)
     } catch (e) {
+      if (e instanceof JsonWebTokenError) {
+        return res.redirect(URL + `/app/password-recovery/token-expired`)
+      }
       if (e instanceof Error) errorHandler(res, e)
     }
   })

@@ -1,39 +1,34 @@
-import * as React from "react";
-import { Link } from "wouter";
+import React, {useState} from "react";
+import {Link, useLocation} from "wouter";
+import {toast} from "react-toastify";
 import { useForm } from "react-hook-form";
+import LanguageSelect from "../../e_features/LanguageSelect";
+import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
+import { useTranslation } from "../../f_entities/contexts/i18n";
 import { CustomSpinner } from "../../g_shared/ui_components";
 import { Paths } from "../../g_shared/constants/routes";
-import useResponsiveGrid from "../../f_entities/hooks/useResponsiveGrid";
-import LanguageSelect from "../../e_features/LanguageSelect";
-import { useTranslation } from "../../f_entities/contexts/i18n";
 import { FORM_FIELDS, FormValues } from "../../g_shared/types/form";
-import useSignUp from "./useSignUp";
-
-const formFieldOptions = {
-  [FORM_FIELDS.EMAIL]: {
-    required: "Введите адрес электронной почты",
-    pattern: {
-      value: /^\S+@\S+$/i,
-      message: "Невалидный e-mail",
-    },
-  },
-  [FORM_FIELDS.PASSWORD]: {
-    required: "Введите пароль",
-    minLength: {
-      value: 6,
-      message: "Пароль должен содержать не менее 6 символов",
-    },
-  },
-  [FORM_FIELDS.CONFIRM_PASSWORD]: {
-    required: "Подтвердите пароль",
-    validate: (value: string, { password }: FormValues) => value === password || "Пароли не совпадают",
-  },
-};
+import {signUp} from "../../g_shared/methods/api";
 
 const SignUpScreen = () => {
-  const { isLoading, onSubmit } = useSignUp();
+  const [, setLocation] = useLocation();
   const { isSmall } = useResponsiveGrid();
-  const { translate } = useTranslation();
+  const [isLoading, setIsLoading] = useState<null | Boolean>(null)
+  const {translate} = useTranslation();
+
+  const onSubmit = ({email, password}: {email: string, password: string}) => {
+    setIsLoading(true)
+    signUp({
+      email: email.toLowerCase(),
+      password,
+    }).then(() => {
+      setIsLoading(false)
+      setLocation(Paths.confirmEmail);
+    }).catch((e) => {
+      setIsLoading(false)
+      toast.error(translate(e.message))
+    })
+  }
 
   const {
     register,
@@ -43,6 +38,27 @@ const SignUpScreen = () => {
   } = useForm<FormValues>();
 
   const passwordValue = watch(FORM_FIELDS.PASSWORD);
+
+  const formFieldOptions = {
+    [FORM_FIELDS.EMAIL]: {
+      required: translate('requiredEmail'),
+      pattern: {
+        value: /^\S+@\S+$/i,
+        message: translate('invalidEmail'),
+      },
+    },
+    [FORM_FIELDS.PASSWORD]: {
+      required: translate('requiredPassword'),
+      minLength: {
+        value: 6,
+        message: translate('passwordMinLength'),
+      },
+    },
+    [FORM_FIELDS.CONFIRM_PASSWORD]: {
+      required: translate('confirmPassword'),
+      validate: value => value === passwordValue || translate('passwordsDoNotMatch')
+    },
+  };
 
   return (
     <div className="flex justify-center items-center bg-gray-800 w-full h-full">
@@ -91,7 +107,7 @@ const SignUpScreen = () => {
               id="repeat-password-input-id"
               type="password"
               placeholder="********"
-              {...register(FORM_FIELDS.CONFIRM_PASSWORD, { ...formFieldOptions[FORM_FIELDS.CONFIRM_PASSWORD], validate: value => value === passwordValue || translate('passwordsDoNotMatch') })}
+              {...register(FORM_FIELDS.CONFIRM_PASSWORD, formFieldOptions[FORM_FIELDS.CONFIRM_PASSWORD])}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
             />
             {errors.confirmPassword && isDirty && (
@@ -100,7 +116,7 @@ const SignUpScreen = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-full flex justify-center items-center"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex justify-center items-center"
           >
             {translate('register')}
             {isLoading && <CustomSpinner />}
