@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {useTranslation, LANGUAGES} from "../f_entities/contexts/i18n"
 import {ChevronDownIcon, ChevronUpIcon} from "../g_shared/icons";
 
 const LanguageSelect = ({small}: {small?: boolean}) => {
   const { setLanguage, language } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false); // Для управления открытием меню
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLanguageChange = (language: LANGUAGES) => {
     setLanguage(language);
     setIsOpen(false);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);;
+  }, []);
+
   return (
-    <div className={small && "absolute top-8 right-8"}>
+    <div className={small && "absolute top-8 right-8"} ref={dropdownRef}>
       <div className="relative inline-block text-left">
         <button
           type="button"
@@ -20,7 +32,11 @@ const LanguageSelect = ({small}: {small?: boolean}) => {
           onClick={() => setIsOpen(!isOpen)}
         >
           {language === LANGUAGES.RU ? 'Русский' : 'English'}
-          {isOpen ? <ChevronUpIcon color='#6B7280'/> : <ChevronDownIcon color='#6B7280'/>}
+          <span
+            className={`ml-2 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+          >
+            <ChevronDownIcon color='#6B7280' />
+          </span>
         </button>
 
         {isOpen && (
