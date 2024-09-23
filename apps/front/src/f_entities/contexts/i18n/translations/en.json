@@ -95,5 +95,6 @@
 
   "500_INTERNAL_SERVER_ERROR": "Internal server error. Please try again later.",
   "VALID_TOKEN_EXIST": "A valid recovery token already exists. Please check your email.",
-  "MAILING_ERROR": "Error sending the email. Please try again later."
+  "MAILING_ERROR": "Error sending the email. Please try again later.",
+  "INVALID_ACTIVATOR": "Invalid activation token"
 }

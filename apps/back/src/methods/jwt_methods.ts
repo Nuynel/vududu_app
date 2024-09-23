@@ -1,11 +1,12 @@
 import jwt, {JwtPayload} from "jsonwebtoken";
 
-const ACCESS_SECRET_KEY = 'abirvalg'
-const API_ACCESS_SECRET_KEY = 'HollywoodRedTricolourPitPrait'
-const REFRESH_SECRET_KEY = 'ciclopentanoperhidrofenantreno'
-const RECOVERY_SECRET_KEY = 'vivaxairpowerfan'
+const ACCESS_SECRET_KEY = process.env.ACCESS_SECRET_KEY || 'abirvalg';
+const API_ACCESS_SECRET_KEY = process.env.API_ACCESS_SECRET_KEY || 'HollywoodRedTricolourPitPrait';
+const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY || 'ciclopentanoperhidrofenantreno';
+const RECOVERY_SECRET_KEY = process.env.RECOVERY_SECRET_KEY || 'vivaxairpowerfan';
+const ACTIVATOR_SECRET_KEY = process.env.ACTIVATOR_SECRET_KEY || 'rewiewcodeanalysis';
 
-enum TOKEN_TYPES { ACCESS = 'ACCESS', API_ACCESS = 'API_ACCESS', REFRESH = 'REFRESH', RECOVERY = 'RECOVERY' }
+enum TOKEN_TYPES { ACCESS = 'ACCESS', API_ACCESS = 'API_ACCESS', REFRESH = 'REFRESH', RECOVERY = 'RECOVERY', ACTIVATOR = 'ACTIVATOR' }
 
 function isJwtPayload(decoded: string | JwtPayload): decoded is JwtPayload {
   return typeof decoded === 'object' && 'userId' in decoded && 'type' in decoded;
@@ -18,6 +19,8 @@ export const generateRefreshToken = (id: string): string => jwt.sign({ userId: i
 
 export const generateRecoveryToken = (id: string): string => jwt.sign({ userId: id, type: TOKEN_TYPES.RECOVERY }, RECOVERY_SECRET_KEY, { expiresIn: '10m' })
 
+export const generateActivatorToken = (id: string): string => jwt.sign({ userId: id, type: TOKEN_TYPES.ACTIVATOR }, ACTIVATOR_SECRET_KEY, { expiresIn: '7d' })
+
 const checkJWT = (token: string, key: string, tokenType: TOKEN_TYPES): { userId: string | null, profileId: string | null } => {
   const decoded = jwt.verify(token, key);
   const isTokenValid = isJwtPayload(decoded) && decoded.type === tokenType;
@@ -29,3 +32,5 @@ export const checkAPIAccessToken = (token: string) => checkJWT(token, API_ACCESS
 export const checkRefreshToken = (token: string) => checkJWT(token, REFRESH_SECRET_KEY, TOKEN_TYPES.REFRESH)
 
 export const checkRecoveryToken = (token: string) => checkJWT(token, RECOVERY_SECRET_KEY, TOKEN_TYPES.RECOVERY)
+
+export const checkActivatorToken = (token: string) => checkJWT(token, ACTIVATOR_SECRET_KEY, TOKEN_TYPES.ACTIVATOR)

@@ -11,7 +11,7 @@ import {Paths} from "../../g_shared/constants/routes";
 
 const ConfirmEmailScreen = () => {
   const {recoveryToken}: {recoveryToken: string} = useParams();
-  const [matchExpiredRoute] = useRoute('/app/password-recovery/token-expired')
+  const [matchExpiredRoute] = useRoute('/app/password-recovery/expired')
   const [isRecoveryInitialized, changeIsRecoveryInitialized] = useState<null | boolean>(null)
   const [isLoading, setIsLoading] = useState<null | boolean>(null)
   const {translate, language} = useTranslation();

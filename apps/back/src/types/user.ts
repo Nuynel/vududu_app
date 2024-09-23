@@ -25,7 +25,7 @@ export type NewUser = {
 }
 
 export type User = NewUser & {
-  activator: string;
+  activator: string | null;
   isActivated: boolean;
   isBanned: boolean;
   createdAt: string;

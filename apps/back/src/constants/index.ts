@@ -113,4 +113,5 @@ export enum FIELDS_NAMES {
   DATA = 'data',
   PERMISSIONS = 'permissions',
   DOCUMENT_IDS = 'documentIds',
+  ACTIVATOR = 'activator'
 }

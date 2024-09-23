@@ -1,10 +1,14 @@
 import {Application, Response} from 'express';
 import {MongoClient, ObjectId, WithId} from 'mongodb';
-import { createTransport } from 'nodemailer';
+import {createTransport} from 'nodemailer';
 import {
   activateProfileByActivator,
+  assignValueToField,
   checkIn,
+  checkRecoveryToken,
   checkRefreshToken,
+  constructDogForClient,
+  constructLitterForClient,
   errorHandler,
   findEntitiesByIds,
   findEntityById,
@@ -12,32 +16,30 @@ import {
   findUserById,
   generateAccessToken,
   generateAPIAccessToken,
-  generateRefreshToken,
-  isPasswordCorrect,
-  getTimestamp,
-  constructLitterForClient,
-  constructDogForClient,
-  getCookiesPayload,
-  assignValueToField,
   generateRecoveryToken,
+  generateRefreshToken,
+  getCookiesPayload,
+  getTimestamp,
   hashPass,
-  checkRecoveryToken,
+  isPasswordCorrect,
 } from "../methods";
 import {
   Breed,
   BreederProfile,
   ClientDog,
+  ClientLitter,
   DatabaseDog,
+  DatabaseLitter,
   DatabaseProfile,
   KennelProfile,
-  DatabaseLitter,
   PROFILE_TYPES,
-  User, ClientLitter
+  User
 } from "../types";
 import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {CustomError, ERROR_NAME} from "../methods/error_messages_methods";
 import {JsonWebTokenError} from "jsonwebtoken";
 import Wording from "../constants/Wording";
+import {checkActivatorToken} from "../methods/jwt_methods";
 
 // todo организовать безопасную работу с рефреш токенами (хранение в отдельной таблице, проверка)
 
@@ -124,14 +126,14 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       if (!email || !password) throw new CustomError(ERROR_NAME.INCOMPLETE_INCOMING_DATA, {file: 'user_routes', line: 103})
       const user = await findUserByEmail(client, email);
       if (user) throw new CustomError(ERROR_NAME.EMAIL_ALREADY_EXISTS, {file: 'user_routes', line: 105})
-      const checkInResult = await checkIn(client, {email, password});
+      const activator = await checkIn(client, {email, password});
       // Содержимое письма
       const mailOptions = {
         from: 'vududu_support@vududu.ru',
         to: email,
         subject: Wording.registrationConfirmationSubject[language],
         text: Wording.registrationConfirmationText[language],
-        html: `<p>${Wording.confirmEmailPrompt[language]} <a href="${URL}/api/activate?activator=${checkInResult.activator}&id=${checkInResult.id}">${Wording.confirmEmailLink[language]}.</a></p>`
+        html: `<p>${Wording.confirmEmailPrompt[language]} <a href="${URL}/api/activate?activator=${activator}">${Wording.confirmEmailLink[language]}.</a></p>`
       };
 
       // Отправка письма
@@ -154,7 +156,7 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       try {
         if (user.passwordRecoveryToken && checkRecoveryToken(user.passwordRecoveryToken)) throw new CustomError(ERROR_NAME.VALID_TOKEN_EXIST, {file: 'user_routes', line: 174})
       } catch (e) {
-        if (e instanceof Error && e.name !== 'TokenExpiredError') errorHandler(res, e)
+        if (e instanceof Error && e.name !== 'TokenExpiredError') return errorHandler(res, e)
       }
       const recoveryToken = generateRecoveryToken(user._id.toHexString())
       await assignValueToField(client, COLLECTIONS.USERS, user._id, FIELDS_NAMES.PASSWORD_RECOVERY_TOKEN, recoveryToken)
@@ -184,11 +186,11 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
       const user = await findUserById(client, userId);
       if (!user) throw new CustomError(ERROR_NAME.DATABASE_ERROR, {file: 'user_routes', line: 167})
       console.log(getTimestamp(), '>>> CONTINUE FOR /GET/PASSWORD-RECOVERY, email >>> ', user.email, user.passwordRecoveryToken !== recoveryToken)
-      if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/app/sign-in/expired')
+      if (user.passwordRecoveryToken !== recoveryToken) res.redirect(URL + '/app/password-recovery/expired')
       res.redirect(URL + `/app/password-recovery/${recoveryToken}`)
     } catch (e) {
       if (e instanceof JsonWebTokenError) {
-        return res.redirect(URL + `/app/password-recovery/token-expired`)
+        return res.redirect(URL + `/app/password-recovery/expired`)
       }
       if (e instanceof Error) errorHandler(res, e)
     }
@@ -247,9 +249,10 @@ export const initUserRoutes = (app: Application, client: MongoClient) => {
 
   app.get<{}, { message: string }, {}, { id: string; activator: string }>('/api/activate', async (req, res) => {
     try {
-      const {id, activator} = req.query
-      console.log(getTimestamp(), 'REQUEST TO /GET/ACTIVATE, id >>> ', id)
-      await activateProfileByActivator(client, id, activator)
+      const {userId} = checkActivatorToken(req.query.activator)
+      console.log(getTimestamp(), 'REQUEST TO /GET/ACTIVATE, id >>> ', userId)
+      if (!userId) throw new CustomError(ERROR_NAME.INVALID_ACTIVATOR, {file: 'user_routes', line: 256})
+      await activateProfileByActivator(client, userId, req.query.activator)
       res.redirect(URL + '/app/sign-in?activated')
     } catch (e) {
       if (e instanceof Error) errorHandler(res, e)

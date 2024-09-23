@@ -30,6 +30,7 @@ export enum ERROR_NAME {
   TOKEN_MISSING = 'TOKEN_MISSING',
   VALID_TOKEN_EXIST = 'VALID_TOKEN_EXIST',
   MAILING_ERROR = 'MAILING_ERROR',
+  INVALID_ACTIVATOR = 'INVALID_ACTIVATOR',
 }
 
 export class CustomError extends Error {
@@ -71,6 +72,7 @@ export const errorHandler = (res: Response, e: Error) => {
       case ERROR_NAME.INACTIVE_PROFILE:
       case ERROR_NAME.INVALID_REFRESH_TOKEN:
       case ERROR_NAME.INVALID_ACCESS_TOKEN:
+      case ERROR_NAME.INVALID_ACTIVATOR:
         return res.status(401).send({message: e.type})
       case ERROR_NAME.VALID_TOKEN_EXIST:
         return res.status(429).send({message: e.type})

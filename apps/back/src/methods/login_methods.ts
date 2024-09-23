@@ -1,9 +1,10 @@
 import {NewUser, User} from "../types";
 import bcrypt from "bcryptjs";
 import {MongoClient} from "mongodb";
-import {COLLECTIONS} from "../constants";
+import {COLLECTIONS, FIELDS_NAMES} from "../constants";
 import {ERROR_NAME, CustomError} from "./error_messages_methods";
-import {insertEntity} from "./db_methods";
+import {insertEntity, assignValueToField} from "./db_methods";
+import {generateActivatorToken, checkActivatorToken} from './jwt_methods'
 
 export const hashPass = async (password: string) => {
   try {
@@ -21,13 +22,12 @@ export const isPasswordCorrect = async (user: User, password: string) => {
   }
 }
 
-export const checkIn = async (client: MongoClient, {email, password}: NewUser): Promise<{ id: string; activator: string }> => {
+export const checkIn = async (client: MongoClient, {email, password}: NewUser): Promise<string> => {
   const hashedPassword = await hashPass(password);
-  const activator = `${(~~(Math.random()*1e8)).toString(16)}${(+new Date).toString(16)}`;
   const user: User = {
     email,
     password: hashedPassword,
-    activator: activator,
+    activator: null,
     isActivated: false,
     isBanned: false,
     createdAt: (new Date()).toISOString(),
@@ -36,8 +36,8 @@ export const checkIn = async (client: MongoClient, {email, password}: NewUser): 
   };
 
   const { insertedId } = await insertEntity(client, COLLECTIONS.USERS, user);
-  return {
-    id: insertedId.toHexString(),
-    activator: activator
-  }
+  const activator = generateActivatorToken(insertedId.toHexString());
+  await assignValueToField(client, COLLECTIONS.USERS, insertedId, FIELDS_NAMES.ACTIVATOR, activator)
+
+  return activator
 };

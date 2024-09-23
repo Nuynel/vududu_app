@@ -27,7 +27,7 @@ export enum Paths {
   document = '/app/document/:id',
   pedigrees = '/app/pedigrees',
   passwordRecovery = '/app/password-recovery',
-  passwordRecoveryExpired = '/app/password-recovery/token-expired',
+  passwordRecoveryExpired = '/app/password-recovery/expired',
   passwordRecoveryFinish = '/app/password-recovery/:recoveryToken',
 }
 

@@ -6,9 +6,11 @@ import {
   generateAPIAccessToken,
   generateRefreshToken,
   generateRecoveryToken,
+  generateActivatorToken,
   checkAPIAccessToken,
   checkRefreshToken,
-  checkRecoveryToken
+  checkRecoveryToken,
+  checkActivatorToken,
 } from "./jwt_methods";
 import {
   isPasswordCorrect,
@@ -75,9 +77,11 @@ export {
   generateAPIAccessToken,
   generateRefreshToken,
   generateRecoveryToken,
+  generateActivatorToken,
   checkAPIAccessToken,
   checkRefreshToken,
   checkRecoveryToken,
+  checkActivatorToken,
   isPasswordCorrect,
   checkIn,
   insertEntity,
