@@ -33,7 +33,7 @@ const LanguageSelect = ({small}: {small?: boolean}) => {
           >
             <div className="py-1" role="none">
               <button
-                className={`block px-4 py-2 text-sm ${
+                className={`block px-4 py-2 w-full text-sm ${
                   language === LANGUAGES.RU
                     ? 'text-indigo-600 font-semibold'
                     : 'text-gray-700'
@@ -45,7 +45,7 @@ const LanguageSelect = ({small}: {small?: boolean}) => {
               </button>
 
               <button
-                className={`block px-4 py-2 text-sm ${
+                className={`block px-4 py-2 w-full text-sm ${
                   language === LANGUAGES.EN
                     ? 'text-indigo-600 font-semibold'
                     : 'text-gray-700'
