@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {useTranslation, LANGUAGES} from "../f_entities/contexts/i18n"
-import {ChevronDownIcon, ChevronUpIcon} from "../g_shared/icons";
+import {ChevronDownIcon} from "../g_shared/icons";
 
-const LanguageSelect = ({small}: {small?: boolean}) => {
+// todo разобраться с пропсами, а то хня какая-то
+
+const LanguageSelect = ({small, bottom}: {small?: boolean, bottom?: boolean}) => {
   const { setLanguage, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -24,7 +26,7 @@ const LanguageSelect = ({small}: {small?: boolean}) => {
   }, []);
 
   return (
-    <div className={small && "absolute top-8 right-8"} ref={dropdownRef}>
+    <div className={small && "absolute top-8 right-8 "} ref={dropdownRef}>
       <div className="relative inline-block text-left">
         <button
           type="button"
@@ -41,7 +43,9 @@ const LanguageSelect = ({small}: {small?: boolean}) => {
 
         {isOpen && (
           <div
-            className="origin-top-right absolute right-0 mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+            className={`origin-top-right absolute ${
+              bottom ? 'bottom-full mb-2' : 'top-full mt-2'
+            } right-0 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5`}
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="menu-button"

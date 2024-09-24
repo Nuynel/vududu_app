@@ -88,7 +88,7 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
     {
       icon: PeopleIcon,
       to: Paths.contacts,
-      routeComparison: matchProfileRoutes || matchContactsRoutes
+      routeComparison: matchContactsRoutes
     },
     {
       icon: PawIcon,

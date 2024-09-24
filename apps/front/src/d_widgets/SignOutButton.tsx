@@ -1,9 +1,11 @@
 import * as React from "react";
 import {signOut} from "../g_shared/methods/api";
 import {useProfileDataStore} from "../f_entities/store/useProfileDataStore";
+import {useTranslation} from "../f_entities/contexts/i18n";
 
-const SignOutButton = ({fill}: { fill: boolean }) => {
+const SignOutButton = ({fill}: { fill?: boolean }) => {
   const {removeAccessToken, setAccessToken} = useProfileDataStore();
+  const {translate} = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -15,11 +17,9 @@ const SignOutButton = ({fill}: { fill: boolean }) => {
   return (
     <button
       onClick={handleSignOut}
-      className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded ${
-        fill ? 'w-full' : ''
-      }`}
+      className={`flex justify-center text-blue-600 hover:text-blue-800 ${fill ? 'w-full' : ''}`}
     >
-      Выйти
+      {translate('signOut')}
     </button>
   )
 }
