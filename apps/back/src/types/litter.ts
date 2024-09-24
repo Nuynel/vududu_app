@@ -41,7 +41,7 @@ export type ClientLitter = Omit<WithId<DatabaseLitter>, 'fatherId' | 'motherId'>
   fatherData: {id: string, fullName: string};
   motherData: {id: string, fullName: string};
   puppiesData: {id: string, fullName: string, verified: boolean}[];
-  creatorProfileName: string,
+  creatorProfileName: string | null,
 }
 
 export type RawLitterData = Pick<DatabaseLitter, 'dateOfBirth' | 'comments' | 'litterTitle'> & {

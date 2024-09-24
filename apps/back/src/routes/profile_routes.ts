@@ -41,14 +41,14 @@ export const initProfileRoutes = (app: Application, client: MongoClient) => {
       const {userId} = getCookiesPayload(req, false);
       console.log(getTimestamp(), 'REQUEST TO /POST/PROFILE, userId >>> ', userId)
 
-      const { name, type, connectedOrganisations } = req.body;
+      const { type } = req.body;
 
       // const profile: DatabaseProfile = createNewDatabaseProfile(userId, name, type, connectedOrganisations)
       const profile: DatabaseProfile = {
         userId: new ObjectId(userId),
-        name,
+        name: null,
         type,
-        connectedOrganisations,
+        connectedOrganisations: null,
         breedIds: [],
         payments: {},
         permissions: {},

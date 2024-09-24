@@ -37,7 +37,7 @@ export type User = NewUser & {
 
 type Profile = {
   userId: ObjectId;
-  name: string;
+  name: string | null;
   payments: Payments;
   permissions: Permissions;
   documentIds: ObjectId[];
@@ -74,22 +74,22 @@ type MaleDogOwnerConnectedOrganizations =
   'canineFederation' | 'nationalBreedClub' | 'canineClub' | 'kennel' | 'breeder'
 
 export type CanineFederationProfile = Profile & { // кинологические федерации
-  connectedOrganisations: Pick<ConnectedOrganisations, CanineFederationConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, CanineFederationConnectedOrganizations> | null;
   type: PROFILE_TYPES.CANINE_FEDERATION
 }
 
 export type NationalBreedClubProfile = Profile & { // национальные породные клубы
-  connectedOrganisations: Pick<ConnectedOrganisations, NationalBreedClubConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, NationalBreedClubConnectedOrganizations> | null;
   type: PROFILE_TYPES.NATIONAL_BREED_CLUb
 }
 
 export type CanineClubProfile =  Profile & { // кинологические клубы
-  connectedOrganisations: Pick<ConnectedOrganisations, CanineClubConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, CanineClubConnectedOrganizations> | null;
   type: PROFILE_TYPES.CANINE_CLUB
 }
 
 export type KennelProfile = Profile & { // питомники
-  connectedOrganisations: Pick<ConnectedOrganisations, KennelConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, KennelConnectedOrganizations> | null;
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
   litterIds: ObjectId[];
@@ -99,7 +99,7 @@ export type KennelProfile = Profile & { // питомники
 }
 
 export type BreederProfile = Profile & { // заводчики
-  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations> | null;
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
   litterIds: ObjectId[];
@@ -109,7 +109,7 @@ export type BreederProfile = Profile & { // заводчики
 }
 
 export type DogOwnerProfile = Profile & { // хозяева кобелей
-  connectedOrganisations: Pick<ConnectedOrganisations, MaleDogOwnerConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, MaleDogOwnerConnectedOrganizations> | null;
   ownDogIds: ObjectId[];
   otherDogIds: ObjectId[];
   otherLitterIds: ObjectId[];

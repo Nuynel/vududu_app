@@ -99,7 +99,7 @@ export type ClientDog = Omit<WithId<DatabaseDog>, 'litterId' | 'reproductiveHist
   vaccinations: HistoryRecord[] | null;
   healthCertificates: HistoryRecord[] | null;
   reproductiveHistory: ClientReproductiveHistory;
-  creatorProfileName: string;
+  creatorProfileName: string | null;
   ownerProfileName: string | null;
 }
 

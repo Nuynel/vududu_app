@@ -2,20 +2,14 @@ import {checkResponse, URL} from "./index";
 import {PROFILE_TYPES} from "../../../c_pages/profile/CreateProfile";
 import {ProfileData} from "../../types";
 
-type ConnectedOrganisations = {
-  canineFederation: string | null,
-  nationalBreedClub: string | null,
-  canineClub: string | null,
-  kennel: string | null,
-}
+// type ConnectedOrganisations = {
+//   canineFederation: string | null,
+//   nationalBreedClub: string | null,
+//   canineClub: string | null,
+//   kennel: string | null,
+// }
 
-type NewProfile = {
-  name: string,
-  type: PROFILE_TYPES,
-  connectedOrganisations: ConnectedOrganisations
-}
-
-export async function createProfile(data: NewProfile) {
+export async function createProfile(data: { type: PROFILE_TYPES }) {
   try{
     return await fetch(`${URL}/api/profile`, {
       method: 'POST',

@@ -116,7 +116,7 @@ const checkDogDataPermissions = (
 ): boolean => (profile && dog.ownerProfileId?.equals(profile._id))
   || (group === PERMISSION_GROUPS.ALL)
   || !!(group === PERMISSION_GROUPS.REGISTERED && profile)
-  || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations.canineFederation === dog.federationId)
+  || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations && profile.connectedOrganisations.canineFederation === dog.federationId)
   || !!(profile && profileIds?.some(id => id.equals(profile._id)))
 
 const getProfilePermissionsByDog = (profile: WithId<DatabaseProfile>, dog: WithId<DatabaseDog>): ProfilePermissionsByEntity => ({
@@ -186,7 +186,7 @@ const checkLitterDataPermissions = (
 ): boolean => (profile && (profile._id.equals(fatherOwnerId) || profile._id.equals(motherOwnerId)))
   || (group === PERMISSION_GROUPS.ALL)
   || !!(group === PERMISSION_GROUPS.REGISTERED && profile)
-  || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations.canineFederation === litter.federationId)
+  || !!(group === PERMISSION_GROUPS.ORGANISATION && profile && profile.connectedOrganisations && profile.connectedOrganisations.canineFederation === litter.federationId)
   || !!(profile && profileIds?.includes(profile?._id))
 
 const getProfilePermissionsByLitter = (

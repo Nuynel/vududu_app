@@ -30,7 +30,7 @@ export type BreederConnectedOrganizations =
   // | 'maleDogOwnerIds'
 
 export type ProfileData = {
-  name: string;
+  name: string | null;
   type: PROFILE_TYPES;
   documentIds: string[];
   contactIds: string[];
@@ -38,7 +38,7 @@ export type ProfileData = {
   ownDogIds: string[];
   otherDogIds: string[];
   litterIds: string[];
-  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations>;
+  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations> | null;
 }
 
 export type ProfileStorage = ProfileData & {

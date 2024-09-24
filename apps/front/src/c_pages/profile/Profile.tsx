@@ -23,13 +23,18 @@ const ProfileScreen = () => {
     email,
     name,
     type,
+    connectedOrganisations
+  }: {
+    email: string,
+    name: string | null,
+    type: PROFILE_TYPES,
     connectedOrganisations: {
-      canineFederation,
-      nationalBreedClub,
-      canineClub,
-      kennel
-    }
-  } = useProfileDataStore();
+      canineFederation: string | null,
+      nationalBreedClub: string | null,
+      canineClub: string | null,
+      kennel: string | null
+    } | null
+  } = useProfileDataStore()
 
   const headerProps = {
     title: DATA_TYPES.PROFILE.toLowerCase(),
@@ -49,54 +54,42 @@ const ProfileScreen = () => {
               </div>
 
               {/* Условное отображение для типа профиля */}
-              {type === PROFILE_TYPES.KENNEL ? (
-                <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
-                  <span className="font-bold">Название питомника:</span>
-                  <span className="truncate">{name}</span>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
-                  <span className="font-bold">Имя заводчика:</span>
-                  <span className="truncate">{name}</span>
-                </div>
-              )}
+              <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
+                <span className="font-bold">{type === PROFILE_TYPES.KENNEL ? 'Название питомника:' : 'Имя заводчика:'}</span>
+                <span className="truncate">{name || 'Не указано'}</span>
+              </div>
 
               {/* Кинологическая федерация */}
-              {canineFederation && (
+              {connectedOrganisations?.canineFederation && (
                 <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
                   <span className="font-bold">Кинологическая федерация:</span>
-                  <span className="truncate">{canineFederation}</span>
+                  <span className="truncate">{connectedOrganisations?.canineFederation}</span>
                 </div>
               )}
 
               {/* Национальный клуб породы */}
-              {nationalBreedClub && (
+              {connectedOrganisations?.nationalBreedClub && (
                 <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
                   <span className="font-bold">Национальный клуб породы:</span>
-                  <span className="truncate">{nationalBreedClub}</span>
+                  <span className="truncate">{connectedOrganisations?.nationalBreedClub}</span>
                 </div>
               )}
 
               {/* Кинологический клуб */}
-              {canineClub && (
+              {connectedOrganisations?.canineClub && (
                 <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
                   <span className="font-bold">Кинологический клуб:</span>
-                  <span className="truncate">{canineClub}</span>
+                  <span className="truncate">{connectedOrganisations?.canineClub}</span>
                 </div>
               )}
 
               {/* Питомник */}
-              {kennel && (
+              {connectedOrganisations?.kennel && (
                 <div className="grid grid-cols-2 items-center mb-2 text-sm md:text-base">
                   <span className="font-bold">Питомник:</span>
-                  <span className="truncate">{kennel}</span>
+                  <span className="truncate">{connectedOrganisations?.kennel}</span>
                 </div>
               )}
-            </div>
-
-            {/* Footer с кнопкой выхода */}
-            <div className="flex justify-center p-4">
-              <SignOutButton fill={false}/>
             </div>
           </div>
           <BreedCreator email={email} />

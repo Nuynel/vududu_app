@@ -10,6 +10,7 @@ import {
   IncomingEventData,
   Breed,
 } from "../../g_shared/types";
+import {PROFILE_TYPES} from "../../g_shared/types/profile";
 
 type ProfileDataStore = {
   email: string,
@@ -22,15 +23,15 @@ type ProfileDataStore = {
   removeAccessToken: () => void,
   loadAccessToken: () => void,
 
-  name: string;
-  type: string;
+  name: string | null;
+  type: PROFILE_TYPES;
   documentIds: string[];
   contactIds: string[];
   eventIds: string[];
   dogIds: string[];
   litterIds: string[];
-  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations>
-  setProfileData: (profileData: ProfileData) => void,
+  connectedOrganisations: Pick<ConnectedOrganisations, BreederConnectedOrganizations> | null;
+  setProfileData: (profileData: ProfileData) => void;
 
   dogsData: IncomingDogData[],
   setDogsData: (dogsData: IncomingDogData[]) => void,
@@ -74,19 +75,14 @@ export const useProfileDataStore = create<ProfileDataStore>((set, get) => ({
   removeAccessToken: () => localStorage.removeItem('accessToken'),
   loadAccessToken: () => set((state: ProfileDataStore): ProfileDataStore => ({...state, accessToken: localStorage.getItem('accessToken')})),
 
-  name: '',
-  type: '',
+  name: null,
+  type: PROFILE_TYPES.BREEDER,
   documentIds: [],
   contactIds: [],
   eventIds: [],
   dogIds: [],
   litterIds: [],
-  connectedOrganisations: {
-    canineFederation: null,
-    nationalBreedClub: null,
-    canineClub: null,
-    kennel: null,
-  },
+  connectedOrganisations: null,
   setProfileData: (profileData) => set((state): ProfileStorage => ({...state, ...profileData})),
 
   dogsData: [],
