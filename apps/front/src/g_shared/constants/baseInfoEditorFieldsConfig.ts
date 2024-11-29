@@ -1,5 +1,6 @@
 import {GENDER} from "../types/dog";
 import {EVENT_TYPE} from "../types/event";
+import {convertDateFormat} from "../methods/helpers";
 
 export const baseInfoFieldsConfig = {
   name: {
@@ -17,9 +18,14 @@ export const baseInfoFieldsConfig = {
   dateOfBirth: {
     id: 'date-of-birth-input-id',
     label: 'Дата рождения',
-    placeholder: new Date(),
-    format: 'yyyy-mm-dd',
-    handler: (event, key, method) => method(key, event.target.value),
+    // placeholder: new Date(),
+    // format: 'yyyy-mm-dd',
+    handler: (event, key, method) => {
+      const inputValue = event.target.value;
+      const formattedValue = convertDateFormat(inputValue);
+      console.log(event.target.value)
+      method(key, formattedValue)
+    },
   },
   dateOfDeath: {
     id: 'date-of-death-input-id',

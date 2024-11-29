@@ -24,7 +24,7 @@ const ProbandSelect = ({probandId, changeProbandId}: Props) => {
   }, [dogsData])
 
   return (
-    <div className="flex justify-around items-center bg-white p-2 flex-row">
+    <div className="flex justify-around items-center p-2 flex-row">
       <div>
         <p className="text-sm mr-8 mt-2 mb-1">
           Пробанд

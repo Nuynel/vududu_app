@@ -57,7 +57,7 @@ const LanguageSelect = ({small, bottom}: {small?: boolean, bottom?: boolean}) =>
                   language === LANGUAGES.RU
                     ? 'text-indigo-600 font-semibold'
                     : 'text-gray-700'
-                } hover:bg-gray-100 hover:text-gray-900`}
+                } hover:bg-gray-200 hover:text-gray-900`}
                 role="menuitem"
                 onClick={() => handleLanguageChange(LANGUAGES.RU)}
               >
@@ -69,7 +69,7 @@ const LanguageSelect = ({small, bottom}: {small?: boolean, bottom?: boolean}) =>
                   language === LANGUAGES.EN
                     ? 'text-indigo-600 font-semibold'
                     : 'text-gray-700'
-                } hover:bg-gray-100 hover:text-gray-900`}
+                } hover:bg-gray-200 hover:text-gray-900`}
                 role="menuitem"
                 onClick={() => handleLanguageChange(LANGUAGES.EN)}
               >

@@ -21,43 +21,41 @@ const AccordionCard = ({cardName, fields}: { cardName: string, fields: FieldData
   const [, setLocation] = useLocation();
 
   return (
-    <div className="m-2 p-4 gap-4 bg-white overflow-visible" style={{ minHeight: 'unset' }}>
-      <Accordion title={getRuTranslate(cardName)}>
-          {fields.map((field, i) => (
-            <div className="grid grid-cols-[80px_auto_60px] gap-4 p-2 m-2">
-              {field.date && (
-                <div className="flex items-center justify-center">
-                  <p className="text-sm">
-                    {field.date}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex items-center justify-center">
-                <p className="truncate text-sm">
-                  {field.value || '-'}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center">
-                <button
-                  className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center focus:outline-none"
-                  onClick={() => setLocation(field.linkValue)}
-                >
-                  <OpenIcon color='black'/>
-                </button>
-              </div>
-            </div>
-          ))}
-          {!fields.length && (
-            <div className="m-2">
+    <Accordion title={getRuTranslate(cardName)}>
+      {fields.map((field, i) => (
+        <div className="grid grid-cols-[80px_auto_60px] gap-4 p-2 m-2">
+          {field.date && (
+            <div className="flex items-center justify-center">
               <p className="text-sm">
-                {getRuTranslate('empty')}
+                {field.date}
               </p>
             </div>
           )}
-      </Accordion>
-    </div>
+
+          <div className="flex items-center justify-center">
+            <p className="truncate text-sm">
+              {field.value || '-'}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <button
+              className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center focus:outline-none"
+              onClick={() => setLocation(field.linkValue)}
+            >
+              <OpenIcon color='black'/>
+            </button>
+          </div>
+        </div>
+      ))}
+      {!fields.length && (
+        <div className="m-2">
+          <p className="text-sm">
+            {getRuTranslate('empty')}
+          </p>
+        </div>
+      )}
+    </Accordion>
   )
 }
 

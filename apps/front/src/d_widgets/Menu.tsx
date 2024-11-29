@@ -1,16 +1,19 @@
-import {Link, useRoute} from "wouter";
+import {Link, useRoute, useLocation} from "wouter";
 import {CalendarIcon, DocumentIcon, PawIcon, GraphIcon, PeopleIcon, ContactsIcon, IconProps} from "../g_shared/icons";
 import * as React from "react";
 import {Paths} from "../g_shared/constants/routes";
+import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
 
-const Menu = ({isDesktop}: {isDesktop: boolean}) => {
-  const [matchDogsRoutes] = useRoute('/app/dogs/*?')
-  const [matchLittersRoutes] = useRoute('/app/litters/*?')
-  const [matchEventsRoutes] = useRoute('/app/events/*?')
+const Menu = () => {
+  const [matchDogsRoutes] = useRoute('/dogs/*?')
+  const [matchLittersRoutes] = useRoute('/litters/*?')
+  const [matchEventsRoutes] = useRoute(Paths.events_short)
+  const [matchHistoryRoutes] = useRoute(Paths.history_short)
   const [matchProfileRoutes] = useRoute(Paths.profile)
   const [matchContactsRoutes] = useRoute(Paths.contacts)
   const [matchDocumentsRoutes] = useRoute(Paths.documents)
   const [matchPedigreesRoutes] = useRoute(Paths.pedigrees)
+  const {isSmall} = useResponsiveGrid()
 
   const DesktopMenuConfig: {
     icon: (props: IconProps) => JSX.Element,
@@ -46,7 +49,7 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
       icon: CalendarIcon,
       to: Paths.events,
       title: { ru: 'События', en: 'Events'},
-      routeComparison: matchEventsRoutes
+      routeComparison: matchEventsRoutes || matchHistoryRoutes
     },
     {
       icon: DocumentIcon,
@@ -61,24 +64,6 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
       routeComparison: matchPedigreesRoutes
     }
   ]
-
-  if (isDesktop) {
-    return (
-      <nav className="grid-area-nav py-4 px-2 flex flex-col justify-start">
-        {DesktopMenuConfig.map((config, index) => {
-          const DynamicIcon = config.icon
-          return (
-            <Link key={index} to={config.to}>
-              <button className="flex mb-3 px-5 w-full h-9 items-center p-2 text-left border-2 border-yellow-500 rounded-3xl">
-                <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
-                <span className="ml-2">{config.title.ru}</span>
-              </button>
-            </Link>
-          )
-        })}
-      </nav>
-    )
-  }
 
   const MobileMenuConfig: {
     icon: (props: IconProps) => JSX.Element,
@@ -98,7 +83,7 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
     {
       icon: CalendarIcon,
       to: Paths.events,
-      routeComparison: matchEventsRoutes
+      routeComparison: matchEventsRoutes || matchHistoryRoutes
     },
     {
       icon: DocumentIcon,
@@ -112,14 +97,32 @@ const Menu = ({isDesktop}: {isDesktop: boolean}) => {
     }
   ]
 
+  if (isSmall) {
+    return (
+      <nav className="grid-area-nav h-16 flex items-center justify-around border-t border-gray-200 bg-white shadow-md">
+        {MobileMenuConfig.map((config, index) => {
+          const DynamicIcon = config.icon
+          return (
+            <Link key={index} to={`~${config.to}`}>
+              <button className="p-2">
+                <DynamicIcon color={config.routeComparison ? '#3b82f6' : '#9ca3af'} />
+              </button>
+            </Link>
+          )
+        })}
+      </nav>
+    )
+  }
+
   return (
-    <nav className="grid-area-nav h-16 flex items-center justify-around border-t border-gray-200">
-      {MobileMenuConfig.map((config, index) => {
+    <nav className="grid-area-nav gap-2 py-4 px-2 flex flex-col justify-start bg-gray-200">
+      {DesktopMenuConfig.map((config, index) => {
         const DynamicIcon = config.icon
         return (
-          <Link key={index} to={config.to}>
-            <button className="p-2">
-              <DynamicIcon color={config.routeComparison ? '#e4b33a' : '#4c4c4c'} />
+          <Link key={index} to={`~${config.to}`}>
+            <button className={`flex gap-2 px-5 w-full h-9 items-center p-2 text-left rounded-md hover:bg-gray-200 hover:text-gray-700 transition-all duration-300 ${config.routeComparison ? 'text-gray-700' : 'text-gray-500'}`}>
+              <DynamicIcon color={config.routeComparison ? '#3b82f6' : '#9ca3af'} />
+              <span className={`ml-2`}>{config.title.ru}</span>
             </button>
           </Link>
         )

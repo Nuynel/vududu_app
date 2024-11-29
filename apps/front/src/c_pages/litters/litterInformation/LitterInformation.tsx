@@ -6,9 +6,17 @@ import {useProfileDataStore} from "../../../f_entities/store/useProfileDataStore
 import {BlocksConfig, FieldData, IncomingLitterData} from "../../../g_shared/types";
 import {formatSingleDate} from "../../../g_shared/methods/helpers";
 import {BLOCK_TYPES} from "../../../g_shared/types/components";
-import {getFieldsConfigFromPuppiesList} from "../helpers";
 import {litterBaseDataFields} from './configurations'
 import {Paths} from "../../../g_shared/constants/routes";
+
+const getFieldsConfigFromPuppiesList = (puppies: {id: string, fullName: string, verified: boolean}[]) => {
+  return puppies.map(puppy => ({
+    key: puppy.id,
+    value: puppy.fullName,
+    link: true,
+    linkValue: `/app/population/dogs/dog/${puppy.id}`
+  }))
+}
 
 const LitterInformation = () => {
   const [litter, setLitter] = useState<IncomingLitterData | null>(null);
@@ -26,7 +34,7 @@ const LitterInformation = () => {
 
 
   const openLitterEditor = () => {
-    setLocation(`/app/litters/litter/${params.id}/editor`);
+    setLocation(`/app/population/litters/litter/${params.id}/editor`);
   }
 
   const getCardsConfig = (): BlocksConfig => {
@@ -36,13 +44,13 @@ const LitterInformation = () => {
           key: fieldName,
           value: litter.fatherData.fullName,
           link: true,
-          linkValue: `/app/dogs/dog/${litter.fatherData.id}`,
+          linkValue: `/app/population/dogs/dog/${litter.fatherData.id}`,
         }
         case 'motherFullName': return {
           key: fieldName,
           value:  litter.motherData.fullName,
           link: true,
-          linkValue: `/app/dogs/dog/${litter.motherData.id}`,
+          linkValue: `/app/population/dogs/dog/${litter.motherData.id}`,
         }
         case 'dateOfBirth': return {
           key: fieldName,

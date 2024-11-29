@@ -1,15 +1,19 @@
 import {useEffect, useState} from "react";
 import {IncomingDogData, IncomingLitterData, OutgoingDogData} from "../../../g_shared/types";
-import {fixTimezone} from "../../../g_shared/methods/helpers";
+import {convertDateFormat, fixTimezone, formatSingleDate} from "../../../g_shared/methods/helpers";
 import {createDog, getLittersByDate, updateBaseDogInfo} from "../../../g_shared/methods/api";
 import BaseInfoEditor from "../../../e_features/BaseInfoEditor";
 import useGetInitialData from "../../../f_entities/hooks/useGetInitialData";
 import {useBreeds} from "../../../f_entities/hooks/useBreeds";
-import FormPageWrapper from "../../../e_features/FormPageWrapper";
 import useNewDogValidation from "./useNewDogValidation";
 import * as React from "react";
 import EntityList from "../../../e_features/EntityList";
 import SubmitActionPopup from "../../../e_features/SubmitActionPopup";
+import useResponsiveGrid from "../../../f_entities/hooks/useResponsiveGrid";
+import {GENDER} from "../../../g_shared/types/dog";
+import {FORM_FIELDS, FormValues} from "../../../g_shared/types/form";
+import {useForm} from "react-hook-form";
+import {useTranslation} from "../../../f_entities/contexts/i18n";
 
 const dogOwningDisputeText = 'Пожалуйста, напишите в службу поддержки vududu_support@vududu.ru. Укажите данные собаки (кличку, пол, дату рождения и породу), прикрепите доказательства владения собакой и мы рассмотрим Вашу заявку'
 
@@ -35,6 +39,7 @@ const DogInformationCreator = () => {
   const [showPopup, switchShowPopup] = useState<boolean>(false)
   const [selectedDogId, changeSelectedDogId] = useState<string | null>(null)
   const {breeds, getAllBreeds, setBreedSearchString} = useBreeds();
+  const {isSmall} = useResponsiveGrid()
 
   const {getInitialData} = useGetInitialData()
   const {
@@ -77,7 +82,7 @@ const DogInformationCreator = () => {
     }))
   }
 
-  const handleSubmit = async () => {
+  const onSubmit = async () => {
     const newDog: OutgoingDogData = {
       litterId: newDogData.litterData?.id || null,
       breedId: newDogValidationData.breedId,
@@ -134,85 +139,187 @@ const DogInformationCreator = () => {
     ))
   }
 
+  const {translate} = useTranslation();
+
+  const formFieldOptions = {
+    [FORM_FIELDS.DATE_OF_BIRTH]: {
+      // required: translate("requiredEmail"),
+      // pattern: {
+      //   value: /^\S+@\S+$/i,
+      //   message: translate("invalidEmail"),
+      // },
+    },
+    [FORM_FIELDS.BREED_ID]: {
+      // required: translate("requiredPassword"),
+      // minLength: {
+      //   value: 6,
+      //   message: translate("passwordMinLength"),
+      // },
+    },
+    [FORM_FIELDS.GENDER]: {
+      // required: translate("requiredPassword"),
+      // minLength: {
+      //   value: 6,
+      //   message: translate("passwordMinLength"),
+      // },
+    }
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm<FormValues>();
+
   return (
-    <FormPageWrapper title={'Добавление собаки'}>
-      <BaseInfoEditor
-        entityType={'newDogValidation'}
-        entity={newDogValidationData}
-        handleInputChange={handleNewDogValChange}
-        handleSearch={setBreedSearchString}
-        handleSubmit={handleValidateNewDog}
-        litters={litters}
-        breeds={breeds}
-        isLoading={isLoading}
-        saveButtonLabel={'Поиск собаки в базе'}
-      />
-      {dogDataMatch && dogDataMatch.length > 0 && (
-        <EntityList
-          list={getEntityList()}
-          setActiveId={chooseDog}
-          hasColorIndicator={false}
-          hasIcons={false}
-          isDogChooser
-        />
-      )}
-
-      {(dogDataMatch && dogDataMatch.length > 0) || (dogDataMatch && dogDataMatch.length > 0 && !selectedDogId) && (
-        <div className="m-2" style={{ minHeight: '24px' }}>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={isNoMatch}
-              onChange={(event) => switchIsNoMatch(event.target.checked)}
-              className="form-checkbox"
-            />
-            <span>Здесь нет такой собаки</span>
+    <div className='w-full px-4 relative'>
+      <div className={`flex flex-col rounded-xl ${isSmall ? 'justify-around' : 'justify-end'} items-start w-full bg-white py-4 px-6`}>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">
+            Дата рождения
           </label>
+          <input
+            type="date"
+            value={formatSingleDate(newDogValidationData.dateOfBirth)}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Проверяем и преобразуем формат даты
+              const formattedValue = convertDateFormat(inputValue);
+              // setDateValue(formattedValue);
+              // Вызываем ваш обработчик
+              handleNewDogValChange('dateOfBirth', formattedValue)
+            }}
+            className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-      )}
 
-      {dogDataMatch && dogDataMatch.length === 0 && (
-        <div className="m-2 w-full" style={{ minHeight: 'min-content' }}>
-          <p className="text-center">
-            Собак с такими данными не найдено, продолжите заполнение формы для добавления
-          </p>
-        </div>
-      )}
-
-      {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (
-        <div className="m-2" style={{ minHeight: '24px' }}>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={isOwnDog}
-              disabled={!!selectedDogId}
-              onChange={(event) => switchIsOwnDog(event.target.checked)}
-              className="form-checkbox"
-            />
-            <span>Собака принадлежит мне</span>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">
+            Порода
           </label>
+          <select
+            value={breeds.find(breed => 'breedId' in newDogValidationData && breed._id === newDogValidationData.breedId)?._id}
+            onChange={(e) => handleNewDogValChange('breedId', e)}
+            className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            {breeds.map((breed) => (
+              <option key={breed._id} value={breed._id}>
+                {breed.name ? breed.name.rus : ''}
+              </option>
+            ))}
+          </select>
         </div>
 
-      )}
+        <div className="mb-4">
+          <label className="block text-sm font-medium">
+            Пол
+          </label>
+          <div className="mt-2">
+            {[
+              {
+                id: GENDER.MALE,
+                value: GENDER.MALE,
+                label: 'Кобель',
+              },
+              {
+                id: GENDER.FEMALE,
+                value: GENDER.FEMALE,
+                label: 'Сука',
+              }
+            ].map((option) => (
+              <label key={option.id} className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  id={option.id}
+                  value={option.value}
+                  checked={newDogValidationData.gender === option.value}
+                  onChange={(e) => handleNewDogValChange('gender', e.target.value)}
+                  className="form-radio"
+                />
+                <span>{option.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-      {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (
-        <BaseInfoEditor
-          entityType={isOwnDog ? 'newOwnDog' : 'newOtherDog'}
-          entity={newDogData}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-          litters={litters}
-          saveButtonLabel={'Сохранить'}
-        />
-      )}
+        {/*<BaseInfoEditor*/}
+        {/*  entityType={'newDogValidation'}*/}
+        {/*  entity={newDogValidationData}*/}
+        {/*  handleInputChange={handleNewDogValChange}*/}
+        {/*  handleSearch={setBreedSearchString}*/}
+        {/*  handleSubmit={handleValidateNewDog}*/}
+        {/*  litters={litters}*/}
+        {/*  breeds={breeds}*/}
+        {/*  isLoading={isLoading}*/}
+        {/*  saveButtonLabel={'Поиск собаки в базе'}*/}
+        {/*/>*/}
+        {dogDataMatch && dogDataMatch.length > 0 && (
+          <EntityList
+            list={getEntityList()}
+            setActiveId={chooseDog}
+            hasColorIndicator={false}
+            hasIcons={false}
+            isDogChooser
+          />
+        )}
 
-      {showPopup && (
-        <SubmitActionPopup
-          text={dogOwningDisputeText}
-          closePopup={() => switchShowPopup(false)}
-        />
-      )}
-    </FormPageWrapper>
+        {(dogDataMatch && dogDataMatch.length > 0) || (dogDataMatch && dogDataMatch.length > 0 && !selectedDogId) && (
+          <div className="m-2" style={{ minHeight: '24px' }}>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={isNoMatch}
+                onChange={(event) => switchIsNoMatch(event.target.checked)}
+                className="form-checkbox"
+              />
+              <span>Здесь нет такой собаки</span>
+            </label>
+          </div>
+        )}
+
+        {dogDataMatch && dogDataMatch.length === 0 && (
+          <div className="m-2 w-full" style={{ minHeight: 'min-content' }}>
+            <p className="text-center">
+              Собак с такими данными не найдено, продолжите заполнение формы для добавления
+            </p>
+          </div>
+        )}
+
+        {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (
+          <div className="m-2" style={{ minHeight: '24px' }}>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={isOwnDog}
+                disabled={!!selectedDogId}
+                onChange={(event) => switchIsOwnDog(event.target.checked)}
+                className="form-checkbox"
+              />
+              <span>Собака принадлежит мне</span>
+            </label>
+          </div>
+
+        )}
+
+        {((dogDataMatch && dogDataMatch.length === 0) || isNoMatch || selectedDogId) && (
+          <BaseInfoEditor
+            entityType={isOwnDog ? 'newOwnDog' : 'newOtherDog'}
+            entity={newDogData}
+            handleInputChange={handleInputChange}
+            handleSubmit={onSubmit}
+            litters={litters}
+            saveButtonLabel={'Сохранить'}
+          />
+        )}
+
+        {showPopup && (
+          <SubmitActionPopup
+            text={dogOwningDisputeText}
+            closePopup={() => switchShowPopup(false)}
+          />
+        )}
+      </div>
+    </div>
   )
 }
 

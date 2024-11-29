@@ -58,7 +58,7 @@ const SignInScreen = () => {
   } = useForm<FormValues>();
 
   return (
-    <div className="flex flex-col justify-center items-center bg-gray-800 w-full h-full">
+    <div className="flex justify-center items-center bg-gray-800 w-full h-full">
       <LanguageSelect small />
 
       <div className={`bg-white p-6 rounded-lg shadow-lg ${isSmall ? 'w-11/12' : 'w-96'} m-6`}>

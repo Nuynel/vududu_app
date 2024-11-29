@@ -1,34 +1,14 @@
 import * as React from "react";
 import {ReactNode} from "react";
-import Header from "../e_features/Header";
-import {Paths} from "../g_shared/constants/routes";
 
 type Props = {
   children: ReactNode,
   filter?: boolean
-  headerProps: {
-    title: string,
-    submenu?: {
-      left: {
-        path: Paths,
-        title: string,
-        isActive: boolean
-      },
-      right: {
-        path: Paths,
-        title: string,
-        isActive: boolean
-      },
-    },
-    back: boolean
-  }
 }
 
-const PageComponent = ({children, headerProps, filter}: Props) => {
-
+const PageComponent = ({children, filter}: Props) => {
   return (
-    <div className={`grid ${filter ? 'grid-rows-[auto_auto_1fr]' : 'grid-rows-[auto_1fr]'} grid-cols-[auto] h-full overflow-scroll`}>
-      <Header {...headerProps}/>
+    <div className={`relative grid p-4 ${filter ? 'grid-rows-[auto_1fr]' : 'grid-rows-[1fr]'} h-full grid-cols-[auto] overflow-scroll bg-gray-200 gap-4 lg:pt-4`}>
       {children}
     </div>
   )

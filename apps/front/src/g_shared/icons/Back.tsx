@@ -6,11 +6,11 @@ const BackIcon = ({color}: IconProps) => {
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path
           fill="none"
-          stroke={color}
-          strokeWidth="32"
           strokeLinecap="round"
+          stroke={color}
           strokeLinejoin="round"
-          d="M244 400L100 256l144-144M120 256h292"/>
+          strokeWidth="32" d="M320 448L128 256l192-192"
+        />
       </svg>
     </div>
   )

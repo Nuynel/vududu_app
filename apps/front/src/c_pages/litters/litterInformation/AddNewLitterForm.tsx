@@ -113,7 +113,7 @@ const LitterInformationCreator = () => {
   useEffect(() => getAllBreeds(), [])
 
   return (
-    <FormPageWrapper title={'Добавление помета'}>
+    <div>
       <BaseInfoEditor
         entityType={'newLitter'}
         entity={newLitterData}
@@ -126,7 +126,7 @@ const LitterInformationCreator = () => {
         breeds={breeds}
         saveButtonLabel={'Сохранить'}
       />
-    </FormPageWrapper>
+    </div>
   )
 }
 

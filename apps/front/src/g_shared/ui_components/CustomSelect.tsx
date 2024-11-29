@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from '../icons'; // Можем использовать react-icons для стрелки
+import { ChevronDownIcon, ChevronUpIcon } from '../icons';
 
-const CustomSelect = ({ options, value, setValue }) => {
+type Props = {
+  options: { value: string, label: string }[],
+  value: string,
+  onChange: (value: string) => void;
+  onBlur: () => void;}
+
+const CustomSelect = ({ options, value, onChange, onBlur }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectOption = (option) => {
-    setValue(option.value);
+    onChange(option.value);
     setIsOpen(false);
   };
 
@@ -15,10 +21,12 @@ const CustomSelect = ({ options, value, setValue }) => {
     <div className="relative w-full">
       {/* Кнопка для селекта */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
+        onBlur={onBlur}
         className="w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm flex justify-between items-center focus:outline-none"
       >
-        <span>{options.find((option) => option.value === value)?.label || 'Выберите фильтр'}</span>
+        <span>{options.find((option) => option.value === value)?.label || 'Выберите значение'}</span>
         <DynamicIcon color='black'/>
       </button>
 
@@ -28,8 +36,8 @@ const CustomSelect = ({ options, value, setValue }) => {
           {options.map((option) => (
             <li
               key={option.value}
-              onClick={() => handleSelectOption(option)}
-              className={`cursor-pointer py-2 px-3 hover:bg-gray-100 ${
+              onMouseDown={() => handleSelectOption(option)}
+              className={`cursor-pointer py-2 px-3 hover:bg-gray-200 ${
                 value === option.value ? 'bg-blue-100 text-blue-600' : ''
               }`}
             >

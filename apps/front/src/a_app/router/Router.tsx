@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Route, Switch, Link } from 'wouter';
+import {Route, Switch, Link} from 'wouter';
 import { PrivateRoutes, PublicRoutes, Paths } from "../../g_shared/constants/routes";
 import PrivatePageTemplate from "./PrivatePageTemplate";
 import PrivateRoute from "../../e_features/PrivateRoute";
@@ -20,6 +20,15 @@ const Router = () => {
               </PrivateRoute>
             </Route>
           )
+
+          if (path.includes(Paths.population) || path.includes(Paths.calendar)) return (
+            <Route path={path} key={path} nest>
+              <PrivatePageTemplate>
+                <DynamicComponent />
+              </PrivatePageTemplate>
+            </Route>
+          )
+
           return (
             <Route path={path} key={path}>
               <PrivatePageTemplate>

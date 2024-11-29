@@ -3,34 +3,36 @@ import Calendar from "../../c_pages/events/Events";
 import Contacts from "../../c_pages/contacts/Contacts";
 import Documents from "../../c_pages/documents/Documents";
 import Profile from "../../c_pages/profile/Profile";
-import Pets from "../../c_pages/dogs/Dogs";
+import Population from "../../c_pages/population/Population";
+import Litters from "../../c_pages/litters/Litters";
 import SignIn from "../../c_pages/signin/SignIn";
 import SignUp from "../../c_pages/signup/SignUp";
 import ConfirmEmail from "../../c_pages/confirm_email/ConfirmEmail";
 import CreateProfile from "../../c_pages/profile/CreateProfile";
 import DogInformation from "../../c_pages/dogs/dogInformation/DogInformation";
 import DogInformationEditor from "../../c_pages/dogs/dogInformation/DogInformationEditor";
-import DogInformationCreator from "../../c_pages/dogs/dogInformation/AddNewDogForm";
-import LitterInformation from "../../c_pages/dogs/litterInformation/LitterInformation";
-import LitterInformationEditor from "../../c_pages/dogs/litterInformation/LitterInformationEditor";
+import DogInformationCreator from "../../c_pages/dogs/dogInformation/newDog/AddNewDogForm";
+import LitterInformation from "../../c_pages/litters/litterInformation/LitterInformation";
+import LitterInformationEditor from "../../c_pages/litters/litterInformation/LitterInformationEditor";
 import EventInformation from "../../c_pages/events/eventInformation/EventInformation";
 import EventInfoEditor from "../../c_pages/events/eventInformation/EventInfoEditor";
 import Pedigree from "../../c_pages/pedigree/Pedigree";
 import PasswordRecovery from "../../c_pages/password_recovery/PasswordRecovery";
-import LitterInformationCreator from "../../c_pages/dogs/litterInformation/AddNewLitterForm";
+import LitterInformationCreator from "../../c_pages/litters/litterInformation/AddNewLitterForm";
 import AddNewEventForm from "../../c_pages/events/eventInformation/AddNewEventForm";
+import BreedCreator from "../../c_pages/profile/BreedCreator";
 
 export const componentsMapping = {
-  [Paths.events]: {
+  [Paths.calendar]: {
     component: Calendar,
     private: true,
-    path: Paths.events,
+    path: Paths.calendar,
   },
-  [Paths.history]: {
-    component: Calendar,
-    private: true,
-    path: Paths.history,
-  },
+  // [Paths.history]: {
+  //   component: Calendar,
+  //   private: true,
+  //   path: Paths.history,
+  // },
   [Paths.contacts]: {
     component: Contacts,
     private: true,
@@ -46,15 +48,20 @@ export const componentsMapping = {
     private: true,
     path: Paths.profile,
   },
-  [Paths.dogs]: {
-    component: Pets,
+  // [Paths.dogs]: {
+  //   component: Population,
+  //   private: true,
+  //   path: Paths.dogs,
+  // },
+  // [Paths.litters]: {
+  //   component: Population,
+  //   private: true,
+  //   path: Paths.litters,
+  // },
+  [Paths.population]: {
+    component: Population,
     private: true,
-    path: Paths.dogs,
-  },
-  [Paths.litters]: {
-    component: Pets,
-    private: true,
-    path: Paths.litters,
+    path: Paths.sign_in,
   },
   [Paths.sign_in]: {
     component: SignIn,
@@ -140,5 +147,10 @@ export const componentsMapping = {
     component: PasswordRecovery,
     private: false,
     path: Paths.passwordRecoveryExpired,
+  },
+  [Paths.breed_creator]: {
+    component: BreedCreator,
+    private: true,
+    path: Paths.breed_creator,
   },
 }

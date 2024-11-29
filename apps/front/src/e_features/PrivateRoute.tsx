@@ -23,7 +23,7 @@ const PrivateRoute = ({ children }) => {
   }
 
   return (
-    <div className="grid-area-main h-full">
+    <div className="h-full overflow-scroll">
       {children}
     </div>
   );

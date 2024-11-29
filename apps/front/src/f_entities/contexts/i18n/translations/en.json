@@ -96,5 +96,18 @@
   "500_INTERNAL_SERVER_ERROR": "Internal server error. Please try again later.",
   "VALID_TOKEN_EXIST": "A valid recovery token already exists. Please check your email.",
   "MAILING_ERROR": "Error sending the email. Please try again later.",
-  "INVALID_ACTIVATOR": "Invalid activation token"
+  "INVALID_ACTIVATOR": "Invalid activation token",
+
+  "profileCreating": "Profile Creation",
+  "addKennel": "Add Kennel",
+  "registerAsKennel": "Register as Kennel",
+  "addBreeder": "Add Breeder",
+  "registerAsBreeder": "Register as Breeder",
+  "back": "Back",
+  "signOut": "Sign out",
+  "addFirstLitter": "Add first litter",
+  "addFirstDog": "Add first dog",
+  "addFirstEvent": "Add first event",
+  "addFirstDocument": "Add first document",
+  "addFirstContact": "Add first contact"
 }

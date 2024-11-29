@@ -101,6 +101,7 @@ export async function validateNewDog (
   newDogData: Pick<OutgoingDogData, 'dateOfBirth' | 'gender' | 'breedId'>
 ): Promise<{dogs: Pick<IncomingDogData, 'ownerProfileId' | '_id' | 'creatorProfileId' | 'federationId' | 'fullName' | 'dateOfBirth' | 'gender' | 'breedId' | 'name' | 'dateOfDeath' | 'color' | 'isNeutered' | 'litterData'>[]}> {
   try {
+    console.log(newDogData)
     const queryParams = new URLSearchParams(newDogData).toString();
     return await fetch(`${URL}/api/validate-new-dog?${queryParams}`, {
       method: 'GET',

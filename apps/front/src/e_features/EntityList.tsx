@@ -3,8 +3,9 @@ import * as React from "react";
 import {EVENT_TYPE} from "../g_shared/types/event";
 import {BugIcon, FemaleIcon, InjectorIcon, MaleIcon, WaterIcon} from "../g_shared/icons";
 import {GENDER} from "../g_shared/types/dog";
-import {InfiniteScroll} from '../g_shared/ui_components'
+import {CustomSpinner, InfiniteScroll} from '../g_shared/ui_components'
 import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
+import {useTranslation} from "../f_entities/contexts/i18n";
 
 const colors = {
   red: 'red',
@@ -41,6 +42,8 @@ type Props = {
   isDogChooser?: boolean,
   setActiveId: (_id: string) => void,
   switchIsIdSelected?: (_id: string) => void,
+  openCreator?: () => void,
+  addButtonText?: string
 }
 
 const iconsMapping = {
@@ -97,24 +100,31 @@ const getBorder = (hasColorIndicator: boolean, date: string[]): React.CSSPropert
   } : undefined
 }
 
-const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds, isDogChooser, switchIsIdSelected, selectMode}: Props) => {
+const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds, isDogChooser, switchIsIdSelected, selectMode, openCreator, addButtonText}: Props) => {
   const {isSmall} = useResponsiveGrid()
+  const {translate} = useTranslation()
 
   const cardClickEventHandler = (id: string) => {
     if (!selectMode) setActiveId(id)
   }
 
-  const getMargin = (index, list) => {
-    if (index === (list.length - 1) && !isDogChooser) return {bottom: '72px', top: isSmall ? 'medium' : 'small', left: 'small', right: 'small'}
-    return {bottom: 'none', top: isSmall ? 'medium' : 'small', left: 'small', right: 'small'}
-  }
+  if (!list.length && openCreator) return (
+    <div className={`flex rounded-xl justify-around w-full bg-white p-4 h-full ${isSmall ? 'items-center' : 'items-start'}`}>
+      <button
+        onClick={openCreator}
+        className={`w-full bg-green-400 hover:bg-green-500 text-white px-4 flex justify-center text-xl items-center ${isSmall ? 'py-12 rounded-xl' : 'py-2 rounded-full'}`}
+      >
+        {translate(addButtonText)}
+      </button>
+    </div>
+  )
 
   return (
     <InfiniteScroll items={list}>
       {(entity: Entity, index: number) => {
         return isDogChooser ? (
           <div
-            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} ${getMargin(index, list)} rounded-md shadow-md`}
+            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} rounded-xl shadow-md`}
             key={index}
           >
             <div className={`flex ${isSmall ? 'flex-col items-center' : 'flex-row justify-between items-center'}`}>
@@ -138,7 +148,7 @@ const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds
           </div>
           ) : (
           <div
-            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} ${getMargin(index, list)} rounded-md shadow-md cursor-pointer`}
+            className={`bg-white ${isSmall ? 'p-4' : 'p-2'} rounded-xl shadow-md cursor-pointer`}
             key={index}
             onClick={() => cardClickEventHandler(entity._id)}
             style={getBorder(hasColorIndicator, entity.date)}
@@ -157,9 +167,9 @@ const EntityList = ({list, hasColorIndicator, hasIcons, setActiveId, selectedIds
               <div className="ml-2 truncate">
                 {entity.title}
               </div>
-              <p className="text-sm" style={{ maxWidth: 'min-content' }}>
+              <div>
                 {formatDateOrRange(entity.date)}
-              </p>
+              </div>
             </div>
           </div>
         )

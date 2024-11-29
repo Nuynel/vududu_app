@@ -27,7 +27,23 @@ import ExitIcon from './Exit';
 
 export type IconProps = {
   // size: string,
-  color: string | 'white' | 'black'
+  color: string
+    | '#e5e7eb' // gray-200
+    | '#9ca3af' // gray-400
+    | '#6b7280' // gray-500
+    | '#374151' // gray-700
+    | '#111827' // gray-900
+    | '#bfdbfe' // blue-200
+    | '#93c5fd' // blue-300
+    | '#60a5fa' // blue-400
+    | '#3b82f6' // blue-500
+    | '#2563eb' // blue-600
+    | '#1d4ed8' // blue-700
+    | '#1e40af' // blue-800
+    | '#1e3a8a' // blue-900
+    | '#172554' // blue-950
+    | 'white'
+    | 'black'
     | '#6B7280'
 
     | '#e4b33a'

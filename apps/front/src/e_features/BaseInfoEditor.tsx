@@ -161,7 +161,7 @@ const BaseInfoEditor = (props: Props) => {
                   }
                   placeholder={fieldConfig.placeholder}
                   onChange={(e) => fieldConfig.handler(e, 'dogId', props.handleInputChange)}
-                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             )
@@ -205,7 +205,7 @@ const BaseInfoEditor = (props: Props) => {
                   value={getRuTranslate(props.entity[key])}
                   placeholder={fieldConfig.placeholder}
                   onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
-                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
                 {['heat', 'vaccination', 'treatment'].includes(props.entityType) && (props.entity[key] === 'overdue' || props.entity[key] === 'planned') && (
                   <button
@@ -233,7 +233,7 @@ const BaseInfoEditor = (props: Props) => {
                   value={props.entity[key]}
                   placeholder={fieldConfig.placeholder}
                   onChange={(e) => fieldConfig.handler(e, key, props.handleInputChange)}
-                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full p-2 border border-gray-300 bg-gray-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             )

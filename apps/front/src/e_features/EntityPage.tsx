@@ -10,7 +10,7 @@ type Props = {
 
 const EntityPage = ({config, openBaseInfoEditor}: Props) => {
   return (
-    <div className="overflow-scroll bg-gray-100">
+    <div className="overflow-scroll bg-gray-200">
       <CommonCard blockName={config.commonData.blockName} blockFields={config.commonData.blockFields} openBaseInfoEditor={openBaseInfoEditor}/>
       {config.additionalData.map((block, index) => (
         <AccordionCard key={index} cardName={block.blockName} fields={block.blockFields}/>

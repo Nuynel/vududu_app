@@ -4,41 +4,33 @@ import useResponsiveGrid from "../f_entities/hooks/useResponsiveGrid";
 
 type Props = {
   isEditingModeActive: boolean,
+  isListEmpty?: boolean,
   children?: React.ReactNode,
   switchEditingMode: () => void,
   showPopup: () => void,
   openCreator: () => void,
 }
 
-const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showPopup, openCreator}: Props) => {
+const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showPopup, openCreator, isListEmpty}: Props) => {
   const {isSmall} = useResponsiveGrid()
-  const getBlockWidth = () => {
-    return isSmall ? '100%' : window.innerWidth - 250
-  }
 
-  function isStandalone() {
-    // @ts-ignore: next line
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  }
+  // function isStandalone() {
+  //   // @ts-ignore: next line
+  //   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  // }
 
   return (
     <div
-      className={`flex justify-between items-center px-4`}
-      style={{
-        height: '48px',
-        width: getBlockWidth(),
-        position: 'absolute',
-        bottom: isSmall ? (isStandalone ? '92px' : '72px') : '24px',
-      }}
+      className={`absolute bottom-4 flex justify-between items-center px-4 w-full`}
     >
       <div className="flex gap-4">
         {/* Кнопка редактирования */}
-        <button
+        {!isListEmpty && (<button
           className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center"
           onClick={switchEditingMode}
         >
-          <PencilIcon color="white" />
-        </button>
+          <PencilIcon color="white"/>
+        </button>)}
 
         {/* Кнопка удаления, если активен режим редактирования */}
         {isEditingModeActive && (
@@ -55,13 +47,15 @@ const EditingButtons = ({isEditingModeActive, children, switchEditingMode, showP
       </div>
 
       {/* Кнопка добавления */}
-      <button
-        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
-        onClick={openCreator}
-        disabled={isEditingModeActive}
-      >
-        <PlusIcon color="white" />
-      </button>
+      {!isListEmpty && (
+        <button
+          className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
+          onClick={openCreator}
+          disabled={isEditingModeActive}
+        >
+          <PlusIcon color="white"/>
+        </button>
+      )}
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import { navigationAfterInit, isValidRoute } from "./navigationHelpers";
 import { parseJwt, isTokenExpired, isAuthenticated } from "./tokenHelpers";
-import { getFormatTimezoneOffset, formatDateOrRange, getFormattedDate, fixTimezone, compareDates, sortDates, formatSingleDate, getDateDiff } from './dateTimeHelpers';
-
+import { getFormatTimezoneOffset, formatDateOrRange, getFormattedDate, fixTimezone, compareDates, sortDates, formatSingleDate, getDateDiff, convertDateFormat } from './dateTimeHelpers';
 
 export {
   navigationAfterInit,
@@ -16,5 +15,6 @@ export {
   compareDates,
   sortDates,
   formatSingleDate,
-  getDateDiff
+  getDateDiff,
+  convertDateFormat
 }

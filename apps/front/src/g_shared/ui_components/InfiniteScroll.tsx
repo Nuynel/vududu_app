@@ -46,7 +46,7 @@ const InfiniteScroll = ({ items, loadMore, children }: InfiniteScrollProps) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-2.5">
       {visibleItems.map((entity, index) => (
         <div key={index}>
           {children(entity, index)} {/* Рендеринг с использованием функции */}

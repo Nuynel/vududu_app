@@ -26,7 +26,7 @@ const App = () => {
   return (
     <TranslationProvider>
       <div className="min-h-screen h-screen max-h-screen">
-      <Router/>
+        <Router/>
         <ToastContainer
           position="top-right"
           autoClose={5000}

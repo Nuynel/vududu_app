@@ -55,13 +55,13 @@ const DogCard = ({dogId}: Props) => {
         <div className="flex flex-row items-center justify-around">
           <button
             className={`py-2 px-4 ${isSmall ? 'text-sm' : 'text-base'} bg-blue-500 text-white rounded-md`}
-            onClick={() => setLocation(`/app/dogs/dog/${dogId}`)}
+            onClick={() => setLocation(`/app/population/dogs/dog/${dogId}`)}
           >
             Карточка собаки
           </button>
           <button
             className={`py-2 px-4 ${isSmall ? 'text-sm' : 'text-base'} bg-blue-500 text-white rounded-md`}
-            onClick={() => setLocation(`/app/litters/litter/${getDogById(dogId).litterData?.id}`)}
+            onClick={() => setLocation(`/app/population/litters/litter/${getDogById(dogId).litterData?.id}`)}
           >
             Карточка помета
           </button>
